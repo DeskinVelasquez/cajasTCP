@@ -4,6 +4,7 @@
  */
 package com.cajatcp.view;
 
+import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.GraphicsEnvironment;
@@ -15,20 +16,26 @@ import java.net.UnknownHostException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.imageio.ImageIO;
+import javax.swing.JButton;
 import javax.swing.JPanel;
+import java.awt.event.*;
 
 /**
  *Clase que crea los paneles o laminas que tendr� la ventana. 
  * @author WPOSS
  */
-public class Panel extends JPanel {
+public class Panel extends JPanel implements ActionListener {
     
     private int widthScreen = 0;
     private int heightScreen = 0;
-    
+    private JButton p1;
+    private JButton p2;
+    private JButton p3;
+       
     public Panel(int widthScreen, int heightScreen){
         this.widthScreen = widthScreen;
         this.heightScreen = heightScreen;
+        showButtons();
     }
     
     @Override
@@ -43,9 +50,7 @@ public class Panel extends JPanel {
         g.setFont(font);
         g.drawString("IP_Caja: " + obtenerIP(), 20, 40);
         g.drawLine(20, 50, (widthScreen/2)-40, 50);
-        g.drawImage(getImage(), (widthScreen/4)+60, 2, null);
-       
-    
+        g.drawImage(getImage(), (widthScreen/4)+60, 2, null);  
     }
     
     /**
@@ -84,5 +89,30 @@ public class Panel extends JPanel {
             System.out.println("Imagen no disponible: " + ex.getMessage());
         } 
         return null;
+    }
+    
+    private void showButtons() {
+        p1 = new JButton("Producto 1");
+        p2 = new JButton("Producto 2");
+        p3 = new JButton("Producto 3");
+        add(p1);
+        add(p2);
+        add(p3);
+        p1.addActionListener(this);
+        p2.addActionListener(this);
+        p3.addActionListener(this);
+        
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+          Object btnPressed = e.getSource();
+          if (btnPressed == p1) {
+              setBackground(Color.red);
+        } else if (btnPressed == p2) {
+            setBackground(Color.blue);
+        } else {
+            setBackground(Color.yellow);
+        }
     }
 }
