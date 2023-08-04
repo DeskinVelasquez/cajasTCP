@@ -31,6 +31,9 @@ public class Marco extends JFrame  {
         //agregar un panel
         Panel panel = new Panel(widthScreen, heightScreen);
         add(panel);
+        
+        //se agrega listener de ventana
+        addWindowListener(new VentanaMain());
     }
     
     
