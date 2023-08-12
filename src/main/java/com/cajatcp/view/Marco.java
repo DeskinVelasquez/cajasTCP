@@ -4,7 +4,9 @@
  */
 package com.cajatcp.view;
 
+import com.cajatcp.view.listeners.VentanaMain;
 import com.cajatcp.view.Panel;
+import com.cajatcp.view.listeners.TecladoMain;
 import java.awt.Dimension;
 import java.awt.Image;
 import java.awt.Toolkit;
@@ -25,7 +27,7 @@ public class Marco extends JFrame  {
         obtenerTamañoPantalla();
         //tambien se puede agregar una ventana con setbounds, que recibe cuatro parametros correspondientes al tamaño y posición de la pantalla
         setBounds(widthScreen/4, heightScreen/4, widthScreen/2, heightScreen/2);
-        setResizable(false); //este metodo permite bloquear el redimensionamiento de la ventana
+        setResizable(true); //este metodo permite bloquear el redimensionamiento de la ventana
         setTitle("Cajas TCP"); // pone el titulo de la ventana
         
         //agregar un panel
@@ -34,6 +36,10 @@ public class Marco extends JFrame  {
         
         //se agrega listener de ventana
         addWindowListener(new VentanaMain());
+        addWindowStateListener(new VentanaMain());
+        
+        //se agrega listener de teclado
+        //addKeyListener(new TecladoMain());
     }
     
     

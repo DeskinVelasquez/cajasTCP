@@ -4,6 +4,7 @@
  */
 package com.cajatcp.view;
 
+import com.cajatcp.view.listeners.TecladoMain;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
@@ -50,7 +51,10 @@ public class Panel extends JPanel implements ActionListener {
         g.setFont(font);
         g.drawString("IP_Caja: " + obtenerIP(), 20, 40);
         g.drawLine(20, 50, (widthScreen/2)-40, 50);
-        g.drawImage(getImage(), (widthScreen/4)+60, 2, null);  
+        g.drawImage(getImage(), (widthScreen/4)+60, 2, null); 
+        
+        //se agrega listener de teclado
+        addKeyListener(new TecladoMain());
     }
     
     /**
