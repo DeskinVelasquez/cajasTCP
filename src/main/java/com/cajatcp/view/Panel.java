@@ -4,7 +4,7 @@
  */
 package com.cajatcp.view;
 
-import com.cajatcp.view.listeners.TecladoMain;
+import com.cajatcp.view.listeners.FocusMain;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
@@ -20,6 +20,7 @@ import javax.imageio.ImageIO;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 import java.awt.event.*;
+import javax.swing.JTextField;
 
 /**
  *Clase que crea los paneles o laminas que tendr� la ventana. 
@@ -32,6 +33,8 @@ public class Panel extends JPanel implements ActionListener {
     private JButton p1;
     private JButton p2;
     private JButton p3;
+    private JTextField textField1;
+    private JTextField textField2;
        
     public Panel(int widthScreen, int heightScreen){
         this.widthScreen = widthScreen;
@@ -53,8 +56,21 @@ public class Panel extends JPanel implements ActionListener {
         g.drawLine(20, 50, (widthScreen/2)-40, 50);
         g.drawImage(getImage(), (widthScreen/4)+60, 2, null); 
         
-        //se agrega listener de teclado
-        addKeyListener(new TecladoMain());
+        //agregando cuadros de texto, para el tema del evento foco
+        //primero invalidamos el layout: el layuot es la disposicion que tienen los componentes en el panel (orden de componentes), por defecto java los ubica automaticamente por ello lo invalidamos
+        setLayout(null);
+        textField1 = new JTextField();
+        textField2 = new JTextField();
+        
+        textField1.setBounds(250, 80, 150, 20);
+        textField2.setBounds(250, 100, 150, 20);
+        
+        add(textField1);
+        add(textField2);
+        
+        //agregando listener focus a los cuadros de texto
+        textField1.addFocusListener(new FocusMain());
+        textField2.addFocusListener(new FocusMain());
     }
     
     /**
@@ -86,7 +102,7 @@ public class Panel extends JPanel implements ActionListener {
             File file = new File("logo_red_enlace.png");
             Image image = ImageIO.read(file);
             if (image != null) {
-                return image.getScaledInstance(widthScreen/7, heightScreen/16, widthScreen);
+                return image.getScaledInstance(widthScreen/7, heightScreen/20, widthScreen);
             }
         } catch (IOException ex) {
             Logger.getLogger(Panel.class.getName()).log(Level.SEVERE, null, ex);
@@ -105,6 +121,10 @@ public class Panel extends JPanel implements ActionListener {
         p1.addActionListener(this);
         p2.addActionListener(this);
         p3.addActionListener(this);
+        setLayout(null);
+        p1.setBounds(30, 80, 100, 20);
+        p2.setBounds(30, 110, 100, 20);
+        p3.setBounds(30, 140, 100, 20);
         
     }
 
@@ -112,11 +132,11 @@ public class Panel extends JPanel implements ActionListener {
     public void actionPerformed(ActionEvent e) {
           Object btnPressed = e.getSource();
           if (btnPressed == p1) {
-              setBackground(Color.red);
+             //lógica botón 1
         } else if (btnPressed == p2) {
-            setBackground(Color.blue);
+            //lógica botón 2
         } else {
-            setBackground(Color.yellow);
+            //lógica botón 3
         }
     }
 }

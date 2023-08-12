@@ -6,6 +6,8 @@
 package com.mycompany.cajatcp;
 
 import com.cajatcp.view.Marco;
+import com.cajatcp.view.listeners.FocusListenerWindowMain;
+import com.sun.java.accessibility.util.AWTEventMonitor;
 import javax.swing.JFrame;
 
 /**
@@ -18,5 +20,7 @@ public class Cajatcp {
        Marco marco = new Marco();
        marco.setVisible(true);
        marco.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); //cancelar ejecución del programa al cerrar la ventana
+       
+       marco.addWindowFocusListener(new FocusListenerWindowMain());
     }
 }

@@ -6,10 +6,13 @@ package com.cajatcp.view;
 
 import com.cajatcp.view.listeners.VentanaMain;
 import com.cajatcp.view.Panel;
+import com.cajatcp.view.listeners.MouseMain;
+import com.cajatcp.view.listeners.MouseMainListener;
 import com.cajatcp.view.listeners.TecladoMain;
 import java.awt.Dimension;
 import java.awt.Image;
 import java.awt.Toolkit;
+import java.awt.event.MouseListener;
 import javax.swing.JFrame;
 
 /**
@@ -39,7 +42,15 @@ public class Marco extends JFrame  {
         addWindowStateListener(new VentanaMain());
         
         //se agrega listener de teclado
-        //addKeyListener(new TecladoMain());
+        addKeyListener(new TecladoMain());
+        
+        //se agrega listener de Mouse
+        addMouseListener(new MouseMain());
+        
+        //se agrega un mouse motion listener
+        addMouseMotionListener(new MouseMainListener());
+      
+        
     }
     
     
