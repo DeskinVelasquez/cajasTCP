@@ -21,6 +21,7 @@ public class Cajatcp {
        marco.setVisible(true);
        marco.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); //cancelar ejecución del programa al cerrar la ventana
        
+       //se agrega el focus listener a la ventana principal.
        marco.addWindowFocusListener(new FocusListenerWindowMain());
     }
 }

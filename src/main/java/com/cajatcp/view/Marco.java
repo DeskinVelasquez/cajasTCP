@@ -27,8 +27,8 @@ public class Marco extends JFrame  {
     public Marco(){
         //setSize(400, 400);
         //setLocation(500, 500);
-        obtenerTamañoPantalla();
-        //tambien se puede agregar una ventana con setbounds, que recibe cuatro parametros correspondientes al tamaño y posición de la pantalla
+        getSizeScreen();
+        //tambien se puede agregar una ventana con setbounds, que recibe cuatro parametros correspondientes al tamaÃ±o y posiciÃ³n de la pantalla
         setBounds(widthScreen/4, heightScreen/4, widthScreen/2, heightScreen/2);
         setResizable(true); //este metodo permite bloquear el redimensionamiento de la ventana
         setTitle("Cajas TCP"); // pone el titulo de la ventana
@@ -60,7 +60,7 @@ public class Marco extends JFrame  {
      * Este metodo se usa para capturar las dimensiones de la pantalla en las 
      * variable globales, y cambia el icono de la ventana. 
      */
-    private void obtenerTamañoPantalla() {
+    private void getSizeScreen() {
        Toolkit toolKit = Toolkit.getDefaultToolkit();
        Dimension dimension = toolKit.getScreenSize();
        widthScreen = dimension.width;
