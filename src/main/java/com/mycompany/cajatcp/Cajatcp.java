@@ -5,9 +5,9 @@
 
 package com.mycompany.cajatcp;
 
-import com.cajatcp.practice.MarcoCalculadora;
-import com.cajatcp.view.Marco;
-import com.cajatcp.view.listeners.FocusListenerWindowMain;
+import com.cajatcp.practice.JFrameCalculadora;
+import com.cajatcp.view.JFramePrincipal;
+import com.cajatcp.view.listeners.ImpWindowFocusListener;
 import com.sun.java.accessibility.util.AWTEventMonitor;
 import javax.swing.JFrame;
 
@@ -18,16 +18,18 @@ import javax.swing.JFrame;
 public class Cajatcp {
 
     public static void main(String[] args) {
-      /*  
-       Marco marco = new Marco();
+        
+       JFramePrincipal marco = new JFramePrincipal();
        marco.setVisible(true);
        marco.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); //cancelar ejecución del programa al cerrar la ventana
        
        //se agrega el focus listener a la ventana principal.
-       marco.addWindowFocusListener(new FocusListenerWindowMain());*/
+       marco.addWindowFocusListener(new ImpWindowFocusListener());
        
+      /*
        MarcoCalculadora marcoCalculadora = new MarcoCalculadora();
        marcoCalculadora.setVisible(true);
        marcoCalculadora.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); //cancelar ejecución del programa al cerrar la ventana
+      */
     }
 }

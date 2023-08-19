@@ -11,7 +11,7 @@ import java.awt.event.FocusListener;
  *
  * @author WPOSS
  */
-public class FocusMain implements FocusListener {
+public class ImpFocusListener implements FocusListener {
 
     @Override
     public void focusGained(FocusEvent e) {

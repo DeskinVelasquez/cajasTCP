@@ -12,7 +12,7 @@ import java.awt.event.WindowEvent;
  *
  * @author WPOSS
  */
-public class VentanaMain extends WindowAdapter {
+public class ExtWindowAdapter extends WindowAdapter {
 
     //extendiendo de la clase WindowAdapter, se omite la sobreescritura de metodos
     //debido a que dicha clase ya implementa las interfaces. 

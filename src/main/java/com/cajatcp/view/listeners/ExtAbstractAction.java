@@ -4,7 +4,7 @@
  */
 package com.cajatcp.view.listeners;
 
-import com.cajatcp.view.Panel;
+import com.cajatcp.view.JPanelPrincipal;
 import java.awt.Color;
 import java.awt.event.ActionEvent;
 import javax.swing.AbstractAction;
@@ -15,11 +15,11 @@ import javax.swing.Icon;
  *
  * @author WPOSS
  */
-public class MultiFuenteMain /*implements Action*/ extends AbstractAction {
+public class ExtAbstractAction /*implements Action*/ extends AbstractAction {
     public static final String COLOR_OBJETO_OYENTE = "COLOR_OBJETO_OYENTE";
-    private Panel panel;
+    private JPanelPrincipal panel;
     
-    public MultiFuenteMain(String nombre, Icon icono, Color color, Panel panel){
+    public ExtAbstractAction(String nombre, Icon icono, Color color, JPanelPrincipal panel){
         
         //se guardan los parametro en clave valor, esto se guardara en el objeto evento del tipo ActionEvent
         putValue(Action.NAME, nombre);

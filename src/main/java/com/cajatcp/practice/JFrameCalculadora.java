@@ -11,12 +11,12 @@ import javax.swing.JFrame;
  *
  * @author WPOSS
  */
-public class MarcoCalculadora extends JFrame {
+public class JFrameCalculadora extends JFrame {
     
-    public MarcoCalculadora() {
+    public JFrameCalculadora() {
         setTitle("Calculadora");
         setBounds(500, 300, 450, 300);
-        PanelCalculadora panelCalculadora = new PanelCalculadora();
+        JPanelCalculadora panelCalculadora = new JPanelCalculadora();
         add(panelCalculadora);
         //pack();
     }

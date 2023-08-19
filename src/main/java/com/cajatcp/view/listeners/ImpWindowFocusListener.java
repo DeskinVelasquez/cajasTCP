@@ -11,7 +11,7 @@ import java.awt.event.WindowFocusListener;
  *
  * @author WPOSS
  */
-public class FocusListenerWindowMain implements WindowFocusListener {
+public class ImpWindowFocusListener implements WindowFocusListener {
 
     @Override
     public void windowGainedFocus(WindowEvent e) {

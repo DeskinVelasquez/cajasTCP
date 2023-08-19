@@ -12,7 +12,7 @@ import java.awt.event.MouseMotionListener;
  * Esta clase gestiona los eventos de ratón
  * @author WPOSS
  */
-public class MouseMain extends MouseAdapter implements MouseMotionListener{
+public class ExtMouseAdapter extends MouseAdapter implements MouseMotionListener{
 
     @Override
     public void mouseClicked(MouseEvent e) {

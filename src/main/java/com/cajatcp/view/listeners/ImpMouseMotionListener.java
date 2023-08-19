@@ -11,7 +11,7 @@ import java.awt.event.MouseMotionListener;
  *
  * @author WPOSS
  */
-public class MouseMainListener implements MouseMotionListener{
+public class ImpMouseMotionListener implements MouseMotionListener{
 
   
      @Override

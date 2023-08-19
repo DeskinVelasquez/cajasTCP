@@ -4,11 +4,11 @@
  */
 package com.cajatcp.view;
 
-import com.cajatcp.view.listeners.VentanaMain;
-import com.cajatcp.view.Panel;
-import com.cajatcp.view.listeners.MouseMain;
-import com.cajatcp.view.listeners.MouseMainListener;
-import com.cajatcp.view.listeners.TecladoMain;
+import com.cajatcp.view.listeners.ExtWindowAdapter;
+import com.cajatcp.view.JPanelPrincipal;
+import com.cajatcp.view.listeners.ExtMouseAdapter;
+import com.cajatcp.view.listeners.ImpMouseMotionListener;
+import com.cajatcp.view.listeners.ImpKeyListener;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
@@ -21,12 +21,12 @@ import javax.swing.JFrame;
  * Clase para crear la ventana o marco
  * @author WPOSS
  */
-public class Marco extends JFrame  {
+public class JFramePrincipal extends JFrame  {
     private int widthScreen = 0;
     private int heightScreen = 0;
     
     //constructor
-    public Marco(){
+    public JFramePrincipal(){
         //setSize(400, 400);
         //setLocation(500, 500);
         getSizeScreen();
@@ -36,7 +36,7 @@ public class Marco extends JFrame  {
         setTitle("Cajas TCP"); // pone el titulo de la ventana
         
         //agregar un panel
-        Panel panel = new Panel(widthScreen, heightScreen);
+        JPanelPrincipal panel = new JPanelPrincipal(widthScreen, heightScreen);
         
         //trabajando con posicionamientos de componentes del panel.
         //FlowLayout flowLayout = new FlowLayout(FlowLayout.TRAILING);
@@ -45,17 +45,17 @@ public class Marco extends JFrame  {
         add(panel);
         
         //se agrega listener de ventana
-        addWindowListener(new VentanaMain());
-        addWindowStateListener(new VentanaMain());
+        addWindowListener(new ExtWindowAdapter());
+        addWindowStateListener(new ExtWindowAdapter());
         
         //se agrega listener de teclado
-        addKeyListener(new TecladoMain());
+        addKeyListener(new ImpKeyListener());
         
         //se agrega listener de Mouse
-        addMouseListener(new MouseMain());
+        addMouseListener(new ExtMouseAdapter());
         
         //se agrega un mouse motion listener
-        addMouseMotionListener(new MouseMainListener());
+        addMouseMotionListener(new ImpMouseMotionListener());
       
         
     }

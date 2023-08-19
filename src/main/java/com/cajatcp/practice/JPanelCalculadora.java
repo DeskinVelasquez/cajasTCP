@@ -15,11 +15,11 @@ import javax.swing.JPanel;
  *
  * @author WPOSS
  */
-public class PanelCalculadora extends JPanel implements ActionListener{
+public class JPanelCalculadora extends JPanel implements ActionListener{
     private JButton pantalla;
     private JPanel botonera;
     private StringBuilder textScreen = new StringBuilder();
-    public PanelCalculadora(){
+    public JPanelCalculadora(){
         setLayout(new BorderLayout()); 
         pantalla = new JButton("0");
         pantalla.setEnabled(false);
