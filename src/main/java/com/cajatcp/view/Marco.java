@@ -9,7 +9,9 @@ import com.cajatcp.view.Panel;
 import com.cajatcp.view.listeners.MouseMain;
 import com.cajatcp.view.listeners.MouseMainListener;
 import com.cajatcp.view.listeners.TecladoMain;
+import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.Image;
 import java.awt.Toolkit;
 import java.awt.event.MouseListener;
@@ -35,6 +37,11 @@ public class Marco extends JFrame  {
         
         //agregar un panel
         Panel panel = new Panel(widthScreen, heightScreen);
+        
+        //trabajando con posicionamientos de componentes del panel.
+        //FlowLayout flowLayout = new FlowLayout(FlowLayout.TRAILING);
+        // panel.setLayout(flowLayout);
+      
         add(panel);
         
         //se agrega listener de ventana

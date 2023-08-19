@@ -6,6 +6,7 @@ package com.cajatcp.view;
 
 import com.cajatcp.view.listeners.FocusMain;
 import com.cajatcp.view.listeners.MultiFuenteMain;
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
@@ -42,7 +43,6 @@ public class Panel extends JPanel /*implements ActionListener*/ {
     private JButton p2;
     private JButton p3;
     private JButton p4;
-    private JButton p5;
     private JTextField textField1;
     private JTextField textField2;
        
@@ -132,14 +132,12 @@ public class Panel extends JPanel /*implements ActionListener*/ {
         MultiFuenteMain actionP2 = new MultiFuenteMain("producto 2", imageIcon, Color.blue, this);
         MultiFuenteMain actionP3 = new MultiFuenteMain("producto 3",imageIcon, Color.red, this);
         MultiFuenteMain actionP4 = new MultiFuenteMain("producto 4",imageIcon, Color.green, this);
-        MultiFuenteMain actionP5 = new MultiFuenteMain("producto 5",imageIcon, Color.pink, this);
         
         //Para el tema de multifuentes, podemos instanciar los botones de la siguiente manera. 
         p1 = new JButton(actionP1);
         p2 = new JButton(actionP2);
         p3 = new JButton(actionP3);
         p4 = new JButton(actionP4);
-        p5 = new JButton(actionP5);
         
         /*
         //se instancian los botones
@@ -159,19 +157,18 @@ public class Panel extends JPanel /*implements ActionListener*/ {
         */
         
         //Se rehubican los botones
-        setLayout(null);
+        /*setLayout(null);
         p1.setBounds(30, 80, 120, 20);
         p2.setBounds(30, 110, 120, 20);
-        p3.setBounds(30, 130, 120, 20);
-        p4.setBounds(30, 150, 120, 20);
-        p5.setBounds(30, 170, 120, 20);
+        p3.setBounds(30, 130, 120, 20);*/
         
+        //trabajando con posicionamientos de componentes del panel.
+        setLayout(new BorderLayout());
         //se agregan los botones al panel
-        add(p1);
-        add(p2);
-        add(p3);
-        add(p4);
-        add(p5);
+        add(p1, BorderLayout.SOUTH);
+        add(p2, BorderLayout.NORTH);
+        add(p3, BorderLayout.EAST);
+        add(p4, BorderLayout.WEST);
         
         //InputMap proporciona un vinculo ante un evento y un objeto, normalmente es usado con un actionMap.
         InputMap mapaEntrada =getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
@@ -180,23 +177,20 @@ public class Panel extends JPanel /*implements ActionListener*/ {
         KeyStroke keyBackGroundYellow = KeyStroke.getKeyStroke("ctrl Y");
         KeyStroke keyBackGroundBlue = KeyStroke.getKeyStroke("ctrl B");
         KeyStroke keyBackGroundRed = KeyStroke.getKeyStroke("ctrl R");
-        KeyStroke keyBackGroundGreen = KeyStroke.getKeyStroke("ctrl G");
-        KeyStroke keyBackGroundPink = KeyStroke.getKeyStroke("ctrl P");
+        KeyStroke keyBackGroundRGreen = KeyStroke.getKeyStroke("ctrl G");
         
         //asignamos la combinacion de teclas al siguiente objeto
         mapaEntrada.put(keyBackGroundYellow, "fondo_amarillo");
         mapaEntrada.put(keyBackGroundBlue, "fondo_azul");
         mapaEntrada.put(keyBackGroundRed, "fondo_rojo");
-        mapaEntrada.put(keyBackGroundGreen, "fondo_verde");
-        mapaEntrada.put(keyBackGroundPink, "fondo_rosa");
+        mapaEntrada.put(keyBackGroundRGreen, "fondo_verde");
         
         //se asigna el objeto a la action
         ActionMap actionMap = getActionMap();
         actionMap.put("fondo_amarillo", actionP1);
         actionMap.put("fondo_azul", actionP2);
-        actionMap.put("fondo_rojo", actionP3);
-        actionMap.put("fondo_verde", actionP4);
-        actionMap.put("fondo_rosa", actionP5);
+        actionMap.put("fondo_rojo", actionP3);;
+        actionMap.put("fondo_verde", actionP4);;
     }
     
     private ImageIcon redimensionarIcono(Image image){
