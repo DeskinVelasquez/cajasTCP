@@ -4,12 +4,15 @@
  */
 package com.cajatcp.view.listeners;
 
+import com.cajatcp.Constans;
+import com.cajatcp.practice.Comunication;
 import com.cajatcp.view.JPanelPrincipal;
 import java.awt.Color;
 import java.awt.event.ActionEvent;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.Icon;
+import javax.swing.JPanel;
 
 /**
  *
@@ -19,24 +22,37 @@ public class ExtAbstractAction /*implements Action*/ extends AbstractAction {
     public static final String COLOR_OBJETO_OYENTE = "COLOR_OBJETO_OYENTE";
     private JPanelPrincipal panel;
     
-    public ExtAbstractAction(String nombre, Icon icono, Color color, JPanelPrincipal panel){
-        
+    public ExtAbstractAction(String nombre, Icon icono, JPanelPrincipal panel){
         //se guardan los parametro en clave valor, esto se guardara en el objeto evento del tipo ActionEvent
         putValue(Action.NAME, nombre);
         putValue(Action.SMALL_ICON, icono);
-        putValue(Action.SHORT_DESCRIPTION, "Descripcion de prueba que indica el color: " + color.toString());
-        putValue(COLOR_OBJETO_OYENTE, color);
         this.panel = panel;
     } 
     
+    public ExtAbstractAction(String nombre, JPanelPrincipal jpanel) {
+
+        //se guardan los parametro en clave valor, esto se guardara en el objeto evento del tipo ActionEvent
+        putValue(Action.NAME, nombre);
+        panel = jpanel;
+    }
+
     @Override
     public void actionPerformed(ActionEvent e) {
-        Color color = (Color) getValue(COLOR_OBJETO_OYENTE);
+        String nombre = (String) getValue(NAME);
+        Comunication co = new Comunication();
 
-        panel.setBackground(color);
-        System.out.println("Nombre: " + getValue(Action.NAME));
-        System.out.println("Descripción: " + getValue(Action.SHORT_DESCRIPTION));
-        
+        switch (nombre) {
+            case Constans.PAGO_ICC:
+                co.send(Constans.SOLICITUD_CONEXION);
+                String rsp = co.receiveRsp();
+                panel.rspBox(rsp);
+                break;
+            case Constans.STR_ENABLE_CONNECT:
+                panel.rspBox(co.enableConnect());
+                break;
+        default:
+            break;
+        }
     }
-    
+
 }

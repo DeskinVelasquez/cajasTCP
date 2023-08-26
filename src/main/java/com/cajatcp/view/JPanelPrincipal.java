@@ -4,11 +4,13 @@
  */
 package com.cajatcp.view;
 
+import com.cajatcp.Constans;
 import com.cajatcp.view.listeners.ImpFocusListener;
 import com.cajatcp.view.listeners.ExtAbstractAction;
 import com.cajatcp.view.listeners.ImpDocumentListener;
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.GraphicsEnvironment;
@@ -27,13 +29,20 @@ import javax.swing.ButtonGroup;
 import javax.swing.ImageIcon;
 import javax.swing.InputMap;
 import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JPasswordField;
 import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
+import javax.swing.JSlider;
+import javax.swing.JSpinner;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.KeyStroke;
+import javax.swing.SpinnerDateModel;
+import javax.swing.SpinnerListModel;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import javax.swing.text.Document;
 
 /**
@@ -44,13 +53,14 @@ public class JPanelPrincipal extends JPanel /*implements ActionListener*/ {
     
     private int widthScreen = 0;
     private int heightScreen = 0;
-    private JButton p1;
-    private JButton p2;
-    private JButton p3;
+    private JButton p;
+    private JButton btnPagoIcc;
+    private JButton enableConnect;
     private JTextField textField1;
     private JPasswordField textField2;
     private JTextArea jTextArea;
     private JCheckBox jCheckBox;
+    private JSlider jSlider;
        
     public JPanelPrincipal(int widthScreen, int heightScreen) {
         this.widthScreen = widthScreen;
@@ -59,11 +69,8 @@ public class JPanelPrincipal extends JPanel /*implements ActionListener*/ {
         setLayout(null);
         
         //se muestran los botones UI
-        showBoxRadio();
-        showButtons();
-        showTextField();
         showTextArea();
-                
+        showButtons();
     }
 
     @Override
@@ -73,12 +80,12 @@ public class JPanelPrincipal extends JPanel /*implements ActionListener*/ {
         Font font = new Font(fonts[0], Font.BOLD, 16);
         g.setFont(font);
         g.drawString("DemoCajas TCP", 20, 20);
-        g.drawLine(20, 25, widthScreen/4, 25);
+        g.drawLine(20, 25, widthScreen/2, 25);
         font = new Font(fonts[0], Font.BOLD, 12);
         g.setFont(font);
         g.drawString("IP_Caja: " + obtenerIP(), 20, 40);
-        g.drawLine(20, 50, (widthScreen/2)-40, 50);
-        g.drawImage(getImage(), (widthScreen/4)+60, 2, null); 
+        g.drawLine(20, 50, (widthScreen)-40, 50);
+        //g.drawImage(getImage(), (widthScreen/2)+60, 2, null); 
          
         
     }
@@ -112,7 +119,7 @@ public class JPanelPrincipal extends JPanel /*implements ActionListener*/ {
             File file = new File("src/images/logo_red_enlace.png");
             Image image = ImageIO.read(file);
             if (image != null) {
-                return image.getScaledInstance(widthScreen/7, heightScreen/20, widthScreen);
+                return image.getScaledInstance(widthScreen/2, heightScreen/10, widthScreen);
             }
         } catch (IOException ex) {
             Logger.getLogger(JPanelPrincipal.class.getName()).log(Level.SEVERE, null, ex);
@@ -128,14 +135,14 @@ public class JPanelPrincipal extends JPanel /*implements ActionListener*/ {
         //ImageIcon imageIcon = new ImageIcon("src/images/ic_logo.png");
         
         //se crean las instancias de multifuente para cada boton
-        ExtAbstractAction actionP1 = new ExtAbstractAction("producto 1", imageIcon, Color.yellow, this);
-        ExtAbstractAction actionP2 = new ExtAbstractAction("producto 2", imageIcon, Color.blue, this);
-        ExtAbstractAction actionP3 = new ExtAbstractAction("producto 3",imageIcon, Color.red, this);
+        ExtAbstractAction actionP = new ExtAbstractAction("producto", imageIcon, this);
+        ExtAbstractAction actionPagoIcc = new ExtAbstractAction(Constans.PAGO_ICC, this);
+        ExtAbstractAction actionEnableConnect = new ExtAbstractAction(Constans.STR_ENABLE_CONNECT, this);
         
         //Para el tema de multifuentes, podemos instanciar los botones de la siguiente manera. 
-        p1 = new JButton(actionP1);
-        p2 = new JButton(actionP2);
-        p3 = new JButton(actionP3);
+        p = new JButton(actionP);
+        btnPagoIcc = new JButton(actionPagoIcc);
+        enableConnect = new JButton(actionEnableConnect);
         
         /*
         //se instancian los botones
@@ -155,13 +162,13 @@ public class JPanelPrincipal extends JPanel /*implements ActionListener*/ {
         */
         
         //Se rehubican los botones
-        p1.setBounds(30, 80, 120, 20);
-        p2.setBounds(30, 110, 120, 20);
-        p3.setBounds(30, 140, 120, 20);
+        p.setBounds(30, 80, 120, 20);
+        btnPagoIcc.setBounds(30, 110, 120, 20);
+        enableConnect.setBounds(650, 50, 100, 20);
         
-        add(p1);
-        add(p2);
-        add(p3);
+        add(p);
+        add(btnPagoIcc);
+        add(enableConnect);
         //add(p4);
         /*
         //trabajando con posicionamientos de componentes del panel.
@@ -187,10 +194,10 @@ public class JPanelPrincipal extends JPanel /*implements ActionListener*/ {
         mapaEntrada.put(keyBackGroundRed, "fondo_rojo");
         
         //se asigna el objeto a la action
-        ActionMap actionMap = getActionMap();
+        /*ActionMap actionMap = getActionMap();
         actionMap.put("fondo_amarillo", actionP1);
         actionMap.put("fondo_azul", actionP2);
-        actionMap.put("fondo_rojo", actionP3);;
+        actionMap.put("fondo_rojo", actionP3);;*/
     }
     
     private ImageIcon redimensionarIcono(Image image){
@@ -206,8 +213,12 @@ public class JPanelPrincipal extends JPanel /*implements ActionListener*/ {
 
         //para que no crezca a lo alto, sino que tnga barras de desplazamiento
         JScrollPane jScrollPane = new JScrollPane(jTextArea);
-        jScrollPane.setBounds(30, 170, 150, 60);
+        jScrollPane.setBounds(30, 170, widthScreen-70, heightScreen/2);
         add(jScrollPane);
+    }
+    
+    public void rspBox(String rsp){
+        jTextArea.append(rsp);
     }
 
     private void showTextField (){
@@ -223,18 +234,17 @@ public class JPanelPrincipal extends JPanel /*implements ActionListener*/ {
         Document document = textField1.getDocument();
         document.addDocumentListener(documentListener);
         
-        textField1.setBounds(250, 80, 150, 20);
+        textField1.setBounds(180, 80, 120, 20);
         textField2.setBounds(250, 100, 150, 20);
         
         add(textField1);
-        add(textField2);
         
         //agregando cuadros de texto, para el tema del evento foco
         textField1.addFocusListener(new ImpFocusListener());
         textField2.addFocusListener(new ImpFocusListener());
     }
     
-    private void showBoxRadio() {
+    private void showOthersComponetsSwing() {
         jCheckBox = new JCheckBox();
         jCheckBox.setBounds(500, 170, 150, 60);
 
@@ -270,6 +280,48 @@ public class JPanelPrincipal extends JPanel /*implements ActionListener*/ {
         add(btn2);
         add(btn3);
         add(jCheckBox);
+        
+        //comboBOx
+        JComboBox jComboBox = new JComboBox();
+        String[] itemsComboBox = {"element 1", "element 2","element 3"};
+        jComboBox.addItem(itemsComboBox[0]);
+        jComboBox.addItem(itemsComboBox[1]);
+        jComboBox.addItem(itemsComboBox[2]);
+        jComboBox.setBounds(300, 270, 130, 20);
+        jComboBox.setEditable(true); //para que sea editable
+        add(jComboBox);
+        
+        //JSlider
+        jSlider = new JSlider();
+        jSlider.setBounds(20, 270, 130, 100);
+        jSlider.setMajorTickSpacing(25);
+        jSlider.setMinorTickSpacing(5);
+        jSlider.setPaintLabels(true);
+        jSlider.setPaintTicks(true);
+        jSlider.setPaintTrack(true);
+        jSlider.setSnapToTicks(true); //para que solo tome valores de la barra
+        
+        jSlider.addChangeListener(new ChangeListener() {
+            @Override
+            public void stateChanged(ChangeEvent e) {
+                System.out.println("deslizante en: " + jSlider.getValue());
+            }
+        });
+        add(jSlider);
+        
+        //JSpinner
+        JSpinner jSpinner;
+       // JSpinner jSpinner = new JSpinner(new SpinnerDateModel()); //para representar fechas
+       // JSpinner jSpinner = new JSpinner(new SpinnerListModel(new String[]{"Enero", "Febrero", "Marzo", "Abril"})); //para representar Listas
+       // jSpinner.setBounds(500, 270, 150, 20);
+       String[] fonts = GraphicsEnvironment.getLocalGraphicsEnvironment().getAvailableFontFamilyNames();
+       SpinnerListModel spinnerListModel = new SpinnerListModel(fonts);
+       jSpinner = new JSpinner(spinnerListModel);
+       Dimension dimension = new Dimension(200, 20);
+       jSpinner.setLocation(500, 270);
+       jSpinner.setPreferredSize(dimension);
+       add(jSpinner);
+        
 
     }
 }

@@ -22,6 +22,7 @@ public class Cajatcp {
        JFramePrincipal marco = new JFramePrincipal();
        marco.setVisible(true);
        marco.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); //cancelar ejecución del programa al cerrar la ventana
+       marco.setResizable(false);//bloquear la maximizacion de la pantalla
        
        //se agrega el focus listener a la ventana principal.
        marco.addWindowFocusListener(new ImpWindowFocusListener());

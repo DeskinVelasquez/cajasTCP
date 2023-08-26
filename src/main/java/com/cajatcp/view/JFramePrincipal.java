@@ -29,14 +29,18 @@ public class JFramePrincipal extends JFrame  {
     public JFramePrincipal(){
         //setSize(400, 400);
         //setLocation(500, 500);
+        //dimensiones de la ventana+
         getSizeScreen();
+        int ScreenX = widthScreen/2;
+        int ScreenY = heightScreen/2;
+        
         //tambien se puede agregar una ventana con setbounds, que recibe cuatro parametros correspondientes al tamaÃ±o y posiciÃ³n de la pantalla
-        setBounds(widthScreen/4, heightScreen/4, widthScreen/2, heightScreen/2);
+        setBounds(ScreenX/2, ScreenY/2, ScreenX, ScreenY);
         setResizable(true); //este metodo permite bloquear el redimensionamiento de la ventana
         setTitle("Cajas TCP"); // pone el titulo de la ventana
         
         //agregar un panel
-        JPanelPrincipal panel = new JPanelPrincipal(widthScreen, heightScreen);
+        JPanelPrincipal panel = new JPanelPrincipal(ScreenX, ScreenY);
         
         //trabajando con posicionamientos de componentes del panel.
         //FlowLayout flowLayout = new FlowLayout(FlowLayout.TRAILING);
