@@ -39,16 +39,19 @@ public class ExtAbstractAction /*implements Action*/ extends AbstractAction {
     @Override
     public void actionPerformed(ActionEvent e) {
         String nombre = (String) getValue(NAME);
-        Comunication co = new Comunication();
+        final Comunication co = new Comunication();
+        String rsp = "cliente no conectado\n";
 
         switch (nombre) {
             case Constans.PAGO_ICC:
-                co.send(Constans.SOLICITUD_CONEXION);
-                String rsp = co.receiveRsp();
-                panel.rspBox(rsp);
+                
+                if(co.send(Constans.BT_SOLICITUD_CONEXION)){
+                    System.out.println("Envio exitoso"); 
+                }; 
                 break;
             case Constans.STR_ENABLE_CONNECT:
                 panel.rspBox(co.enableConnect());
+                co.receiveRsp(panel);
                 break;
         default:
             break;

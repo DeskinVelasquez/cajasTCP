@@ -218,7 +218,7 @@ public class JPanelPrincipal extends JPanel /*implements ActionListener*/ {
     }
     
     public void rspBox(String rsp){
-        jTextArea.append(rsp);
+        jTextArea.append(rsp+"\n");
     }
 
     private void showTextField (){

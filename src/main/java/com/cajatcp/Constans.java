@@ -24,4 +24,14 @@ public class Constans {
     public final static String PAGO_ICC = "pago icc";
     public final static String STR_SOLICITUD_CONEXION = "STR_SOLICITUD_CONEXION";
     public final static String STR_ENABLE_CONNECT = "conectar";
+    
+    
+    //msg bytes venta icc
+    public final static byte[] BT_SOLICITUD_CONEXION = {2, 0, 23, 54, 48, 48, 48, 48, 48, 48, 48, 48, 48, 49, 48, 48, 48, 48, 48, 48, 3, 35};
+    public final static byte[] BT_ACK = {6};
+    public final static byte[] BT_TRANS_NO_REV= {2, 0, 36, 54, 48, 48, 48, 48, 48, 48, 48, 48, 48, 49, 48, 48, 48, 48, 48, 49, 28, 52, 56, 0, 2, 88, 88, 3, 3};
+    public final static byte[] BT_SEND_DATA = {2, 0, 36, 54, 48, 48, 48, 48, 48, 48, 48, 48, 48, 49, 48, 48, 48, 48, 48, 49, 28, 52, 56, 0, 2, 88, 88, 3, 3};
+    
+    //msg bytes venta ctl
+    
 }
