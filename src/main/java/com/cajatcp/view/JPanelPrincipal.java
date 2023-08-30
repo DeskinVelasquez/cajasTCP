@@ -24,7 +24,6 @@ import java.util.logging.Logger;
 import javax.imageio.ImageIO;
 import javax.swing.JButton;
 import javax.swing.JPanel;
-import javax.swing.ActionMap;
 import javax.swing.ButtonGroup;
 import javax.swing.ImageIcon;
 import javax.swing.InputMap;
@@ -39,7 +38,6 @@ import javax.swing.JSpinner;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.KeyStroke;
-import javax.swing.SpinnerDateModel;
 import javax.swing.SpinnerListModel;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -53,7 +51,7 @@ public class JPanelPrincipal extends JPanel /*implements ActionListener*/ {
     
     private int widthScreen = 0;
     private int heightScreen = 0;
-    private JButton p;
+    private JButton btnPagoQR;
     private JButton btnPagoIcc;
     private JButton enableConnect;
     private JTextField textField1;
@@ -131,17 +129,17 @@ public class JPanelPrincipal extends JPanel /*implements ActionListener*/ {
     private void showButtons() {
         
         //Se crea el icono de la imagen para redimensionarlo
-         ImageIcon imageIcon = redimensionarIcono(new ImageIcon("src/images/ic_logo.png").getImage());
+        // ImageIcon imageIcon = redimensionarIcono(new ImageIcon("src/images/ic_logo.png").getImage());
         //ImageIcon imageIcon = new ImageIcon("src/images/ic_logo.png");
         
         //se crean las instancias de multifuente para cada boton
-        ExtAbstractAction actionP = new ExtAbstractAction("producto", imageIcon, this);
-        ExtAbstractAction actionPagoIcc = new ExtAbstractAction(Constans.PAGO_ICC, this);
+        ExtAbstractAction actionQR = new ExtAbstractAction(Constans.PAGO_QR, redimensionarIcono(new ImageIcon("src/images/ic_qr.png").getImage()), this);
+        ExtAbstractAction actionIcc = new ExtAbstractAction(Constans.PAGO_ICC, redimensionarIcono(new ImageIcon("src/images/ic_icc.png").getImage()), this);
         ExtAbstractAction actionEnableConnect = new ExtAbstractAction(Constans.STR_ENABLE_CONNECT, this);
         
         //Para el tema de multifuentes, podemos instanciar los botones de la siguiente manera. 
-        p = new JButton(actionP);
-        btnPagoIcc = new JButton(actionPagoIcc);
+        btnPagoQR = new JButton(actionQR);
+        btnPagoIcc = new JButton(actionIcc);
         enableConnect = new JButton(actionEnableConnect);
         
         /*
@@ -162,11 +160,11 @@ public class JPanelPrincipal extends JPanel /*implements ActionListener*/ {
         */
         
         //Se rehubican los botones
-        p.setBounds(30, 80, 120, 20);
-        btnPagoIcc.setBounds(30, 110, 120, 20);
-        enableConnect.setBounds(650, 50, 100, 20);
+        btnPagoQR.setBounds(30, 80, 130, 20);
+        btnPagoIcc.setBounds(30, 110, 130, 20);
+        enableConnect.setBounds(600, 50, 120, 20);
         
-        add(p);
+        add(btnPagoQR);
         add(btnPagoIcc);
         add(enableConnect);
         //add(p4);
@@ -201,8 +199,9 @@ public class JPanelPrincipal extends JPanel /*implements ActionListener*/ {
     }
     
     private ImageIcon redimensionarIcono(Image image){
-        int newSize = image.getWidth(null)/25;
-        return new ImageIcon(image.getScaledInstance(newSize, newSize, Image.SCALE_DEFAULT));
+        int newSizeX = image.getWidth(null)/30;
+        int newSizeY = image.getHeight(null)/30;
+        return new ImageIcon(image.getScaledInstance(newSizeX, newSizeY, Image.SCALE_DEFAULT));
     }
     
     private void showTextArea() {
@@ -219,6 +218,16 @@ public class JPanelPrincipal extends JPanel /*implements ActionListener*/ {
     
     public void rspBox(String rsp){
         jTextArea.append(rsp+"\n");
+    }
+    
+    public void cambiarNombreBtnConecct(String newName){
+        enableConnect.setText(newName);
+        if (newName.equals(Constans.STR_ENABLE_CONNECT)) {
+           enableConnect.setSize(120, 20); 
+        } else {
+            enableConnect.setSize(130, 20); 
+        }
+        
     }
 
     private void showTextField (){
