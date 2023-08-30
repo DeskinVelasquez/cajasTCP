@@ -4,7 +4,7 @@
  */
 package com.cajatcp.view;
 
-import com.cajatcp.Constans;
+import com.cajatcp.Utils.Constans;
 import com.cajatcp.view.listeners.ImpFocusListener;
 import com.cajatcp.view.listeners.ExtAbstractAction;
 import com.cajatcp.view.listeners.ImpDocumentListener;
@@ -30,6 +30,7 @@ import javax.swing.InputMap;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
+import javax.swing.JLabel;
 import javax.swing.JPasswordField;
 import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
@@ -41,11 +42,12 @@ import javax.swing.KeyStroke;
 import javax.swing.SpinnerListModel;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import javax.swing.text.DefaultCaret;
 import javax.swing.text.Document;
 
 /**
  *Clase que crea los paneles o laminas que tendr� la ventana. 
- * @author WPOSS
+ * @author Deskin Velasquez
  */
 public class JPanelPrincipal extends JPanel /*implements ActionListener*/ {
     
@@ -54,7 +56,9 @@ public class JPanelPrincipal extends JPanel /*implements ActionListener*/ {
     private JButton btnPagoQR;
     private JButton btnPagoIcc;
     private JButton enableConnect;
+    private JButton generico;
     private JTextField textField1;
+    private JLabel jLabelMonto;
     private JPasswordField textField2;
     private JTextArea jTextArea;
     private JCheckBox jCheckBox;
@@ -69,6 +73,7 @@ public class JPanelPrincipal extends JPanel /*implements ActionListener*/ {
         //se muestran los botones UI
         showTextArea();
         showButtons();
+        showTextField();
     }
 
     @Override
@@ -136,11 +141,13 @@ public class JPanelPrincipal extends JPanel /*implements ActionListener*/ {
         ExtAbstractAction actionQR = new ExtAbstractAction(Constans.PAGO_QR, redimensionarIcono(new ImageIcon("src/images/ic_qr.png").getImage()), this);
         ExtAbstractAction actionIcc = new ExtAbstractAction(Constans.PAGO_ICC, redimensionarIcono(new ImageIcon("src/images/ic_icc.png").getImage()), this);
         ExtAbstractAction actionEnableConnect = new ExtAbstractAction(Constans.STR_ENABLE_CONNECT, this);
+        //ExtAbstractAction actionGenerico = new ExtAbstractAction("generico", this);
         
         //Para el tema de multifuentes, podemos instanciar los botones de la siguiente manera. 
         btnPagoQR = new JButton(actionQR);
         btnPagoIcc = new JButton(actionIcc);
         enableConnect = new JButton(actionEnableConnect);
+       // generico = new JButton(actionGenerico);
         
         /*
         //se instancian los botones
@@ -160,13 +167,15 @@ public class JPanelPrincipal extends JPanel /*implements ActionListener*/ {
         */
         
         //Se rehubican los botones
-        btnPagoQR.setBounds(30, 80, 130, 20);
-        btnPagoIcc.setBounds(30, 110, 130, 20);
+        btnPagoQR.setBounds(30, 110, 130, 20);
+        btnPagoIcc.setBounds(30, 140, 130, 20);
         enableConnect.setBounds(600, 50, 120, 20);
+        //generico.setBounds(200, 50, 120, 20);
         
         add(btnPagoQR);
         add(btnPagoIcc);
         add(enableConnect);
+        //add(generico);
         //add(p4);
         /*
         //trabajando con posicionamientos de componentes del panel.
@@ -209,10 +218,15 @@ public class JPanelPrincipal extends JPanel /*implements ActionListener*/ {
 
         //para que no se ensanche, sino que de un salto de linea al escribir texto
         jTextArea.setLineWrap(true);
+        jTextArea.setEditable(false);
 
         //para que no crezca a lo alto, sino que tnga barras de desplazamiento
         JScrollPane jScrollPane = new JScrollPane(jTextArea);
         jScrollPane.setBounds(30, 170, widthScreen-70, heightScreen/2);
+        
+        //para que el JScrollPane siempre se desplace al final
+        DefaultCaret defaultCaret = (DefaultCaret) jTextArea.getCaret();
+        defaultCaret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
         add(jScrollPane);
     }
     
@@ -235,22 +249,21 @@ public class JPanelPrincipal extends JPanel /*implements ActionListener*/ {
         //agregando cuadros de texto, para el tema del evento foco
         //primero invalidamos el layout: el layuot es la disposicion que tienen los componentes en el panel (orden de componentes), por defecto java los ubica automaticamente por ello lo invalidamos
         setLayout(null);
+        jLabelMonto = new JLabel("Monto");
         textField1 = new JTextField();
-        textField2 = new JPasswordField();
         
         //agregando el listener de texto al jtextfield
         ImpDocumentListener documentListener = new ImpDocumentListener();
         Document document = textField1.getDocument();
         document.addDocumentListener(documentListener);
         
-        textField1.setBounds(180, 80, 120, 20);
-        textField2.setBounds(250, 100, 150, 20);
-        
+        jLabelMonto.setBounds(30, 50, 70, 20);
+        textField1.setBounds(30, 70, 70, 20);
+        add(jLabelMonto);
         add(textField1);
         
         //agregando cuadros de texto, para el tema del evento foco
-        textField1.addFocusListener(new ImpFocusListener());
-        textField2.addFocusListener(new ImpFocusListener());
+        textField1.addFocusListener(new ImpFocusListener(textField1));
     }
     
     private void showOthersComponetsSwing() {

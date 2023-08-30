@@ -4,14 +4,21 @@
  */
 package com.cajatcp.view.listeners;
 
+import com.cajatcp.Utils.Constans;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
+import javax.swing.JTextField;
 
 /**
  *
- * @author WPOSS
+ * @author Deskin Velasquez
  */
 public class ImpFocusListener implements FocusListener {
+    private JTextField textField;
+    
+    public ImpFocusListener(JTextField textField) {
+        this.textField = textField;
+    }
 
     @Override
     public void focusGained(FocusEvent e) {
@@ -21,6 +28,7 @@ public class ImpFocusListener implements FocusListener {
     @Override
     public void focusLost(FocusEvent e) {
          System.out.println("He perdido el foco");
+         Constans.setMONTO(textField.getText());
     }
     
 }

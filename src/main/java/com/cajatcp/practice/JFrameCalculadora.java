@@ -9,7 +9,7 @@ import javax.swing.JFrame;
 
 /**
  *
- * @author WPOSS
+ * @author Deskin Velasquez
  */
 public class JFrameCalculadora extends JFrame {
     

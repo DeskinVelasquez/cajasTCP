@@ -12,7 +12,7 @@ import javax.swing.text.BadLocationException;
 
 /**
  *Esta clase gestiona los eventos de los cuadros de texto como cambios en el mismo
- * @author WPOSS
+ * @author Deskin Velasquez
  */
 public class ImpDocumentListener implements DocumentListener{
 

@@ -13,7 +13,7 @@ import javax.swing.JPanel;
 
 /**
  *
- * @author WPOSS
+ * @author Deskin Velasquez
  */
 public class JPanelCalculadora extends JPanel implements ActionListener{
     private JButton pantalla;

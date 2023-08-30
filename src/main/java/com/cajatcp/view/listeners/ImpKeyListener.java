@@ -7,7 +7,7 @@ import java.awt.event.*;
 
 /**
  *Key listener es la clase que contiene los metodos de eventos de teclado
- * @author WPOSS
+ * @author Deskin Velasquez
  */
 public class ImpKeyListener implements KeyListener{
 

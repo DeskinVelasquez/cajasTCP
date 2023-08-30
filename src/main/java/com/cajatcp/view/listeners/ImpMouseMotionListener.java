@@ -9,7 +9,7 @@ import java.awt.event.MouseMotionListener;
 
 /**
  *
- * @author WPOSS
+ * @author Deskin Velasquez
  */
 public class ImpMouseMotionListener implements MouseMotionListener{
 

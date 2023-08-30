@@ -9,7 +9,7 @@ import java.awt.event.WindowFocusListener;
 
 /**
  *
- * @author WPOSS
+ * @author Deskin Velasquez
  */
 public class ImpWindowFocusListener implements WindowFocusListener {
 

@@ -10,7 +10,7 @@ import java.awt.event.WindowEvent;
 
 /**
  *
- * @author WPOSS
+ * @author Deskin Velasquez
  */
 public class ExtWindowAdapter extends WindowAdapter {
 

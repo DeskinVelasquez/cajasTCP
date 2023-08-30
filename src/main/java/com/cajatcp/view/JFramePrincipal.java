@@ -19,7 +19,7 @@ import javax.swing.JFrame;
 
 /**
  * Clase para crear la ventana o marco
- * @author WPOSS
+ * @author Deskin Velasquez
  */
 public class JFramePrincipal extends JFrame  {
     private int widthScreen = 0;

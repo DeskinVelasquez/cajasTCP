@@ -4,7 +4,10 @@
  */
 package com.cajatcp.practice;
 
-import com.cajatcp.Constans;
+import com.cajatcp.Utils.Alerts;
+import com.cajatcp.Utils.Constans;
+import static com.cajatcp.Utils.Constans.BT_SEND_DATA;
+import com.cajatcp.Utils.Util;
 import com.cajatcp.view.JPanelPrincipal;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -97,7 +100,7 @@ public class Comunication {
                         msgRecibido = hex2AsciiStr(decodeMsg(frame));  
                     }
                     listMsgInput.add(msgRecibido);
-                    panel.rspBox("recibido: " + msgRecibido);
+                    panel.rspBox("  POS  " + "========>  " +msgOnScreen(msgRecibido) + "  ========> "+ "  CAJA "+ "\n");
                     validateMsgInput(msgRecibido);
 
                 } catch (IOException ex) {
@@ -121,7 +124,6 @@ public class Comunication {
     
     private void validateMsgInput(String msgRecibido) {
         String ultimoMsgEnviado = listMsgOutput.get(listMsgOutput.size() -1);
-        String ultimoMsgRecibido = listMsgInput.get(listMsgInput.size() -1);
         switch(msgRecibido){
             case Constans.ACK_STRING:
                 receiveRsp();  
@@ -140,7 +142,7 @@ public class Comunication {
                 break;
             case Constans.SOLICITUD_DATOS:
                 send(Constans.BT_ACK);
-                send(Constans.BT_SEND_DATA);
+                send(obtenerTramaData());
                 receiveRsp();
                 break;
             case Constans.RESP_HOST:
@@ -159,14 +161,13 @@ public class Comunication {
         }
         listMsgOutput.add(msgEnviado);
         try {
-            if (socket == null) {
-                JOptionPane.showMessageDialog(null, "Debe haber un cliente conectado");
+            if (Alerts.alert(socket == null, "Debe haber un cliente conectado")) {
                 return false;
             }
             OutputStream os = socket.getOutputStream();
             os.write(data);
             os.flush();
-            panel.rspBox("enviado: " + msgEnviado);
+            panel.rspBox("  CAJA " + "========>  " + msgOnScreen(msgEnviado) + "  ========> "+ "  POS "+"\n");
             return true;
         } catch (IOException ex) {
             Logger.getLogger(Comunication.class.getName()).log(Level.SEVERE, null, ex);
@@ -216,7 +217,6 @@ public class Comunication {
     private static boolean manyAckAndNack(byte[] data) {
         byte ack = 0x06;
         byte nack = 0x15;
-        int len = data.length;
 
         byte b = data[0];
         byte c = data[1];
@@ -280,7 +280,6 @@ public class Comunication {
      * Metodo utilizado para descomponer la parte fija del mensaje recibido
      * El presentation header
      * @param trama
-     * Creado por Silvia Hernandez
      */
     private String obtenerPresentationHeader(ArrayList<String> trama) {
         String presentationHeader = "";
@@ -293,12 +292,6 @@ public class Comunication {
         return presentationHeader;
     }
     
-    /**
-     * hex数组转换成ASCII字符串
-     *
-     * @param hex
-     * @return
-     */
     private String hex2AsciiStr(String hex) {
         StringBuilder sb = new StringBuilder();
         StringBuilder temp = new StringBuilder();
@@ -315,5 +308,80 @@ public class Comunication {
         }
 
         return sb.toString();
+    }
+    
+    public byte[] obtenerTramaData() {
+        StringBuilder datos = new StringBuilder();
+        for (byte b : BT_SEND_DATA) {
+
+            char newDato = Util.byte2Char(b);
+            datos.append(newDato);
+        }
+        String montoReplaced = datos.toString().substring(25, 37);
+        int len = Constans.getMONTO().length();
+        int countZero = 12 - len;
+        String zero = "";
+        for (int i = 0; i < countZero - 2; i++) {
+            zero += "0";
+        }
+        String newDatos = datos.toString().replace(montoReplaced, zero + Constans.getMONTO() + "00");
+        byte[] btData = new byte[BT_SEND_DATA.length];
+        for (int i = 0; i < newDatos.length(); i++) {
+            btData[i] = (byte) (int) newDatos.charAt(i);
+            System.out.print(btData[i] + ", ");
+        }
+        return btData;
+    }
+
+    private String msgOnScreen(String msg) {
+        String msgOnScreen = "";
+        switch (msg) {
+            case Constans.SOLICITUD_CONEXION:
+                msgOnScreen = Constans.STR_SOLICITUD_CONEXION;
+                break;
+            case Constans.SOLICITUD_CONEXION_QR:
+                msgOnScreen = Constans.STR_SOLICITUD_CONEXION_QR;
+                break;
+            case Constans.SOLICITUD_CONEXION_TIGOMONEY:
+                msgOnScreen = Constans.STR_SOLICITUD_CONEXION_TIGOMONEY;
+                break;
+            case Constans.SOLICITUD_CONEXION_CONTACTLESS:
+                msgOnScreen = Constans.STR_SOLICITUD_CONEXION_CONTACTLESS;
+                break;
+            case Constans.TRANS_REV_No:
+                msgOnScreen = Constans.STR_TRANS_REV_No;
+                break;
+            case Constans.TRANSACCION_ENVIO_DATOS:
+                msgOnScreen = Constans.STR_TRANSACCION_ENVIO_DATOS;
+                break;
+            case Constans.TARJETA_CONTACTLESS:
+                msgOnScreen = Constans.STR_TARJETA_CONTACTLESS;
+                break;
+        //msg recibidos
+            case Constans.ULTIMA_TRANS:
+                msgOnScreen = Constans.STR_ULTIMA_TRANS;
+                break;
+            case Constans.NUEVA_PANTALLA:
+                msgOnScreen = Constans.STR_NUEVA_PANTALLA;
+                break;
+            case Constans.SOLICITUD_DATOS:
+                msgOnScreen = Constans.STR_SOLICITUD_DATOS;
+                break;
+            case Constans.RESP_HOST:
+                msgOnScreen = Constans.STR_RESP_HOST;
+                break;
+            case Constans.RESP_HOST_CONTACTLESS:
+                msgOnScreen = Constans.STR_RESP_HOST_CONTACTLESS;
+                break;
+            case Constans.ACK_STRING:
+                msgOnScreen = Constans.STR_ACK_STRING;
+                break;
+            case Constans.NACK_STRING:
+                msgOnScreen = Constans.STR_NACK_STRING;
+                break;
+            default:
+                throw new AssertionError();
+        }
+        return msgOnScreen;
     }
 }
