@@ -4,10 +4,12 @@
  */
 package com.cajatcp.view;
 
+import com.cajatcp.Utils.Alerts;
 import com.cajatcp.Utils.Constans;
 import com.cajatcp.view.listeners.ImpFocusListener;
 import com.cajatcp.view.listeners.ExtAbstractAction;
 import com.cajatcp.view.listeners.ImpDocumentListener;
+import com.cajatcp.view.listeners.ImpWindowFocusListener;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -56,6 +58,7 @@ public class JPanelPrincipal extends JPanel /*implements ActionListener*/ {
     private JButton btnPagoQR;
     private JButton btnPagoIcc;
     private JButton enableConnect;
+    private JButton configPort;
     private JButton generico;
     private JTextField textField1;
     private JLabel jLabelMonto;
@@ -63,6 +66,7 @@ public class JPanelPrincipal extends JPanel /*implements ActionListener*/ {
     private JTextArea jTextArea;
     private JCheckBox jCheckBox;
     private JSlider jSlider;
+    private Graphics g;
        
     public JPanelPrincipal(int widthScreen, int heightScreen) {
         this.widthScreen = widthScreen;
@@ -79,6 +83,7 @@ public class JPanelPrincipal extends JPanel /*implements ActionListener*/ {
     @Override
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
+        this.g =g;
         String[] fonts = getFonts();
         Font font = new Font(fonts[0], Font.BOLD, 16);
         g.setFont(font);
@@ -86,7 +91,8 @@ public class JPanelPrincipal extends JPanel /*implements ActionListener*/ {
         g.drawLine(20, 25, widthScreen/2, 25);
         font = new Font(fonts[0], Font.BOLD, 12);
         g.setFont(font);
-        g.drawString("IP_Caja: " + obtenerIP(), 20, 40);
+        g.drawString("IP: " + obtenerIP(), 20, 40);
+        drawPort();
         g.drawLine(20, 50, (widthScreen)-40, 50);
         //g.drawImage(getImage(), (widthScreen/2)+60, 2, null); 
          
@@ -141,12 +147,14 @@ public class JPanelPrincipal extends JPanel /*implements ActionListener*/ {
         ExtAbstractAction actionQR = new ExtAbstractAction(Constans.PAGO_QR, redimensionarIcono(new ImageIcon("src/images/ic_qr.png").getImage()), this);
         ExtAbstractAction actionIcc = new ExtAbstractAction(Constans.PAGO_ICC, redimensionarIcono(new ImageIcon("src/images/ic_icc.png").getImage()), this);
         ExtAbstractAction actionEnableConnect = new ExtAbstractAction(Constans.STR_ENABLE_CONNECT, this);
+        ExtAbstractAction actionConfigPort = new ExtAbstractAction(Constans.STR_CONFIG_PORT, this);
         //ExtAbstractAction actionGenerico = new ExtAbstractAction("generico", this);
         
         //Para el tema de multifuentes, podemos instanciar los botones de la siguiente manera. 
         btnPagoQR = new JButton(actionQR);
         btnPagoIcc = new JButton(actionIcc);
         enableConnect = new JButton(actionEnableConnect);
+        configPort = new JButton(actionConfigPort);
        // generico = new JButton(actionGenerico);
         
         /*
@@ -169,13 +177,13 @@ public class JPanelPrincipal extends JPanel /*implements ActionListener*/ {
         //Se rehubican los botones
         btnPagoQR.setBounds(30, 110, 130, 20);
         btnPagoIcc.setBounds(30, 140, 130, 20);
-        enableConnect.setBounds(600, 50, 120, 20);
-        //generico.setBounds(200, 50, 120, 20);
+        enableConnect.setBounds(500, 5, 90, 15);
+        configPort.setBounds(650, 5, 100, 15);
         
         add(btnPagoQR);
         add(btnPagoIcc);
         add(enableConnect);
-        //add(generico);
+        add(configPort);
         //add(p4);
         /*
         //trabajando con posicionamientos de componentes del panel.
@@ -237,9 +245,9 @@ public class JPanelPrincipal extends JPanel /*implements ActionListener*/ {
     public void cambiarNombreBtnConecct(String newName){
         enableConnect.setText(newName);
         if (newName.equals(Constans.STR_ENABLE_CONNECT)) {
-           enableConnect.setSize(120, 20); 
+           enableConnect.setSize(100, 15); 
         } else {
-            enableConnect.setSize(130, 20); 
+            enableConnect.setSize(120, 15); 
         }
         
     }
@@ -264,6 +272,24 @@ public class JPanelPrincipal extends JPanel /*implements ActionListener*/ {
         
         //agregando cuadros de texto, para el tema del evento foco
         textField1.addFocusListener(new ImpFocusListener(textField1));
+    }
+    
+    public void configPort() {
+        String strPort = Alerts.inputAlert("ingrese nuevo puerto");
+        int port = 0;
+        if (strPort != null) {
+            try {
+            port = Integer.parseInt(strPort);
+            } catch (Exception e) {
+                Alerts.alert(true, "puerto invalido");
+                return;
+            }
+            Constans.setPORT(port);
+            drawPort();
+        }
+    }
+    public  void drawPort() {
+        g.drawString("PORT: " + Constans.getPORT(), 150, 40);
     }
     
     private void showOthersComponetsSwing() {

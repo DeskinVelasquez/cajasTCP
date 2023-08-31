@@ -19,5 +19,12 @@ public class Alerts {
         }
         return false;
     }
+    public static String inputAlert(String msg){
+        String inputValue = JOptionPane.showInputDialog(msg);
+        if (inputValue != null && !inputValue.isEmpty()) {
+            return inputValue;    
+        }
+       return null;
+    }
     
 }

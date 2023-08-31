@@ -11,6 +11,7 @@ import static com.cajatcp.Utils.Constans.BT_SOLICITUD_CONEXION;
 import static com.cajatcp.Utils.Constans.BT_SOLICITUD_CONEXION_QR;
 import static com.cajatcp.Utils.Constans.PAGO_ICC;
 import static com.cajatcp.Utils.Constans.PAGO_QR;
+import static com.cajatcp.Utils.Constans.STR_CONFIG_PORT;
 import static com.cajatcp.Utils.Constans.STR_DISABLE_CONNECT;
 import static com.cajatcp.Utils.Constans.STR_ENABLE_CONNECT;
 import com.cajatcp.Utils.Util;
@@ -61,7 +62,7 @@ public class ExtAbstractAction /*implements Action*/ extends AbstractAction {
                 break;
             case STR_ENABLE_CONNECT:
                 panel.cambiarNombreBtnConecct(STR_DISABLE_CONNECT);
-                panel.rspBox(co.enableConnect());
+                panel.rspBox(co.openConnect());
                 co.receiveRsp();
                 break;
             case PAGO_QR:
@@ -74,6 +75,10 @@ public class ExtAbstractAction /*implements Action*/ extends AbstractAction {
                 System.out.println("desconectado");
                 panel.cambiarNombreBtnConecct(STR_ENABLE_CONNECT);
                 panel.rspBox(co.disaableConnect());
+                break;
+            case STR_CONFIG_PORT:
+                panel.configPort();
+                panel.rspBox("Nuevo puerto: " + Constans.getPORT());
                 break;
             default:
                 break;

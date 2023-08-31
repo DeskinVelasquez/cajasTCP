@@ -38,8 +38,9 @@ public class Constans {
     //strings programa
     public final static String PAGO_ICC = "PAGO ICC";
     public final static String PAGO_QR = "PAGO QR";
-    public final static String STR_ENABLE_CONNECT = "CONECTAR";
-    public final static String STR_DISABLE_CONNECT = "DESCONECTAR";
+    public final static String STR_ENABLE_CONNECT = "conectar";
+    public final static String STR_DISABLE_CONNECT = "desconectar";
+    public final static String STR_CONFIG_PORT = "config port";
     
     
     //Transacciones que salen del POS la CAJA
@@ -80,6 +81,14 @@ public class Constans {
         MONTO = newMonto;
     }
     
+    private static int PORT = 12345;
+    
+    public static int getPORT() {
+        return PORT;
+    }
+    public static void setPORT(int port) {
+        PORT = port;
+    }
     
 }
 

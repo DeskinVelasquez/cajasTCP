@@ -7,6 +7,7 @@ package com.cajatcp.practice;
 import com.cajatcp.Utils.Alerts;
 import com.cajatcp.Utils.Constans;
 import static com.cajatcp.Utils.Constans.BT_SEND_DATA;
+import static com.cajatcp.Utils.Constans.STR_ENABLE_CONNECT;
 import com.cajatcp.Utils.Util;
 import com.cajatcp.view.JPanelPrincipal;
 import java.io.BufferedReader;
@@ -18,10 +19,12 @@ import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.TimerTask;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.net.ssl.SSLSocket;
 import javax.swing.JOptionPane;
+import java.util.Timer;
 
 /**
  *
@@ -33,7 +36,7 @@ public class Comunication {
     private static Socket socket;
     private static ServerSocket serverSocket;
     private JPanelPrincipal panel;
-    
+    String retorno = "";
     private static ArrayList<String> listMsgInput;
     private static ArrayList<String> listMsgOutput;
 
@@ -48,9 +51,13 @@ public class Comunication {
     
      public String disaableConnect() {
         try {
-            socket.close();
-            serverSocket.close();
-            return "Cliente desconectado";
+            if (socket != null) {
+                socket.close();
+            }
+            if (serverSocket != null) {
+                serverSocket.close();
+            }
+            return "Comunicación cerrada";
         } catch (IOException ex) {
             Logger.getLogger(Comunication.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -58,23 +65,49 @@ public class Comunication {
     }
     
     public String enableConnect() {
+        
         try {
             if (socket != null && socket.isClosed()) {
                 socket = new Socket();
             }
-            serverSocket = new ServerSocket(12345);
-            System.out.println("Esperando una conexión...");
+            serverSocket = new ServerSocket(Constans.getPORT());
+            panel.rspBox("Esperando una conexión...");
+            Timer timer = new Timer();
+            timer.schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    Alerts.alert(true, "No se ha conectado ningun cliente");
+                    panel.rspBox("No se ha conectado ningun cliente");
+                    panel.cambiarNombreBtnConecct(STR_ENABLE_CONNECT);
+                    panel.rspBox(disaableConnect());
+                    System.out.println("desconectado");
+                    timer.cancel();
+                }
+            }, 3000);
             socket = serverSocket.accept();
+            timer.cancel();
             if (socket != null && socket.isConnected()) {
                 System.out.println("cliente conectado");
-                return "cliente conectado";
+                retorno = "cliente conectado";
             }
-        } catch (IOException ex) {
-            Logger.getLogger(Comunication.class.getName()).log(Level.SEVERE, null, ex);
+            retorno = "fallo en la conexion con el cliente";
+        } catch (IOException e) {
+            e.printStackTrace();
         }
-        return "fallo en la conexion con el cliente";
-    }
 
+        return retorno;
+    }
+    
+    public String openConnect() {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+               enableConnect();
+            }
+        }).start();
+        return retorno;
+    }
+    
     public void receiveRsp() {
         new Thread(new Runnable() {
             @Override
