@@ -21,6 +21,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.imageio.ImageIO;
@@ -33,6 +34,9 @@ import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
 import javax.swing.JPasswordField;
 import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
@@ -40,6 +44,7 @@ import javax.swing.JSlider;
 import javax.swing.JSpinner;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.JTextPane;
 import javax.swing.KeyStroke;
 import javax.swing.SpinnerListModel;
 import javax.swing.event.ChangeEvent;
@@ -58,10 +63,12 @@ public class JPanelPrincipal extends JPanel /*implements ActionListener*/ {
     private JButton btnPagoQR;
     private JButton btnPagoIcc;
     private JButton enableConnect;
-    private JButton configPort;
     private JButton generico;
     private JTextField textField1;
     private JLabel jLabelMonto;
+    private JLabel jLabelTitle;
+    private JLabel jLabelIP;
+    private JLabel jLabelPORT;
     private JPasswordField textField2;
     private JTextArea jTextArea;
     private JCheckBox jCheckBox;
@@ -75,6 +82,8 @@ public class JPanelPrincipal extends JPanel /*implements ActionListener*/ {
         setLayout(null);
         
         //se muestran los botones UI
+        showLabels();
+        showMenuBar();
         showTextArea();
         showButtons();
         showTextField();
@@ -83,20 +92,85 @@ public class JPanelPrincipal extends JPanel /*implements ActionListener*/ {
     @Override
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
-        this.g =g;
-        String[] fonts = getFonts();
-        Font font = new Font(fonts[0], Font.BOLD, 16);
-        g.setFont(font);
-        g.drawString("DemoCajas TCP", 20, 20);
-        g.drawLine(20, 25, widthScreen/2, 25);
-        font = new Font(fonts[0], Font.BOLD, 12);
-        g.setFont(font);
-        g.drawString("IP: " + obtenerIP(), 20, 40);
-        drawPort();
-        g.drawLine(20, 50, (widthScreen)-40, 50);
+        //this.g =g;
+        //String[] fonts = getFonts();
+       // Font font = new Font(fonts[0], Font.BOLD, 16);
+       // g.setFont(font);
+        //g.drawString("DemoCajas TCP", 20, 20);
+        //g.drawLine(20, 25, widthScreen/2, 25);
+        //font = new Font(fonts[0], Font.BOLD, 12);
+        //g.setFont(font);
+        //g.drawString("IP: " + obtenerIP(), 20, 40);
+        //drawPort();
+        //g.drawLine(20, 50, (widthScreen)-40, 50);
         //g.drawImage(getImage(), (widthScreen/2)+60, 2, null); 
          
         
+    }
+    
+    private void showMenuBar() {
+        //barra menu base
+        JMenuBar barraMenu = new JMenuBar();
+        //components
+        JMenu archivo = new JMenu(Constans.FILE);
+        JMenu edit = new JMenu(Constans.EDIT);
+        JMenu settings = new JMenu(Constans.SETTINGS);
+        JMenu view = new JMenu(Constans.VIEW);
+        //submenu
+        JMenu menuAppearance = new JMenu(Constans.APPEARANCE);
+        JMenu font = new JMenu(Constans.STR_FONT);
+        JMenu size = new JMenu(Constans.STR_SIZE);
+        //items componentes
+        ArrayList<JMenuItem> listItems = new ArrayList<>();
+        JMenuItem appearanceLight = new JMenuItem(Constans.APPEARANCE_LIGHT);
+        JMenuItem appearanceDark = new JMenuItem(Constans.APPEARANCE_DARK);
+        JMenuItem configPort = new JMenuItem(Constans.STR_CONFIG_PORT);
+        JMenuItem style = new JMenuItem(Constans.STR_STYLE);
+        
+        listItems.add(appearanceLight);
+        listItems.add(appearanceDark);
+        listItems.add(configPort);
+        listItems.add(style);
+        
+        
+        String[] fonts = getFonts();
+        for (int i = 0; i < fonts.length; i++) {
+            JMenuItem element = new JMenuItem(fonts[i]);
+            addActionItemMenu(element);
+            font.add(element);
+        }
+        for (int i = 8; i < 17; i++) {
+            JMenuItem element = new JMenuItem(String.valueOf(i));
+            addActionItemMenu(element);
+            size.add(new JMenuItem(String.valueOf(i)));
+        }
+        for (JMenuItem element: listItems) {
+            addActionItemMenu(element);
+        }
+        
+        menuAppearance.add(appearanceLight);
+        menuAppearance.add(appearanceDark);
+        
+        view.add(menuAppearance);
+        settings.add(configPort);
+        
+        edit.add(style);
+        edit.add(font);
+        edit.add(size);
+        
+        barraMenu.add(archivo);
+        barraMenu.add(edit);
+        barraMenu.add(settings);
+        barraMenu.add(view);
+       
+        barraMenu.setBounds(500, 5, 250, 20);
+        
+        add(barraMenu);
+    }
+    
+    private void addActionItemMenu(JMenuItem item){
+        ExtAbstractAction action = new ExtAbstractAction(item.getName(), this);
+        item.addActionListener(action);
     }
         /**
          * Este metodo se usa para obtener el ip del dispositivo en el cual se
@@ -147,14 +221,12 @@ public class JPanelPrincipal extends JPanel /*implements ActionListener*/ {
         ExtAbstractAction actionQR = new ExtAbstractAction(Constans.PAGO_QR, redimensionarIcono(new ImageIcon("src/images/ic_qr.png").getImage()), this);
         ExtAbstractAction actionIcc = new ExtAbstractAction(Constans.PAGO_ICC, redimensionarIcono(new ImageIcon("src/images/ic_icc.png").getImage()), this);
         ExtAbstractAction actionEnableConnect = new ExtAbstractAction(Constans.STR_ENABLE_CONNECT, this);
-        ExtAbstractAction actionConfigPort = new ExtAbstractAction(Constans.STR_CONFIG_PORT, this);
         //ExtAbstractAction actionGenerico = new ExtAbstractAction("generico", this);
         
         //Para el tema de multifuentes, podemos instanciar los botones de la siguiente manera. 
         btnPagoQR = new JButton(actionQR);
         btnPagoIcc = new JButton(actionIcc);
         enableConnect = new JButton(actionEnableConnect);
-        configPort = new JButton(actionConfigPort);
        // generico = new JButton(actionGenerico);
         
         /*
@@ -177,13 +249,10 @@ public class JPanelPrincipal extends JPanel /*implements ActionListener*/ {
         //Se rehubican los botones
         btnPagoQR.setBounds(30, 110, 130, 20);
         btnPagoIcc.setBounds(30, 140, 130, 20);
-        enableConnect.setBounds(500, 5, 90, 15);
-        configPort.setBounds(650, 5, 100, 15);
-        
+        enableConnect.setBounds(505, 32, 90, 15);
         add(btnPagoQR);
         add(btnPagoIcc);
         add(enableConnect);
-        add(configPort);
         //add(p4);
         /*
         //trabajando con posicionamientos de componentes del panel.
@@ -256,18 +325,14 @@ public class JPanelPrincipal extends JPanel /*implements ActionListener*/ {
         
         //agregando cuadros de texto, para el tema del evento foco
         //primero invalidamos el layout: el layuot es la disposicion que tienen los componentes en el panel (orden de componentes), por defecto java los ubica automaticamente por ello lo invalidamos
-        setLayout(null);
-        jLabelMonto = new JLabel("Monto");
+        
         textField1 = new JTextField();
         
         //agregando el listener de texto al jtextfield
         ImpDocumentListener documentListener = new ImpDocumentListener();
         Document document = textField1.getDocument();
         document.addDocumentListener(documentListener);
-        
-        jLabelMonto.setBounds(30, 50, 70, 20);
-        textField1.setBounds(30, 70, 70, 20);
-        add(jLabelMonto);
+        textField1.setBounds(30, 80, 70, 20);
         add(textField1);
         
         //agregando cuadros de texto, para el tema del evento foco
@@ -369,7 +434,65 @@ public class JPanelPrincipal extends JPanel /*implements ActionListener*/ {
        jSpinner.setLocation(500, 270);
        jSpinner.setPreferredSize(dimension);
        add(jSpinner);
+    }
+    
+    public void showLabels() {
+        jLabelTitle = new JLabel(Constans.STR_TITLE);
+        jLabelIP = new JLabel("IP: " + obtenerIP());
+        jLabelPORT = new JLabel("PORT: " + Constans.getPORT());
+        jLabelMonto = new JLabel("Monto");
         
-
+        jLabelTitle.setBounds(30, 20, 150, 20);
+        jLabelIP.setBounds(190, 20, 150, 20);
+        jLabelPORT.setBounds(360, 20, 150, 20);
+        jLabelMonto.setBounds(30, 60, 70, 20);
+        
+        
+        
+        add(jLabelTitle);
+        add(jLabelIP);
+        add(jLabelPORT);
+        add(jLabelMonto);
+    }
+    
+    public void darkTheme(){
+        setBackground(Color.BLACK);
+        jTextArea.setBackground(Color.LIGHT_GRAY);
+        jLabelTitle.setForeground(Color.WHITE);
+        jLabelIP.setForeground(Color.WHITE);
+        jLabelPORT.setForeground(Color.WHITE);
+        jLabelMonto.setForeground(Color.WHITE);
+        //btnPagoIcc.set (Color.white);
+        //btnPagoQR.setBackground(Color.BLACK);
+        //btnPagoIcc.setBackground(Color.BLACK);
+        //btnPagoQR.setForeground(Color.WHITE);
+        //btnPagoIcc.setForeground(Color.WHITE);
+    }
+    
+    public void lightTheme(){
+        setBackground(Color.LIGHT_GRAY);
+        jTextArea.setBackground(Color.WHITE);
+        jLabelTitle.setForeground(Color.BLACK);
+        jLabelIP.setForeground(Color.BLACK);
+        jLabelPORT.setForeground(Color.BLACK);
+        jLabelMonto.setForeground(Color.BLACK);
+        //btnPagoIcc.set (Color.white);
+        //btnPagoQR.setBackground(Color.BLACK);
+        //btnPagoIcc.setBackground(Color.BLACK);
+        //btnPagoQR.setForeground(Color.WHITE);
+        //btnPagoIcc.setForeground(Color.WHITE);
+    }
+    
+    public void fontsViewMain(String fuente) {
+        Font font = new Font(fuente, Constans.getSTYLE(), Constans.getSIZE_FONT());
+        jTextArea.setFont(font); 
+    }
+    public void sizeViewMain(int size) {
+        Font font = new Font(Constans.getFONT(), Constans.getSTYLE(), size);
+        jTextArea.setFont(font); 
+    }
+    public void styleViewMain(int style) {
+        Font font = new Font(Constans.getFONT(), style, Constans.getSIZE_FONT());
+        jTextArea.setFont(font); 
     }
 }

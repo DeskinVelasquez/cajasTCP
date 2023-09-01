@@ -6,7 +6,8 @@ package com.cajatcp.view.listeners;
 
 import com.cajatcp.Utils.Alerts;
 import com.cajatcp.Utils.Constans;
-import static com.cajatcp.Utils.Constans.BT_SEND_DATA;
+import static com.cajatcp.Utils.Constans.APPEARANCE_DARK;
+import static com.cajatcp.Utils.Constans.APPEARANCE_LIGHT;
 import static com.cajatcp.Utils.Constans.BT_SOLICITUD_CONEXION;
 import static com.cajatcp.Utils.Constans.BT_SOLICITUD_CONEXION_QR;
 import static com.cajatcp.Utils.Constans.PAGO_ICC;
@@ -14,7 +15,7 @@ import static com.cajatcp.Utils.Constans.PAGO_QR;
 import static com.cajatcp.Utils.Constans.STR_CONFIG_PORT;
 import static com.cajatcp.Utils.Constans.STR_DISABLE_CONNECT;
 import static com.cajatcp.Utils.Constans.STR_ENABLE_CONNECT;
-import com.cajatcp.Utils.Util;
+import static com.cajatcp.Utils.Constans.STR_STYLE;
 import com.cajatcp.practice.Comunication;
 import com.cajatcp.view.JPanelPrincipal;
 import java.awt.Color;
@@ -80,7 +81,20 @@ public class ExtAbstractAction /*implements Action*/ extends AbstractAction {
                 panel.configPort();
                 panel.rspBox("Nuevo puerto: " + Constans.getPORT());
                 break;
+            case APPEARANCE_LIGHT:
+                System.out.println(APPEARANCE_LIGHT);
+                panel.lightTheme();
+                break;
+            case APPEARANCE_DARK:
+                System.out.println(APPEARANCE_DARK);
+                panel.darkTheme();
+                break;
+            case STR_STYLE:
+                System.out.println(STR_STYLE);
+                break;
             default:
+                System.out.println(e.getActionCommand());
+                panel. fontsViewMain(e.getActionCommand());
                 break;
         }
     }

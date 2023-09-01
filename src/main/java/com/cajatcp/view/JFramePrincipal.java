@@ -38,7 +38,7 @@ public class JFramePrincipal extends JFrame  {
         setBounds(ScreenX/2, ScreenY/2, ScreenX, ScreenY);
         setResizable(true); //este metodo permite bloquear el redimensionamiento de la ventana
         setTitle("Cajas TCP"); // pone el titulo de la ventana
-        
+       
         //agregar un panel
         JPanelPrincipal panel = new JPanelPrincipal(ScreenX, ScreenY);
         

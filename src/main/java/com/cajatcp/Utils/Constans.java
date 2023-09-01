@@ -90,5 +90,46 @@ public class Constans {
         PORT = port;
     }
     
+    private static String FONT = "0";
+    
+    public static String getFONT() {
+        return FONT;
+    }
+    public static void setFONT(String FONT) {
+        Constans.FONT = FONT;
+    }
+    private static int STYLE = 0;
+    
+    public static int getSTYLE() {
+        return STYLE;
+    }
+    public static void setSIZE_FONT(int SIZE_FONT) {
+        Constans.SIZE_FONT = SIZE_FONT;
+    }
+    private static int SIZE_FONT = 12;
+    
+    public static int getSIZE_FONT() {
+        return SIZE_FONT;
+    }
+    public static void setSTYLE(int STYLE) {
+        Constans.STYLE = STYLE;
+    }
+    
+    //componentes de la barra de menu
+    public static final String FILE = "Archivo";
+    public static final String SETTINGS = "Configuración";
+    public static final String EDIT = "Editar";
+    public static final String VIEW = "Vista";
+    public static final String APPEARANCE = "Apariencia";
+    public static final String APPEARANCE_LIGHT = "Claro";
+    public static final String APPEARANCE_DARK = "Obscuro";
+    public static final String STR_STYLE = "Estilo";
+    public static final String STR_FONT = "Fuente";
+    public static final String STR_SIZE = "Tamaño";
+    
+    //labels
+    public static final String STR_TITLE = "DemoCajas TCP";
+    
+
 }
 
