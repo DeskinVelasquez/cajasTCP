@@ -41,6 +41,14 @@ public class Constans {
     public final static String STR_ENABLE_CONNECT = "conectar";
     public final static String STR_DISABLE_CONNECT = "desconectar";
     public final static String STR_CONFIG_PORT = "config port";
+    public final static String STR_STYLE_PLAIN = "Normal";
+    public final static String STR_STYLE_BOLD = "Negrita";
+    public final static String STR_STYLE_ITALIC = "Cursiva";
+    public final static String STR_SIZE_8 = "8";
+    public final static String STR_SIZE_10 = "10";
+    public final static String STR_SIZE_12 = "12";
+    public final static String STR_SIZE_14 = "14";
+    public final static String STR_SIZE_16 = "16";
     
     
     //Transacciones que salen del POS la CAJA
@@ -82,7 +90,6 @@ public class Constans {
     }
     
     private static int PORT = 12345;
-    
     public static int getPORT() {
         return PORT;
     }
@@ -91,30 +98,37 @@ public class Constans {
     }
     
     private static String FONT = "0";
-    
     public static String getFONT() {
         return FONT;
     }
     public static void setFONT(String FONT) {
         Constans.FONT = FONT;
     }
+   
     private static int STYLE = 0;
-    
     public static int getSTYLE() {
         return STYLE;
+    }
+     public static void setSTYLE(int STYLE) {
+        Constans.STYLE = STYLE;
+    }
+    
+    private static int SIZE_FONT = 12;
+    public static int getSIZE_FONT() {
+        return SIZE_FONT;
     }
     public static void setSIZE_FONT(int SIZE_FONT) {
         Constans.SIZE_FONT = SIZE_FONT;
     }
-    private static int SIZE_FONT = 12;
     
-    public static int getSIZE_FONT() {
-        return SIZE_FONT;
+    private static boolean BOLD = false;
+    public static boolean getBOLD() {
+        return BOLD;
     }
-    public static void setSTYLE(int STYLE) {
-        Constans.STYLE = STYLE;
+    public static void setBOLD(boolean bold) {
+        Constans.BOLD = bold;
     }
-    
+   
     //componentes de la barra de menu
     public static final String FILE = "Archivo";
     public static final String SETTINGS = "Configuración";
@@ -126,6 +140,8 @@ public class Constans {
     public static final String STR_STYLE = "Estilo";
     public static final String STR_FONT = "Fuente";
     public static final String STR_SIZE = "Tamaño";
+    public static final String STR_SAVE = "Guardar";
+    public static final String STR_SAVE_AS = "Guardar como";
     
     //labels
     public static final String STR_TITLE = "DemoCajas TCP";

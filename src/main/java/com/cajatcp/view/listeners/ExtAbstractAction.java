@@ -15,10 +15,19 @@ import static com.cajatcp.Utils.Constans.PAGO_QR;
 import static com.cajatcp.Utils.Constans.STR_CONFIG_PORT;
 import static com.cajatcp.Utils.Constans.STR_DISABLE_CONNECT;
 import static com.cajatcp.Utils.Constans.STR_ENABLE_CONNECT;
+import static com.cajatcp.Utils.Constans.STR_SIZE_10;
+import static com.cajatcp.Utils.Constans.STR_SIZE_12;
+import static com.cajatcp.Utils.Constans.STR_SIZE_14;
+import static com.cajatcp.Utils.Constans.STR_SIZE_16;
+import static com.cajatcp.Utils.Constans.STR_SIZE_8;
 import static com.cajatcp.Utils.Constans.STR_STYLE;
+import static com.cajatcp.Utils.Constans.STR_STYLE_BOLD;
+import static com.cajatcp.Utils.Constans.STR_STYLE_ITALIC;
+import static com.cajatcp.Utils.Constans.STR_STYLE_PLAIN;
 import com.cajatcp.practice.Comunication;
 import com.cajatcp.view.JPanelPrincipal;
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.util.ArrayList;
 import javax.swing.AbstractAction;
@@ -89,8 +98,21 @@ public class ExtAbstractAction /*implements Action*/ extends AbstractAction {
                 System.out.println(APPEARANCE_DARK);
                 panel.darkTheme();
                 break;
-            case STR_STYLE:
-                System.out.println(STR_STYLE);
+            case STR_STYLE_BOLD:
+                panel.styleViewMain(Font.BOLD);
+                break;
+            case STR_STYLE_ITALIC:
+                panel.styleViewMain(Font.ITALIC);
+                break;
+            case STR_STYLE_PLAIN:
+                panel.styleViewMain(Font.PLAIN);
+                break;
+            case STR_SIZE_8:
+            case STR_SIZE_10:
+            case STR_SIZE_12:
+            case STR_SIZE_14:
+            case STR_SIZE_16:
+                panel.sizeViewMain(Integer.parseInt(e.getActionCommand()));
                 break;
             default:
                 System.out.println(e.getActionCommand());

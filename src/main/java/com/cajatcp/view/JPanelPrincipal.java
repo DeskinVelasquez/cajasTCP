@@ -31,6 +31,7 @@ import javax.swing.ButtonGroup;
 import javax.swing.ImageIcon;
 import javax.swing.InputMap;
 import javax.swing.JCheckBox;
+import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
@@ -39,6 +40,7 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPasswordField;
 import javax.swing.JRadioButton;
+import javax.swing.JRadioButtonMenuItem;
 import javax.swing.JScrollPane;
 import javax.swing.JSlider;
 import javax.swing.JSpinner;
@@ -51,6 +53,7 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.text.DefaultCaret;
 import javax.swing.text.Document;
+import javax.swing.text.StyledEditorKit;
 
 /**
  *Clase que crea los paneles o laminas que tendr� la ventana. 
@@ -74,6 +77,9 @@ public class JPanelPrincipal extends JPanel /*implements ActionListener*/ {
     private JCheckBox jCheckBox;
     private JSlider jSlider;
     private Graphics g;
+    private JCheckBoxMenuItem styleItalic;
+    private JCheckBoxMenuItem styleBold;
+    private JCheckBoxMenuItem stylePlain;
        
     public JPanelPrincipal(int widthScreen, int heightScreen) {
         this.widthScreen = widthScreen;
@@ -109,55 +115,110 @@ public class JPanelPrincipal extends JPanel /*implements ActionListener*/ {
     }
     
     private void showMenuBar() {
-        //barra menu base
+        //barra menu base-----------------------------------------
         JMenuBar barraMenu = new JMenuBar();
-        //components
+        
+        //components--------------------------------------------------
         JMenu archivo = new JMenu(Constans.FILE);
         JMenu edit = new JMenu(Constans.EDIT);
         JMenu settings = new JMenu(Constans.SETTINGS);
         JMenu view = new JMenu(Constans.VIEW);
-        //submenu
+        
+        //submenu---------------------------------------------------
         JMenu menuAppearance = new JMenu(Constans.APPEARANCE);
         JMenu font = new JMenu(Constans.STR_FONT);
         JMenu size = new JMenu(Constans.STR_SIZE);
-        //items componentes
+        JMenu style = new JMenu(Constans.STR_STYLE);
+        
+        //items componentes-----------------------------------------------
         ArrayList<JMenuItem> listItems = new ArrayList<>();
         JMenuItem appearanceLight = new JMenuItem(Constans.APPEARANCE_LIGHT);
         JMenuItem appearanceDark = new JMenuItem(Constans.APPEARANCE_DARK);
         JMenuItem configPort = new JMenuItem(Constans.STR_CONFIG_PORT);
-        JMenuItem style = new JMenuItem(Constans.STR_STYLE);
         
+        
+        //items con iconos-----------------------------------------------------
+        ImageIcon iconSave = new ImageIcon("src/images/disquete.png");
+        ImageIcon icScaled = new ImageIcon(iconSave.getImage().getScaledInstance(10, 10, Image.SCALE_DEFAULT));
+        
+        JMenuItem save = new JMenuItem(Constans.STR_SAVE, icScaled);
+        JMenuItem saveAs = new JMenuItem(Constans.STR_SAVE_AS, icScaled);
+        
+        //para checkBoxMenuItem------------------------------------------------
+        styleItalic = new JCheckBoxMenuItem(Constans.STR_STYLE_ITALIC);
+        styleBold = new JCheckBoxMenuItem(Constans.STR_STYLE_BOLD);
+        stylePlain = new JCheckBoxMenuItem(Constans.STR_STYLE_PLAIN);
+        
+        //para los radioButtons en la barra de menu-------------------------
+        ButtonGroup sizeLetter = new ButtonGroup();
+        JRadioButtonMenuItem size8 = new JRadioButtonMenuItem("8");
+        JRadioButtonMenuItem size10 = new JRadioButtonMenuItem("10");
+        JRadioButtonMenuItem size12 = new JRadioButtonMenuItem("12");
+        JRadioButtonMenuItem size14 = new JRadioButtonMenuItem("14");
+        JRadioButtonMenuItem size16 = new JRadioButtonMenuItem("16");
+        
+        sizeLetter.add(size8);
+        sizeLetter.add(size10);
+        sizeLetter.add(size12);
+        sizeLetter.add(size14);
+        sizeLetter.add(size16);
+        
+        //añadir action listener a los items----------------------------------
         listItems.add(appearanceLight);
         listItems.add(appearanceDark);
         listItems.add(configPort);
-        listItems.add(style);
+        listItems.add(styleItalic);
+        listItems.add(styleBold);
+        listItems.add(stylePlain);
+        listItems.add(size8);
+        listItems.add(size10);
+        listItems.add(size12);
+        listItems.add(size14);
+        listItems.add(size16);
         
         
         String[] fonts = getFonts();
         for (int i = 0; i < fonts.length; i++) {
             JMenuItem element = new JMenuItem(fonts[i]);
-            addActionItemMenu(element);
+            listItems.add(element);
             font.add(element);
-        }
-        for (int i = 8; i < 17; i++) {
-            JMenuItem element = new JMenuItem(String.valueOf(i));
-            addActionItemMenu(element);
-            size.add(new JMenuItem(String.valueOf(i)));
         }
         for (JMenuItem element: listItems) {
             addActionItemMenu(element);
         }
         
+        //añadir a archivo----------------------------------
+        archivo.add(save);
+        archivo.add(saveAs);
+        
+        //añadir a apariencia----------------------------------
         menuAppearance.add(appearanceLight);
         menuAppearance.add(appearanceDark);
         
+        //añadir a vista----------------------------------
         view.add(menuAppearance);
+        
+        //añadir a configuracion----------------------------------
         settings.add(configPort);
         
+        //añadir a editar----------------------------------
         edit.add(style);
         edit.add(font);
         edit.add(size);
         
+        //añadir a estilo----------------------------------
+        style.add(styleItalic);
+        style.add(styleBold);
+        style.add(stylePlain);
+        
+        //añadir a tamaño----------------------------------
+        size.add(size8);
+        size.add(size10);
+        size.add(size12);
+        size.add(size14);
+        size.add(size16);
+        
+        //añadir a barra base----------------------------------
         barraMenu.add(archivo);
         barraMenu.add(edit);
         barraMenu.add(settings);
@@ -485,14 +546,61 @@ public class JPanelPrincipal extends JPanel /*implements ActionListener*/ {
     
     public void fontsViewMain(String fuente) {
         Font font = new Font(fuente, Constans.getSTYLE(), Constans.getSIZE_FONT());
+        Constans.setFONT(fuente);
         jTextArea.setFont(font); 
     }
     public void sizeViewMain(int size) {
         Font font = new Font(Constans.getFONT(), Constans.getSTYLE(), size);
+        Constans.setSIZE_FONT(size);
         jTextArea.setFont(font); 
     }
     public void styleViewMain(int style) {
+        boolean isItalic = styleItalic.isSelected();
+        boolean isBold = styleBold.isSelected();
+        
+        if ((style == Font.ITALIC)) {
+            stylePlain.setSelected(false);
+            if (isItalic) {
+                if (isBold) {
+                    style = 3;
+                }
+            } else {
+                if (isBold) {
+                    stylePlain.setSelected(false);
+                    style = Font.BOLD;
+                } else {
+                    style = Font.PLAIN;
+                }
+            }
+            
+        }
+        
+        if ((style == Font.BOLD)) {
+            if (isBold) {
+                if (isItalic) {
+                    stylePlain.setSelected(false);
+                    style = 3;
+                }
+            } else {
+                if (isItalic) {
+                    stylePlain.setSelected(false);
+                    style = Font.ITALIC;
+                } else {
+                    style = Font.PLAIN;
+                }
+            }
+        }
+        
+        if ((style == Font.PLAIN)) {
+            if (isItalic) {
+                styleItalic.setSelected(false);
+            }
+            if (isBold) {
+                style = Font.BOLD;
+            }
+        }
         Font font = new Font(Constans.getFONT(), style, Constans.getSIZE_FONT());
+        Constans.setSTYLE(style);
         jTextArea.setFont(font); 
     }
 }
