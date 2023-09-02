@@ -17,6 +17,8 @@ import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.GraphicsEnvironment;
 import java.awt.Image;
+import java.awt.event.InputEvent;
+import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.IOException;
 import java.net.InetAddress;
@@ -79,9 +81,9 @@ public class JPanelPrincipal extends JPanel /*implements ActionListener*/ {
     private JCheckBox jCheckBox;
     private JSlider jSlider;
     private Graphics g;
-    private JCheckBoxMenuItem styleItalic;
-    private JCheckBoxMenuItem styleBold;
-    private JCheckBoxMenuItem stylePlain;
+    private JMenuItem styleItalic;
+    private JMenuItem styleBold;
+    private JMenuItem stylePlain;
        
     public JPanelPrincipal(int widthScreen, int heightScreen) {
         this.widthScreen = widthScreen;
@@ -147,9 +149,19 @@ public class JPanelPrincipal extends JPanel /*implements ActionListener*/ {
         JMenuItem saveAs = new JMenuItem(Constans.STR_SAVE_AS, icScaled);
         
         //para checkBoxMenuItem------------------------------------------------
-        styleItalic = new JCheckBoxMenuItem(Constans.STR_STYLE_ITALIC);
-        styleBold = new JCheckBoxMenuItem(Constans.STR_STYLE_BOLD);
-        stylePlain = new JCheckBoxMenuItem(Constans.STR_STYLE_PLAIN);
+        //styleItalic = new JCheckBoxMenuItem(Constans.STR_STYLE_ITALIC);
+        //styleBold = new JCheckBoxMenuItem(Constans.STR_STYLE_BOLD);
+        //stylePlain = new JCheckBoxMenuItem(Constans.STR_STYLE_PLAIN);
+        
+        //refactorizado el checkBox (ya no es checkBox------------------
+        styleItalic = new JMenuItem(Constans.STR_STYLE_ITALIC);
+        styleBold = new JMenuItem(Constans.STR_STYLE_BOLD);
+        stylePlain = new JMenuItem(Constans.STR_STYLE_PLAIN);
+        
+        //se le agregan atajos de teclado a los items
+        styleItalic.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_K, InputEvent.CTRL_DOWN_MASK));
+        styleBold.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N, InputEvent.CTRL_DOWN_MASK));
+        stylePlain.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_D, InputEvent.CTRL_DOWN_MASK));
         
         //para los radioButtons en la barra de menu-------------------------
         ButtonGroup sizeLetter = new ButtonGroup();
@@ -258,9 +270,21 @@ public class JPanelPrincipal extends JPanel /*implements ActionListener*/ {
         size2.add(size12_2);
         size2.add(size14_2);
         size2.add(size16_2);
-
+        
+        JMenu style = new JMenu(Constans.STR_STYLE);
+        JMenuItem italic = new JMenuItem(Constans.STR_STYLE_ITALIC);
+        JMenuItem bold = new JMenuItem(Constans.STR_STYLE_BOLD);
+        JMenuItem plain = new JMenuItem(Constans.STR_STYLE_PLAIN);
+        
+        addActionItemMenu(italic);
+        addActionItemMenu(bold);
+        addActionItemMenu(plain);
+        style.add(italic);
+        style.add(bold);
+        style.add(plain);
         jPopupMenu.add(font2);
         jPopupMenu.add(size2);
+        jPopupMenu.add(style);
         jTextArea.setComponentPopupMenu(jPopupMenu);
     }
     
@@ -638,5 +662,23 @@ public class JPanelPrincipal extends JPanel /*implements ActionListener*/ {
         Font font = new Font(Constans.getFONT(), style, Constans.getSIZE_FONT());
         Constans.setSTYLE(style);
         jTextArea.setFont(font); 
+    }
+    
+     public void styleViewMain2(int style) {
+        Font font = jTextArea.getFont();
+        
+        if ((style == Font.ITALIC)) {
+            if (font.getStyle() == Font.BOLD) {
+                style = 3;
+            }
+        }
+        if ((style == Font.BOLD)) {
+            if (font.getStyle() == Font.ITALIC) {
+                style = 3;
+            }
+        }
+        Constans.setSTYLE(style);
+        jTextArea.setFont(new Font(Constans.getFONT(), style, Constans.getSIZE_FONT())); 
+
     }
 }

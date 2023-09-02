@@ -99,13 +99,13 @@ public class ExtAbstractAction /*implements Action*/ extends AbstractAction {
                 panel.darkTheme();
                 break;
             case STR_STYLE_BOLD:
-                panel.styleViewMain(Font.BOLD);
+                panel.styleViewMain2(Font.BOLD);
                 break;
             case STR_STYLE_ITALIC:
-                panel.styleViewMain(Font.ITALIC);
+                panel.styleViewMain2(Font.ITALIC);
                 break;
             case STR_STYLE_PLAIN:
-                panel.styleViewMain(Font.PLAIN);
+                panel.styleViewMain2(Font.PLAIN);
                 break;
             case STR_SIZE_8:
             case STR_SIZE_10:
