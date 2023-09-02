@@ -39,6 +39,7 @@ import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPasswordField;
+import javax.swing.JPopupMenu;
 import javax.swing.JRadioButton;
 import javax.swing.JRadioButtonMenuItem;
 import javax.swing.JScrollPane;
@@ -51,6 +52,7 @@ import javax.swing.KeyStroke;
 import javax.swing.SpinnerListModel;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import javax.swing.plaf.basic.BasicComboPopup;
 import javax.swing.text.DefaultCaret;
 import javax.swing.text.Document;
 import javax.swing.text.StyledEditorKit;
@@ -73,7 +75,7 @@ public class JPanelPrincipal extends JPanel /*implements ActionListener*/ {
     private JLabel jLabelIP;
     private JLabel jLabelPORT;
     private JPasswordField textField2;
-    private JTextArea jTextArea;
+    private JTextArea jTextArea = new JTextArea();
     private JCheckBox jCheckBox;
     private JSlider jSlider;
     private Graphics g;
@@ -163,6 +165,7 @@ public class JPanelPrincipal extends JPanel /*implements ActionListener*/ {
         sizeLetter.add(size14);
         sizeLetter.add(size16);
         
+        
         //añadir action listener a los items----------------------------------
         listItems.add(appearanceLight);
         listItems.add(appearanceDark);
@@ -175,58 +178,90 @@ public class JPanelPrincipal extends JPanel /*implements ActionListener*/ {
         listItems.add(size12);
         listItems.add(size14);
         listItems.add(size16);
-        
-        
+
         String[] fonts = getFonts();
         for (int i = 0; i < fonts.length; i++) {
             JMenuItem element = new JMenuItem(fonts[i]);
             listItems.add(element);
             font.add(element);
         }
-        for (JMenuItem element: listItems) {
+        for (JMenuItem element : listItems) {
             addActionItemMenu(element);
         }
-        
+
         //añadir a archivo----------------------------------
         archivo.add(save);
         archivo.add(saveAs);
-        
+
         //añadir a apariencia----------------------------------
         menuAppearance.add(appearanceLight);
         menuAppearance.add(appearanceDark);
-        
+
         //añadir a vista----------------------------------
         view.add(menuAppearance);
-        
+
         //añadir a configuracion----------------------------------
         settings.add(configPort);
-        
+
         //añadir a editar----------------------------------
         edit.add(style);
         edit.add(font);
         edit.add(size);
-        
+
         //añadir a estilo----------------------------------
         style.add(styleItalic);
         style.add(styleBold);
         style.add(stylePlain);
-        
+
         //añadir a tamaño----------------------------------
         size.add(size8);
         size.add(size10);
         size.add(size12);
         size.add(size14);
         size.add(size16);
-        
+
         //añadir a barra base----------------------------------
         barraMenu.add(archivo);
         barraMenu.add(edit);
         barraMenu.add(settings);
         barraMenu.add(view);
-       
+
         barraMenu.setBounds(500, 5, 250, 20);
-        
+
         add(barraMenu);
+
+    }
+    
+    private void insertarMenuEmergente(){
+        String[] fonts = getFonts();
+        JPopupMenu jPopupMenu = new JPopupMenu();
+        JMenu font2 = new JMenu(Constans.STR_FONT);
+        for (int i = 0; i < fonts.length; i++) {
+            JMenuItem element = new JMenuItem(fonts[i]);
+            addActionItemMenu(element);
+            font2.add(element);
+        }
+
+        JMenu size2 = new JMenu(Constans.STR_SIZE);
+        JMenuItem size8_2 = new JMenuItem("8");
+        JMenuItem size10_2 = new JMenuItem("10");
+        JMenuItem size12_2 = new JMenuItem("12");
+        JMenuItem size14_2 = new JMenuItem("14");
+        JMenuItem size16_2 = new JMenuItem("16");
+        addActionItemMenu(size8_2);
+        addActionItemMenu(size10_2);
+        addActionItemMenu(size12_2);
+        addActionItemMenu(size14_2);
+        addActionItemMenu(size16_2);
+        size2.add(size8_2);
+        size2.add(size10_2);
+        size2.add(size12_2);
+        size2.add(size14_2);
+        size2.add(size16_2);
+
+        jPopupMenu.add(font2);
+        jPopupMenu.add(size2);
+        jTextArea.setComponentPopupMenu(jPopupMenu);
     }
     
     private void addActionItemMenu(JMenuItem item){
@@ -352,8 +387,7 @@ public class JPanelPrincipal extends JPanel /*implements ActionListener*/ {
     }
     
     private void showTextArea() {
-        jTextArea = new JTextArea();
-
+       
         //para que no se ensanche, sino que de un salto de linea al escribir texto
         jTextArea.setLineWrap(true);
         jTextArea.setEditable(false);
@@ -366,6 +400,8 @@ public class JPanelPrincipal extends JPanel /*implements ActionListener*/ {
         DefaultCaret defaultCaret = (DefaultCaret) jTextArea.getCaret();
         defaultCaret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
         add(jScrollPane);
+        
+        insertarMenuEmergente();
     }
     
     public void rspBox(String rsp){
