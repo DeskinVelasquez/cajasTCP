@@ -2,7 +2,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package com.cajatcp.practice;
+package com.cajatcp.Utils.Comunication;
 
 import com.cajatcp.Utils.Alerts;
 import com.cajatcp.Utils.Constans;
@@ -76,7 +76,7 @@ public class Comunication {
             timer.schedule(new TimerTask() {
                 @Override
                 public void run() {
-                    Alerts.alert(true, "No se ha conectado ningun cliente");
+                    Alerts.alert(true, "No se ha conectado ningun cliente", 1);
                     panel.rspBox("No se ha conectado ningun cliente");
                     panel.cambiarNombreBtnConecct(STR_ENABLE_CONNECT);
                     panel.rspBox(disaableConnect());
@@ -194,7 +194,7 @@ public class Comunication {
         }
         listMsgOutput.add(msgEnviado);
         try {
-            if (Alerts.alert(socket == null, "Debe haber un cliente conectado")) {
+            if (Alerts.alert(socket == null, "Debe haber un cliente conectado", 1)) {
                 return false;
             }
             OutputStream os = socket.getOutputStream();

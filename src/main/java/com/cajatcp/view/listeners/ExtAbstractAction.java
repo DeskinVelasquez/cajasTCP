@@ -24,7 +24,7 @@ import static com.cajatcp.Utils.Constans.STR_STYLE;
 import static com.cajatcp.Utils.Constans.STR_STYLE_BOLD;
 import static com.cajatcp.Utils.Constans.STR_STYLE_ITALIC;
 import static com.cajatcp.Utils.Constans.STR_STYLE_PLAIN;
-import com.cajatcp.practice.Comunication;
+import com.cajatcp.Utils.Comunication.Comunication;
 import com.cajatcp.view.JPanelPrincipal;
 import java.awt.Color;
 import java.awt.Font;
@@ -35,6 +35,7 @@ import javax.swing.Action;
 import javax.swing.Icon;
 import javax.swing.JPanel;
 import java.util.ArrayList;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -65,7 +66,7 @@ public class ExtAbstractAction /*implements Action*/ extends AbstractAction {
         
         switch (e.getActionCommand()) {
             case PAGO_ICC:
-                if (!Alerts.alert(Constans.getMONTO().equals("0"), "Debe haber un monto")
+                if (!Alerts.alert(Constans.getMONTO().equals("0"), "Debe haber un monto", 2)
                         && co.send(BT_SOLICITUD_CONEXION)) {
                     System.out.println("Envio exitoso");
                 }
@@ -76,7 +77,7 @@ public class ExtAbstractAction /*implements Action*/ extends AbstractAction {
                 co.receiveRsp();
                 break;
             case PAGO_QR:
-                if (!Alerts.alert(Constans.getMONTO().equals("0"), "Debe haber un monto")
+                if (!Alerts.alert(Constans.getMONTO().equals("0"), "Debe haber un monto", 2)
                         &&co.send(BT_SOLICITUD_CONEXION_QR)) {
                     System.out.println("Envio exitoso");
                 }

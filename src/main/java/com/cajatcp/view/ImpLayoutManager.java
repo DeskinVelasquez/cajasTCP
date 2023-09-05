@@ -2,7 +2,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package com.cajatcp.practice;
+package com.cajatcp.view;
 
 import java.awt.Component;
 import java.awt.Container;
@@ -39,9 +39,9 @@ public class ImpLayoutManager implements LayoutManager {
     @Override
     public void layoutContainer(Container miContenedor) {
         
-        int d = miContenedor.getWidth();
+        int d = miContenedor.getWidth(); //obtiene el ancho del contenedor
         
-        x = d/2;
+        x = d/2; //se obtiene la medida central del contenedor
         
         int count = 0;
         
@@ -53,9 +53,9 @@ public class ImpLayoutManager implements LayoutManager {
             
             Component cmp = miContenedor.getComponent(i);
             
-            cmp.setBounds(x-100, y, 100, 20);
+            cmp.setBounds(x-100, y, 100, 20); //se resta el ancho del componente a la medida central para que me coloque dicho componente a la izquierda
             
-            x+=100;
+            x+=100; //se suma lo anteriormente restado para obtener nuevamente el centro del contenedor y el siguiente componente lo coloque a la derecha del centro del contenedor
             
             if (count % 2 == 0) {
                 x = d/2;

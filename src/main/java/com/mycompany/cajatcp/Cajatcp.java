@@ -4,7 +4,7 @@
  */
 package com.mycompany.cajatcp;
 
-import com.cajatcp.practice.ImpLayoutManager;
+import com.cajatcp.view.ImpLayoutManager;
 import com.cajatcp.view.JFramePrincipal;
 import com.cajatcp.view.listeners.ImpWindowFocusListener;
 import java.awt.Component;
@@ -28,7 +28,7 @@ import javax.swing.SpringLayout;
 public class Cajatcp {
 
     public static void main(String[] args) {
-        /*
+       
        JFramePrincipal marco = new JFramePrincipal();
        marco.getColorModel();
        marco.setVisible(true);
@@ -37,12 +37,13 @@ public class Cajatcp {
        
        //se agrega el focus listener a la ventana principal.
        marco.addWindowFocusListener(new ImpWindowFocusListener());
-         */
- /*
+       
+        
+       /*
        MarcoCalculadora marcoCalculadora = new MarcoCalculadora();
        marcoCalculadora.setVisible(true);
        marcoCalculadora.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); //cancelar ejecución del programa al cerrar la ventana
-         */
+       */
 
         //Disposiciones avanzadas --------------------------------------------
         //MarcoPractica marco1 = new MarcoPractica("Disposicion en caja");
@@ -53,9 +54,9 @@ public class Cajatcp {
         //marco2.setVisible(true);
         //marco2.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        MarcoPractica marco3 = new MarcoPractica("Disposicion libre");
-        marco3.setVisible(true);
-        marco3.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        //MarcoPractica marco3 = new MarcoPractica("Disposicion libre");
+        //marco3.setVisible(true);
+        //marco3.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
     }
 }

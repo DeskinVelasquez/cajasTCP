@@ -453,7 +453,7 @@ public class JPanelPrincipal extends JPanel /*implements ActionListener*/ {
         //agregando cuadros de texto, para el tema del evento foco
         //primero invalidamos el layout: el layuot es la disposicion que tienen los componentes en el panel (orden de componentes), por defecto java los ubica automaticamente por ello lo invalidamos
         
-        textField1 = new JTextField();
+        textField1 = new JTextField("27");
         
         //agregando el listener de texto al jtextfield
         ImpDocumentListener documentListener = new ImpDocumentListener();
@@ -473,7 +473,7 @@ public class JPanelPrincipal extends JPanel /*implements ActionListener*/ {
             try {
             port = Integer.parseInt(strPort);
             } catch (Exception e) {
-                Alerts.alert(true, "puerto invalido");
+                Alerts.alert(true, "puerto invalido", 2);
                 return;
             }
             Constans.setPORT(port);

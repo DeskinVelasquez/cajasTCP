@@ -12,9 +12,9 @@ import javax.swing.JOptionPane;
  */
 public class Alerts {
 
-    public static boolean alert(boolean b, String msg){
+    public static boolean alert(boolean b, String msg, int typeAlert){
         if (b) {
-            JOptionPane.showMessageDialog(null, msg);
+            JOptionPane.showMessageDialog(null, msg,"Alerta", typeAlert);
             return true;
         }
         return false;
