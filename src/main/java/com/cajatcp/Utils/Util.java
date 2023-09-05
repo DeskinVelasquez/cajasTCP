@@ -27,7 +27,4 @@ public class Util {
         return Integer.parseInt(hexValue, 16);
     }
     
-    public static String setColor(String string, int color) {
-        String newString = string.set
-    }
 }

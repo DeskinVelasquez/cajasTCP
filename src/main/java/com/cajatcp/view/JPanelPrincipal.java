@@ -93,7 +93,7 @@ public class JPanelPrincipal extends JPanel /*implements ActionListener*/ {
         
         //se muestran los botones UI
         showLabels();
-        showMenuBar();
+        //showMenuBar();
         showTextArea();
         showButtons();
         showTextField();
@@ -118,7 +118,7 @@ public class JPanelPrincipal extends JPanel /*implements ActionListener*/ {
         
     }
     
-    private void showMenuBar() {
+    public JMenuBar showMenuBar() {
         //barra menu base-----------------------------------------
         JMenuBar barraMenu = new JMenuBar();
         
@@ -240,8 +240,14 @@ public class JPanelPrincipal extends JPanel /*implements ActionListener*/ {
 
         barraMenu.setBounds(500, 5, 250, 20);
 
-        add(barraMenu);
-
+        //add(barraMenu);
+        
+        return barraMenu;
+        
+    }
+    
+    public JButton showBtnConect () {
+        return enableConnect;
     }
     
     private void insertarMenuEmergente(){
@@ -288,7 +294,7 @@ public class JPanelPrincipal extends JPanel /*implements ActionListener*/ {
         jTextArea.setComponentPopupMenu(jPopupMenu);
     }
     
-    private void addActionItemMenu(JMenuItem item){
+    public void addActionItemMenu(JMenuItem item){
         ExtAbstractAction action = new ExtAbstractAction(item.getName(), this);
         item.addActionListener(action);
     }
@@ -313,7 +319,7 @@ public class JPanelPrincipal extends JPanel /*implements ActionListener*/ {
      * siendo ejecutado.
      * @return un arreglo de String que contiene el familyFonts del equipo. 
      */
-    private String[] getFonts() {
+    public String[] getFonts() {
         return GraphicsEnvironment.getLocalGraphicsEnvironment().getAvailableFontFamilyNames();
     }
     
@@ -367,12 +373,12 @@ public class JPanelPrincipal extends JPanel /*implements ActionListener*/ {
         */
         
         //Se rehubican los botones
-        btnPagoQR.setBounds(30, 110, 130, 20);
-        btnPagoIcc.setBounds(30, 140, 130, 20);
-        enableConnect.setBounds(505, 32, 90, 15);
+        btnPagoQR.setBounds(120, 80, 130, 20);
+        btnPagoIcc.setBounds(270, 80, 130, 20);
+        //enableConnect.setBounds(505, 32, 90, 15);
         add(btnPagoQR);
         add(btnPagoIcc);
-        add(enableConnect);
+        //add(enableConnect);
         //add(p4);
         /*
         //trabajando con posicionamientos de componentes del panel.
@@ -383,7 +389,7 @@ public class JPanelPrincipal extends JPanel /*implements ActionListener*/ {
         add(p3, BorderLayout.EAST);
         add(p4, BorderLayout.WEST);
         */
-        
+        /*
         //InputMap proporciona un vinculo ante un evento y un objeto, normalmente es usado con un actionMap.
         InputMap mapaEntrada =getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
         
@@ -395,7 +401,7 @@ public class JPanelPrincipal extends JPanel /*implements ActionListener*/ {
         //asignamos la combinacion de teclas al siguiente objeto
         mapaEntrada.put(keyBackGroundYellow, "fondo_amarillo");
         mapaEntrada.put(keyBackGroundBlue, "fondo_azul");
-        mapaEntrada.put(keyBackGroundRed, "fondo_rojo");
+        mapaEntrada.put(keyBackGroundRed, "fondo_rojo");*/
         
         //se asigna el objeto a la action
         /*ActionMap actionMap = getActionMap();
@@ -418,7 +424,7 @@ public class JPanelPrincipal extends JPanel /*implements ActionListener*/ {
 
         //para que no crezca a lo alto, sino que tnga barras de desplazamiento
         JScrollPane jScrollPane = new JScrollPane(jTextArea);
-        jScrollPane.setBounds(30, 170, widthScreen-70, heightScreen/2);
+        jScrollPane.setBounds(30, 110, widthScreen-70, heightScreen/2);
         
         //para que el JScrollPane siempre se desplace al final
         DefaultCaret defaultCaret = (DefaultCaret) jTextArea.getCaret();
@@ -591,7 +597,7 @@ public class JPanelPrincipal extends JPanel /*implements ActionListener*/ {
     }
     
     public void lightTheme(){
-        setBackground(Color.LIGHT_GRAY);
+        setBackground(new Color(238, 238, 238));
         jTextArea.setBackground(Color.WHITE);
         jLabelTitle.setForeground(Color.BLACK);
         jLabelIP.setForeground(Color.BLACK);

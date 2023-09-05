@@ -4,6 +4,7 @@
  */
 package com.cajatcp.view;
 
+import com.cajatcp.Utils.Constans;
 import com.cajatcp.view.listeners.ExtWindowAdapter;
 import com.cajatcp.view.JPanelPrincipal;
 import com.cajatcp.view.listeners.ExtMouseAdapter;
@@ -14,8 +15,19 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Image;
 import java.awt.Toolkit;
+import java.awt.event.InputEvent;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseListener;
+import java.util.ArrayList;
+import javax.swing.ButtonGroup;
+import javax.swing.ImageIcon;
 import javax.swing.JFrame;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
+import javax.swing.JRadioButtonMenuItem;
+import javax.swing.JToolBar;
+import javax.swing.KeyStroke;
 
 /**
  * Clase para crear la ventana o marco
@@ -24,6 +36,7 @@ import javax.swing.JFrame;
 public class JFramePrincipal extends JFrame  {
     private int widthScreen = 0;
     private int heightScreen = 0;
+    private JPanelPrincipal panel;
     
     //constructor
     public JFramePrincipal(){
@@ -40,7 +53,7 @@ public class JFramePrincipal extends JFrame  {
         setTitle("Cajas TCP"); // pone el titulo de la ventana
        
         //agregar un panel
-        JPanelPrincipal panel = new JPanelPrincipal(ScreenX, ScreenY);
+        panel = new JPanelPrincipal(ScreenX, ScreenY);
         
         //trabajando con posicionamientos de componentes del panel.
         //FlowLayout flowLayout = new FlowLayout(FlowLayout.TRAILING);
@@ -61,6 +74,13 @@ public class JFramePrincipal extends JFrame  {
         //se agrega un mouse motion listener
         addMouseMotionListener(new ImpMouseMotionListener());
       
+        setJMenuBar(panel.showMenuBar());
+        
+        //construccion de la barra de herramientas
+        
+        JToolBar jToolBar = new JToolBar("Comunicación");
+        jToolBar.add(panel.showBtnConect());
+        add(jToolBar, BorderLayout.NORTH);
         
     }
     
@@ -87,4 +107,4 @@ public class JFramePrincipal extends JFrame  {
         return  widthScreen;
     }
     
-}
+        }

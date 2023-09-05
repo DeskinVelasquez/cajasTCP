@@ -21,5 +21,12 @@ public class JFrameCalculadora extends JFrame {
         //pack();
     }
 
-    
+    public JFrameCalculadora(String title) {
+        setTitle("Calculadora");
+        setBounds(500, 300, 450, 300);
+        JPanelCalculadora panelCalculadora = new JPanelCalculadora();
+        add(panelCalculadora);
+        //pack();
+    }
+
 }
