@@ -10,20 +10,15 @@ import static com.cajatcp.Utils.Constans.BT_SEND_DATA;
 import static com.cajatcp.Utils.Constans.STR_ENABLE_CONNECT;
 import com.cajatcp.Utils.Util;
 import com.cajatcp.view.JPanelPrincipal;
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.TimerTask;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.net.ssl.SSLSocket;
-import javax.swing.JOptionPane;
 import java.util.Timer;
 
 /**
@@ -64,7 +59,7 @@ public class Comunication {
         return "Error al desconectar";
     }
     
-    public String enableConnect() {
+    public void enableConnect() {
         
         try {
             if (socket != null && socket.isClosed()) {
@@ -83,29 +78,27 @@ public class Comunication {
                     System.out.println("desconectado");
                     timer.cancel();
                 }
-            }, 3000);
+            }, 5000);
             socket = serverSocket.accept();
             timer.cancel();
             if (socket != null && socket.isConnected()) {
                 System.out.println("cliente conectado");
-                retorno = "cliente conectado";
+                panel.rspBox("cliente conectado");
+                return;
             }
-            retorno = "fallo en la conexion con el cliente";
+            panel.rspBox("fallo en la conexion con el cliente");
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-        return retorno;
     }
     
-    public String openConnect() {
+    public void openConnect() {
         new Thread(new Runnable() {
             @Override
             public void run() {
                enableConnect();
             }
         }).start();
-        return retorno;
     }
     
     public void receiveRsp() {
@@ -175,7 +168,8 @@ public class Comunication {
                 break;
             case Constans.SOLICITUD_DATOS:
                 send(Constans.BT_ACK);
-                send(obtenerTramaData());
+                //send(obtenerTramaData());
+                send(Constans.BT_SEND_DATA);
                 receiveRsp();
                 break;
             case Constans.RESP_HOST:
@@ -201,6 +195,7 @@ public class Comunication {
             os.write(data);
             os.flush();
             panel.rspBox("  CAJA " + "========>  " + msgOnScreen(msgEnviado) + "  ========> "+ "  POS "+"\n");
+            receiveRsp();
             return true;
         } catch (IOException ex) {
             Logger.getLogger(Comunication.class.getName()).log(Level.SEVERE, null, ex);

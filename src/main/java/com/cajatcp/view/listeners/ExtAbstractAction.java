@@ -73,12 +73,12 @@ public class ExtAbstractAction /*implements Action*/ extends AbstractAction {
                 break;
             case STR_ENABLE_CONNECT:
                 panel.cambiarNombreBtnConecct(STR_DISABLE_CONNECT);
-                panel.rspBox(co.openConnect());
+                co.openConnect();
                 co.receiveRsp();
                 break;
             case PAGO_QR:
-                if (!Alerts.alert(Constans.getMONTO().equals("0"), "Debe haber un monto", 2)
-                        &&co.send(BT_SOLICITUD_CONEXION_QR)) {
+                if (/*!Alerts.alert(Constans.getMONTO().equals("0"), "Debe haber un monto", 2)
+                        &&*/co.send(BT_SOLICITUD_CONEXION_QR)) {
                     System.out.println("Envio exitoso");
                 }
                 break;
@@ -117,7 +117,7 @@ public class ExtAbstractAction /*implements Action*/ extends AbstractAction {
                 break;
             default:
                 System.out.println(e.getActionCommand());
-                panel. fontsViewMain(e.getActionCommand());
+                panel.fontsViewMain(e.getActionCommand());
                 break;
         }
     }

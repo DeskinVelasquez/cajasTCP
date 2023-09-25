@@ -9,8 +9,6 @@ import com.cajatcp.Utils.Constans;
 import com.cajatcp.view.listeners.ImpFocusListener;
 import com.cajatcp.view.listeners.ExtAbstractAction;
 import com.cajatcp.view.listeners.ImpDocumentListener;
-import com.cajatcp.view.listeners.ImpWindowFocusListener;
-import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -26,58 +24,43 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.imageio.ImageIO;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.ButtonGroup;
 import javax.swing.ImageIcon;
-import javax.swing.InputMap;
 import javax.swing.JCheckBox;
-import javax.swing.JCheckBoxMenuItem;
-import javax.swing.JComboBox;
-import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
-import javax.swing.JPasswordField;
 import javax.swing.JPopupMenu;
-import javax.swing.JRadioButton;
 import javax.swing.JRadioButtonMenuItem;
 import javax.swing.JScrollPane;
 import javax.swing.JSlider;
-import javax.swing.JSpinner;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
-import javax.swing.JTextPane;
 import javax.swing.KeyStroke;
-import javax.swing.SpinnerListModel;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
-import javax.swing.plaf.basic.BasicComboPopup;
 import javax.swing.text.DefaultCaret;
 import javax.swing.text.Document;
-import javax.swing.text.StyledEditorKit;
 
 /**
  *Clase que crea los paneles o laminas que tendr� la ventana. 
  * @author Deskin Velasquez
  */
-public class JPanelPrincipal extends JPanel /*implements ActionListener*/ {
+public final class JPanelPrincipal extends JPanel /*implements ActionListener*/ {
     
     private int widthScreen = 0;
     private int heightScreen = 0;
     private JButton btnPagoQR;
     private JButton btnPagoIcc;
     private JButton enableConnect;
-    private JButton generico;
     private JTextField textField1;
     private JLabel jLabelMonto;
     private JLabel jLabelTitle;
     private JLabel jLabelIP;
     private JLabel jLabelPORT;
-    private JPasswordField textField2;
-    private JTextArea jTextArea = new JTextArea();
+    //private JPasswordField textField2;
+    private final JTextArea jTextArea = new JTextArea();
     private JCheckBox jCheckBox;
     private JSlider jSlider;
     private Graphics g;
@@ -96,7 +79,7 @@ public class JPanelPrincipal extends JPanel /*implements ActionListener*/ {
         //showMenuBar();
         showTextArea();
         showButtons();
-        showTextField();
+        //showTextField();
     }
 
     @Override
@@ -192,8 +175,8 @@ public class JPanelPrincipal extends JPanel /*implements ActionListener*/ {
         listItems.add(size16);
 
         String[] fonts = getFonts();
-        for (int i = 0; i < fonts.length; i++) {
-            JMenuItem element = new JMenuItem(fonts[i]);
+        for (String font1 : fonts) {
+            JMenuItem element = new JMenuItem(font1);
             listItems.add(element);
             font.add(element);
         }
@@ -254,8 +237,8 @@ public class JPanelPrincipal extends JPanel /*implements ActionListener*/ {
         String[] fonts = getFonts();
         JPopupMenu jPopupMenu = new JPopupMenu();
         JMenu font2 = new JMenu(Constans.STR_FONT);
-        for (int i = 0; i < fonts.length; i++) {
-            JMenuItem element = new JMenuItem(fonts[i]);
+        for (String font : fonts) {
+            JMenuItem element = new JMenuItem(font);
             addActionItemMenu(element);
             font2.add(element);
         }
@@ -322,7 +305,7 @@ public class JPanelPrincipal extends JPanel /*implements ActionListener*/ {
     public String[] getFonts() {
         return GraphicsEnvironment.getLocalGraphicsEnvironment().getAvailableFontFamilyNames();
     }
-    
+    /*
     private Image getImage() {
         try {
             File file = new File("src/images/logo_red_enlace.png");
@@ -336,7 +319,7 @@ public class JPanelPrincipal extends JPanel /*implements ActionListener*/ {
         } 
         return null;
     }
-    
+    */
     private void showButtons() {
         
         //Se crea el icono de la imagen para redimensionarlo
@@ -373,8 +356,10 @@ public class JPanelPrincipal extends JPanel /*implements ActionListener*/ {
         */
         
         //Se rehubican los botones
-        btnPagoQR.setBounds(120, 80, 130, 20);
-        btnPagoIcc.setBounds(270, 80, 130, 20);
+        //30, 60, 70, 20
+        //btnPagoQR.setBounds(120, 80, 130, 20);
+        btnPagoQR.setBounds(30, 50, 130, 20);
+        btnPagoIcc.setBounds(30, 80, 130, 20);
         //enableConnect.setBounds(505, 32, 90, 15);
         add(btnPagoQR);
         add(btnPagoIcc);
@@ -472,7 +457,7 @@ public class JPanelPrincipal extends JPanel /*implements ActionListener*/ {
         if (strPort != null) {
             try {
             port = Integer.parseInt(strPort);
-            } catch (Exception e) {
+            } catch (NumberFormatException e) {
                 Alerts.alert(true, "puerto invalido", 2);
                 return;
             }
@@ -483,7 +468,7 @@ public class JPanelPrincipal extends JPanel /*implements ActionListener*/ {
     public  void drawPort() {
         g.drawString("PORT: " + Constans.getPORT(), 150, 40);
     }
-    
+    /*
     private void showOthersComponetsSwing() {
         jCheckBox = new JCheckBox();
         jCheckBox.setBounds(500, 170, 150, 60);
@@ -562,24 +547,24 @@ public class JPanelPrincipal extends JPanel /*implements ActionListener*/ {
        jSpinner.setPreferredSize(dimension);
        add(jSpinner);
     }
-    
+    */
     public void showLabels() {
         jLabelTitle = new JLabel(Constans.STR_TITLE);
         jLabelIP = new JLabel("IP: " + obtenerIP());
         jLabelPORT = new JLabel("PORT: " + Constans.getPORT());
-        jLabelMonto = new JLabel("Monto");
+        //jLabelMonto = new JLabel("Monto");
         
         jLabelTitle.setBounds(30, 20, 150, 20);
         jLabelIP.setBounds(190, 20, 150, 20);
         jLabelPORT.setBounds(360, 20, 150, 20);
-        jLabelMonto.setBounds(30, 60, 70, 20);
+        //jLabelMonto.setBounds(30, 60, 70, 20);
         
         
         
         add(jLabelTitle);
         add(jLabelIP);
         add(jLabelPORT);
-        add(jLabelMonto);
+        //add(jLabelMonto);
     }
     
     public void darkTheme(){
