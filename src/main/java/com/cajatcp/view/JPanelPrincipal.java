@@ -4,6 +4,7 @@
  */
 package com.cajatcp.view;
 
+import DataManager.Fichero;
 import com.cajatcp.Utils.Alerts;
 import com.cajatcp.Utils.Constans;
 import com.cajatcp.view.listeners.ImpFocusListener;
@@ -126,10 +127,13 @@ public final class JPanelPrincipal extends JPanel /*implements ActionListener*/ 
         
         //items con iconos-----------------------------------------------------
         ImageIcon iconSave = new ImageIcon("src/images/disquete.png");
+        ImageIcon iconFile = new ImageIcon("src/images/ic_text.png");
         ImageIcon icScaled = new ImageIcon(iconSave.getImage().getScaledInstance(10, 10, Image.SCALE_DEFAULT));
+        ImageIcon icFileScaled = new ImageIcon(iconFile.getImage().getScaledInstance(iconFile.getIconWidth()/35, iconFile.getIconHeight()/35, Image.SCALE_DEFAULT));
         
         JMenuItem save = new JMenuItem(Constans.STR_SAVE, icScaled);
         JMenuItem saveAs = new JMenuItem(Constans.STR_SAVE_AS, icScaled);
+        JMenuItem readFile = new JMenuItem(Constans.STR_READ_FILE, icFileScaled);
         
         //para checkBoxMenuItem------------------------------------------------
         //styleItalic = new JCheckBoxMenuItem(Constans.STR_STYLE_ITALIC);
@@ -173,6 +177,9 @@ public final class JPanelPrincipal extends JPanel /*implements ActionListener*/ 
         listItems.add(size12);
         listItems.add(size14);
         listItems.add(size16);
+        listItems.add(save);
+        listItems.add(saveAs);
+        listItems.add(readFile);
 
         String[] fonts = getFonts();
         for (String font1 : fonts) {
@@ -187,6 +194,7 @@ public final class JPanelPrincipal extends JPanel /*implements ActionListener*/ 
         //añadir a archivo----------------------------------
         archivo.add(save);
         archivo.add(saveAs);
+        archivo.add(readFile);
 
         //añadir a apariencia----------------------------------
         menuAppearance.add(appearanceLight);
@@ -672,4 +680,14 @@ public final class JPanelPrincipal extends JPanel /*implements ActionListener*/ 
         jTextArea.setFont(new Font(Constans.getFONT(), style, Constans.getSIZE_FONT())); 
 
     }
+     
+     public void leerFichero(){
+         Fichero fichero = new Fichero();
+         rspBox(fichero.leerFichero());
+     }
+     
+     public void escribirFichero() {
+         Fichero fichero = new Fichero();
+         fichero.escribirFichero(jTextArea.getText(), true);
+     }
 }

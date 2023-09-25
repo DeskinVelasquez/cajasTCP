@@ -25,6 +25,8 @@ import static com.cajatcp.Utils.Constans.STR_STYLE_BOLD;
 import static com.cajatcp.Utils.Constans.STR_STYLE_ITALIC;
 import static com.cajatcp.Utils.Constans.STR_STYLE_PLAIN;
 import com.cajatcp.Utils.Comunication.Comunication;
+import static com.cajatcp.Utils.Constans.STR_READ_FILE;
+import static com.cajatcp.Utils.Constans.STR_SAVE;
 import com.cajatcp.view.JPanelPrincipal;
 import java.awt.Color;
 import java.awt.Font;
@@ -114,6 +116,12 @@ public class ExtAbstractAction /*implements Action*/ extends AbstractAction {
             case STR_SIZE_14:
             case STR_SIZE_16:
                 panel.sizeViewMain(Integer.parseInt(e.getActionCommand()));
+                break;
+            case STR_READ_FILE:
+                panel.leerFichero();
+                break;
+            case STR_SAVE:
+                panel.escribirFichero();
                 break;
             default:
                 System.out.println(e.getActionCommand());

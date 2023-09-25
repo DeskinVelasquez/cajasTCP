@@ -4,6 +4,11 @@
  */
 package com.cajatcp.Utils;
 
+import java.text.DateFormat;
+import java.time.LocalDate;
+import java.util.Date;
+import java.util.GregorianCalendar;
+
 /**
  * 
  * @author Deskin Velasquez
@@ -25,6 +30,14 @@ public class Util {
     
     public static int convertToDecimal(String hexValue){
         return Integer.parseInt(hexValue, 16);
+    }
+    
+    public static String getDate(){
+        
+        LocalDate date = LocalDate.now();
+        
+        String fecha = "" + date.getDayOfMonth()  + date.getMonthValue() + date.getYear();
+        return fecha;
     }
     
 }

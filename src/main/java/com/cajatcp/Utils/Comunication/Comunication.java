@@ -23,7 +23,7 @@ import java.util.Timer;
 
 /**
  *
- * @author WPOSS
+ * @author deskin
  */
 public class Comunication {
     InputStream inputStream;
