@@ -16,6 +16,7 @@ import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.GraphicsEnvironment;
 import java.awt.Image;
+import java.awt.Toolkit;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.io.File;
@@ -30,6 +31,7 @@ import javax.swing.JPanel;
 import javax.swing.ButtonGroup;
 import javax.swing.ImageIcon;
 import javax.swing.JCheckBox;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
@@ -682,12 +684,52 @@ public final class JPanelPrincipal extends JPanel /*implements ActionListener*/ 
     }
      
      public void leerFichero(){
-         Fichero fichero = new Fichero();
+         Fichero fichero = new Fichero(false);
          rspBox(fichero.leerFichero());
      }
      
      public void escribirFichero() {
-         Fichero fichero = new Fichero();
+         Fichero fichero = new Fichero(false);
          fichero.escribirFichero(jTextArea.getText(), true);
      }
+     
+     public void escribirBufferFichero() {
+         Fichero fichero = new Fichero(false);
+         fichero.escribirBufferFichero(jTextArea.getText(), true);
+     }
+     
+     public void leerBufferFichero(){
+         Fichero fichero = new Fichero(false);
+         rspBox(fichero.leerBufferFichero());
+     }
+     
+     public void leerByteFichero(){
+         Fichero fichero = new Fichero(true);
+         rspBox(fichero.leerByteFichero());
+     }
+     
+     public void escribirByteFichero() {
+         Fichero fichero = new Fichero(true);
+         byte[] bs = jTextArea.getText().getBytes();
+         int[] ibs = new int[bs.length];
+         for (int i = 0; i < bs.length; i++) {
+             ibs[i] = bs[i];
+         }
+         fichero.escribirByteFichero(ibs, true);
+     }
+     
+     
+     public void marcoEmergente() {
+         JFrame marco = new JFrame("Caiste");
+         ImageIcon imagen = new ImageIcon("src/images/tres_dedos.png");
+         marco.setBounds(500, 100, imagen.getIconWidth()/2, imagen.getIconHeight()/2);
+         ImageIcon iScaled = new ImageIcon(imagen.getImage().getScaledInstance(imagen.getIconWidth()/2, imagen.getIconHeight()/2, Image.SCALE_DEFAULT));
+         JLabel image = new JLabel(iScaled);
+         JPanel panel = new JPanel();
+         panel.add(image);
+         panel.setSize(imagen.getIconWidth()/2, imagen.getIconHeight()/2);
+         marco.add(panel);
+         marco.setVisible(true);
+     }
+     
 }

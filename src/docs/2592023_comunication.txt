@@ -45,3 +45,47 @@ cliente conectado
 Esperando una conexión...
 No se ha conectado ningun cliente
 Comunicación cerrada
+Esperando una conexión...
+cliente conectado
+No se ha conectado ningun cliente
+Comunicación cerrada
+Esperando una conexión...
+cliente conectado
+  CAJA ========>  SOLICITUD CONEXION QR  ========>   POS 
+
+  POS  ========>  ACK  ========>   CAJA 
+
+  POS  ========>  SOLICITUD DATOS  ========>   CAJA 
+
+  CAJA ========>  ACK  ========>   POS 
+
+  CAJA ========>  TRANSACCION ENVIO DATOS  ========>   POS 
+
+  POS  ========>  ACK  ========>   CAJA 
+
+  POS  ========>  NUEVA PANTALLA  ========>   CAJA 
+
+  CAJA ========>  ACK  ========>   POS 
+
+kflksadjflasdjflñasjdfñlEsperando una conexión...
+cliente conectado
+No se ha conectado ningun cliente
+Comunicación cerrada
+Esperando una conexión...
+cliente conectado
+  CAJA ========>  SOLICITUD CONEXION QR  ========>   POS 
+
+  POS  ========>  ACK  ========>   CAJA 
+
+  POS  ========>  SOLICITUD DATOS  ========>   CAJA 
+
+  CAJA ========>  ACK  ========>   POS 
+
+  CAJA ========>  TRANSACCION ENVIO DATOS  ========>   POS 
+
+  POS  ========>  ACK  ========>   CAJA 
+
+  POS  ========>  NUEVA PANTALLA  ========>   CAJA 
+
+  CAJA ========>  ACK  ========>   POS 
+
