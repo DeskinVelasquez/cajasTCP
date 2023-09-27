@@ -12,6 +12,7 @@ public class Constans {
     //Variables de tramas
     public final static String ACK_STRING = "06";
     public final static String NACK_STRING = "15";
+    public final static String SEPARADOR_STRING = "1C";
     
     //Strings Variables de tramas
     public final static String STR_ACK_STRING = "ACK";
@@ -74,7 +75,7 @@ public class Constans {
     public final static byte[] BT_SOLICITUD_CONEXION = {2, 0, 23, 54, 48, 48, 48, 48, 48, 48, 48, 48, 48, 49, 48, 48, 48, 48, 48, 48, 3, 35};
     public final static byte[] BT_ACK = {6};
     public final static byte[] BT_TRANS_NO_REV= {2, 0, 36, 54, 48, 48, 48, 48, 48, 48, 48, 48, 48, 49, 48, 48, 48, 48, 48, 49, 28, 52, 56, 0, 2, 88, 88, 3, 3};
-    public final static byte[] BT_SEND_DATA = {2, 0, 119, 54, 48, 48, 48, 48, 48, 48, 48, 48, 48, 49, 48, 48, 48, 48, 48, 50, 28, 52, 48, 0, 12, 48, 48, 48, 48, 48, 48, 48, 48, 50, 55, 48, 48, 28, 52, 50, 0, 10, 49, 50, 51, 32, 32, 32, 32, 32, 32, 32, 28, 52, 56, 0, 2, 32, 32, 28, 53, 51, 0, 10, 49, 50, 51, 52, 53, 54, 32, 32, 32, 32, 28, 56, 56, 0, 1, 49, 3, 121};
+    public final static byte[] BT_SEND_DATA = {2, 0, 119, 54, 48, 48, 48, 48, 48, 48, 48, 48, 48, 49, 48, 48, 48, 48, 48, 50, 28, 52, 48, 0, 12, 48, 48, 48, 48, 48, 48, 48, 48, 50, 55, 48, 48, 28, 52, 50, 0, 10, 49, 50, 51, 32, 32, 32, 32, 32, 32, 32, 28, 52, 56, 0, 2, 32, 32, 28, 53, 51, 0, 10, 49, 50, 51, 52, 53, 54, 32, 32, 32, 32, 28, 56, 56, 0, 1, 49, 3, 121};//monto: 27.00
     
     //msg bytes venta QR
     public final static byte[] BT_SOLICITUD_CONEXION_QR = {2, 0, 23, 54, 48, 48, 48, 48, 48, 48, 48, 48, 48, 49, 48, 48, 56, 48, 48, 48, 3, 43};

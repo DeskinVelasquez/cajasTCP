@@ -8,6 +8,7 @@ import java.text.DateFormat;
 import java.time.LocalDate;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.List;
 
 /**
  * 
@@ -64,5 +65,78 @@ public class Util {
      */
     public static boolean isNullWithTrim(String str) {
         return str == null || str.trim().equals("")||str.trim().equals("null");
+    }
+    
+    /**
+     * pad to the left
+     *
+     * @param s   - original string
+     * @param len - desired len
+     * @param c   - padding char
+     * @return padded string
+     * @throws ISOException on error
+     */
+    public static String padleft(String s, int len, char c) {
+        s = s.trim();
+        if (s.length() > len) {
+            return null;
+        }
+        StringBuilder d = new StringBuilder(len);
+        int fill = len - s.length();
+        while (fill-- > 0) {
+            d.append(c);
+        }
+        d.append(s);
+        return d.toString();
+    }
+    
+    /**
+     * Metodo que convierte una lista en un string continuo con los datos
+     * @param porcion lista a convertir
+     * @return el string equivalente a la lista
+     */
+    public static String conversorAString(List<String> porcion) {
+        StringBuilder sb = new StringBuilder();
+        for (String s : porcion) {
+            sb.append(s);
+        }
+        return hexToAscii(sb.toString());
+    }
+    
+    /**
+     * Metodo utilizado para convetir una cadena hexadecimal a ASCII
+     *
+     * @param hexStr-->Cadena con la trama  en hexadecimal
+     * @return Cadena convertida a ASCII
+     * Creado por: Deskin Velasquez
+     */
+    public static String hexToAscii(String hexStr) {
+        StringBuilder retorno = new StringBuilder();
+
+        for (int i = 0; i < hexStr.length(); i += 2) {
+            String str = hexStr.substring(i, i + 2);
+            retorno.append((char) Integer.parseInt(str, 16));
+        }
+
+        return retorno.toString();
+    }
+    
+    /**
+     * Metodo que convierte un String de hex (0A0C) a integer, se usa para tomar la longitud de un campo
+     * de una trama 0x00 0x12 = 12
+     * @param hex el String de hex
+     * @return el resultado
+     */
+    public static int hex2Int(String hex) {
+        int resultado = 0;
+        //49204c6f7665204a617661 split into two characters 49, 20, 4c...
+        for (int i = 0; i < hex.length() - 1; i += 2) {
+            //grab the hex in pairs
+            String output = hex.substring(i, (i + 2));
+            //convert hex to decimal
+            int decimal = Integer.parseInt(output, 16);
+            resultado += decimal;
+        }
+        return resultado;
     }
 }

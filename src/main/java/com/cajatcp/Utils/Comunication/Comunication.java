@@ -4,6 +4,7 @@
  */
 package com.cajatcp.Utils.Comunication;
 
+import DataManager.DataClasses.Trx;
 import com.cajatcp.Utils.Alerts;
 import com.cajatcp.Utils.Constans;
 import static com.cajatcp.Utils.Constans.BT_SEND_DATA;
@@ -18,6 +19,7 @@ import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.TimerTask;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -36,6 +38,7 @@ public class Comunication {
     String retorno = "";
     private static ArrayList<String> listMsgInput;
     private static ArrayList<String> listMsgOutput;
+    private static ArrayList<String> msgComplete;
 
     public Comunication() {
       listMsgInput = new ArrayList<>();
@@ -121,7 +124,7 @@ public class Comunication {
                     }
 
                     StringBuilder stringBuilder = new StringBuilder();
-                    ArrayList<String> msgComplete = toListStringFrame(frame);
+                    msgComplete = toListStringFrame(frame);
 
                     for (String element : msgComplete) {
                         stringBuilder.append(element);
@@ -166,8 +169,7 @@ public class Comunication {
                 receiveRsp();  
                 break;
             case Constans.ULTIMA_TRANS:
-                if (ultimoMsgEnviado.equals(Constans.SOLICITUD_CONEXION) || 
-                        ultimoMsgEnviado.equals(Constans.SOLICITUD_CONEXION_QR)) {
+                if (ultimoMsgEnviado.equals(Constans.SOLICITUD_CONEXION)) {
                    send(Constans.BT_ACK);
                    send(Constans.BT_TRANS_NO_REV);
                 }
@@ -187,6 +189,7 @@ public class Comunication {
                 break;
             case Constans.RESP_HOST:
                 send(Constans.BT_ACK);
+                desempaquetarDatos(msgComplete);
                 break;
         }
     }
@@ -756,5 +759,109 @@ public class Comunication {
         byte[] retorno = new byte[size];
         if(value != null)retorno = value.getBytes(StandardCharsets.US_ASCII);//convertir cadena en []ascii
         return retorno;
+    }
+    
+    /**
+     * Metodo que permite buscar un campo en la trama,
+     * @param mensaje el arreglo del mensaje
+     * @param campo el campo a buscar ej: 43, 48
+     * @return Una lista con los datos del campo buscado, null si no encuentra el campo
+     */
+    public static List<String> buscarDato(ArrayList<String> mensaje, Integer campo) {
+        try {
+            Integer contador = 20;
+            if(mensaje!=null) {
+                while (contador < mensaje.size() - 2) {
+                    if (isSeparador(mensaje.get(contador))) {
+                        String tipo = Util.conversorAString(mensaje.subList(contador + 1, contador + 3));
+                        Integer tipoInteger = Integer.valueOf(tipo);
+                        if (campo == tipoInteger) {
+                            StringBuilder juntos = new StringBuilder();
+                            juntos.append(mensaje.get(contador + 3));
+                            juntos.append(mensaje.get(contador + 4));
+                            int longitudInteger = Util.hex2Int(juntos.toString());
+                            //Logger.debug("Imprimiendo longitud " + longitudInteger);
+                            return mensaje.subList(contador + 5, contador + 5 + longitudInteger);
+                        }
+                    }
+                    contador++;
+                }
+                return null;
+            }else{
+                return null;
+            }
+        }catch (Exception e){
+            //Logger.error("Hubo un error recorriendo la trama para buscar un dato");
+            return null;
+        }
+    }
+    
+    /**
+     * Metodo usado para saber si un valor hexa en string es separador = 1C
+     * @param entrada
+     * @return
+     */
+    public static boolean isSeparador(String entrada){
+        return entrada.equalsIgnoreCase(Constans.SEPARADOR_STRING);
+    }
+    
+    /**
+     * Metodo que desempaqueta los campos que llegan a la caja
+     * @param mensaje El mensaje o la trama completa recibida
+     */
+
+
+    public int desempaquetarDatos(ArrayList<String> mensaje) {
+       
+        try {
+            String codigoAut = Util.conversorAString(buscarDato(mensaje,01));
+            String montoString = Util.conversorAString(buscarDato(mensaje,40));
+            String numRecibo = Util.conversorAString(buscarDato(mensaje,43));
+            String RRN = Util.conversorAString(buscarDato(mensaje,44));
+            String tid = Util.conversorAString(buscarDato(mensaje,45));
+            String dateTXR = Util.conversorAString(buscarDato(mensaje,46));
+            String timeTXR = Util.conversorAString(buscarDato(mensaje,47));
+            String codRsp = Util.conversorAString(buscarDato(mensaje,48));
+            String typeAccount = Util.conversorAString(buscarDato(mensaje,50));
+            String numCuotas = Util.conversorAString(buscarDato(mensaje,51));
+            String last4Digits = Util.conversorAString(buscarDato(mensaje,54));
+            String msgError = Util.conversorAString(buscarDato(mensaje,61));
+            
+            Trx trx = new Trx(codigoAut, montoString, numRecibo, RRN, tid, dateTXR, timeTXR, codRsp, typeAccount, numCuotas, last4Digits, msgError);
+            panel.rspBox(
+                    "DATOS DE LA TRANSACCIÓN" + "\n"+
+                    "codigoAut:     " + trx.getCodigoAutorizacion()+ "\n" +
+                    "monto:     "+ trx.getMontoCompra()+ "\n" +
+                    "numRecibo:     " + trx.getNumeroRecibo()+ "\n" +
+                    "RRN:   " + trx.getRRN()+ "\n" +
+                    "terminalId:    " + trx.getTerminalID()+ "\n" +
+                    "dateTXR:   " + trx.getDateTRX()+ "\n" +
+                    "timeTXR:   " + trx.getTimeTRX()+ "\n" +
+                    "codRsp:    " + trx.getCodRSP()+ "\n" +
+                    "typeAccount:   " + trx.getCodRSP()+ "\n" +
+                    "msgError:  " + trx.getMsgError()+ "\n"
+            );
+        } catch (Exception e) {
+            System.out.println("Error al desempaquetar los datos ");
+            return 2;
+        }
+        return 0;
+    }
+    
+    /**
+     * Metodo que analiza la parte de datos una trama de codigo de respuesta y regresa si es un codigo de respuesta
+     * correcto o incorrecto
+     * @param trama
+     * @return
+     */
+    public static boolean analizarCodigoRespuesta(List<String> trama){
+        if(trama.size()==2){
+            if (trama.get(0).equalsIgnoreCase("20")) {
+                return true;
+            }else{
+                return false;
+            }
+        }
+        return false;
     }
 }
