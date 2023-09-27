@@ -40,6 +40,7 @@ public class Constans {
     public final static String PAGO_QR = "PAGO QR";
     public final static String STR_ENABLE_CONNECT = "conectar";
     public final static String STR_DISABLE_CONNECT = "desconectar";
+    public final static String STR_CLEAR = "Limpiar registro";
     public final static String STR_CONFIG_PORT = "config port";
     public final static String STR_STYLE_PLAIN = "Normal";
     public final static String STR_STYLE_BOLD = "Negrita";
@@ -89,7 +90,7 @@ public class Constans {
         MONTO = newMonto;
     }
     
-    private static int PORT = 12345;
+    private static int PORT = 1234;
     public static int getPORT() {
         return PORT;
     }
@@ -146,6 +147,22 @@ public class Constans {
     
     //labels
     public static final String STR_TITLE = "DemoCajas TCP";
+    
+    
+    //bytes para armado de tramas-----------------------------------------------------------------
+    public final static byte STX = 0x02;
+    public final static byte ETX = 0x03;
+    public final static byte SEPARADOR = 0x1C;
+    
+    //Transport Header
+    public final static  byte []transportHeader={0x36, 0x30, 0x30, 0x30, 0x30, 0x30, 0x30, 0x30, 0x30, 0x30 };//(10Bytes)
+    
+    //Presentation Header para las tramas enviadas al MPK en formato Bytes
+    //venta
+    public final static byte[] NUEVA_PANTALLA_BYTE ={ 0x31, 0x30, 0x30, 0x34, 0x20, 0x20, 0x30 };
+    public final static byte[] ENVIO_DATOS_BYTE ={ 0x31, 0x30, 0x30, 0x30, 0x30, 0x30, 0x32 };
+    public final static byte[] RESP_HOST_BYTES ={ 0x31, 0x30, 0x30, 0x30, 0x20, 0x20, 0x33 };
+    public final static byte[] RESP_HOST_CONTACTLESS_BYTES ={ 0x31, 0x30, 0x30, 0x36, 0x20, 0x20, 0x30 };
     
     
 }

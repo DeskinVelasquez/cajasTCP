@@ -25,6 +25,7 @@ import static com.cajatcp.Utils.Constans.STR_STYLE_BOLD;
 import static com.cajatcp.Utils.Constans.STR_STYLE_ITALIC;
 import static com.cajatcp.Utils.Constans.STR_STYLE_PLAIN;
 import com.cajatcp.Utils.Comunication.Comunication;
+import static com.cajatcp.Utils.Constans.STR_CLEAR;
 import static com.cajatcp.Utils.Constans.STR_READ_FILE;
 import static com.cajatcp.Utils.Constans.STR_SAVE;
 import static com.cajatcp.Utils.Constans.STR_SAVE_AS;
@@ -69,8 +70,8 @@ public class ExtAbstractAction /*implements Action*/ extends AbstractAction {
         
         switch (e.getActionCommand()) {
             case PAGO_ICC:
-                if (!Alerts.alert(Constans.getMONTO().equals("0"), "Debe haber un monto", 2)
-                        && co.send(BT_SOLICITUD_CONEXION)) {
+                if (/*!Alerts.alert(Constans.getMONTO().equals("0"), "Debe haber un monto", 2)
+                        &&*/ co.send(BT_SOLICITUD_CONEXION)) {
                     System.out.println("Envio exitoso");
                 }
                 break;
@@ -126,6 +127,9 @@ public class ExtAbstractAction /*implements Action*/ extends AbstractAction {
                 break;
             case STR_SAVE_AS:
                 panel.marcoEmergente();
+                break;
+            case STR_CLEAR:
+                panel.clearRegistry();
                 break;
             default:
                 System.out.println(e.getActionCommand());

@@ -15,7 +15,9 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.TimerTask;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -117,16 +119,25 @@ public class Comunication {
                         frame = new byte[1];
                         frame[0] = temporary[0];
                     }
-                    
+
+                    StringBuilder stringBuilder = new StringBuilder();
+                    ArrayList<String> msgComplete = toListStringFrame(frame);
+
+                    for (String element : msgComplete) {
+                        stringBuilder.append(element);
+                    }
+
                     System.out.println("rsp: " + frame);
                     String msgRecibido;
                     if (frame.length == 1) {
-                       msgRecibido = decodeMsg(frame); 
+                        msgRecibido = decodeMsg(frame);
                     } else {
-                        msgRecibido = hex2AsciiStr(decodeMsg(frame));  
+                        msgRecibido = hex2AsciiStr(decodeMsg(frame));
                     }
                     listMsgInput.add(msgRecibido);
-                    panel.rspBox("  POS  " + "========>  " +msgOnScreen(msgRecibido) + "  ========> "+ "  CAJA "+ "\n");
+                    panel.rspBox("POS ->  " + msgOnScreen(msgRecibido));
+                    panel.rspBox("Trama:  " + stringBuilder.toString() + "\n");
+                    stringBuilder = null;
                     validateMsgInput(msgRecibido);
 
                 } catch (IOException ex) {
@@ -169,6 +180,8 @@ public class Comunication {
             case Constans.SOLICITUD_DATOS:
                 send(Constans.BT_ACK);
                 //send(obtenerTramaData());
+                //byte[] trama = armarTrama(121, Constans.SOLICITUD_DATOS, Constans.ENVIO_DATOS_BYTE);
+                //send(trama);
                 send(Constans.BT_SEND_DATA);
                 receiveRsp();
                 break;
@@ -181,11 +194,20 @@ public class Comunication {
     
     public boolean send(byte[] data) {
         String msgEnviado = decodeMsg(data);
+        StringBuilder stringBuilder = new StringBuilder();
+
         if (data.length == 1) {
             msgEnviado = decodeMsg(data);
         } else {
             msgEnviado = hex2AsciiStr(decodeMsg(data));
         }
+
+        ArrayList<String> msgComplete = toListStringFrame(data);
+
+        for (String element : msgComplete) {
+            stringBuilder.append(element);
+        }
+
         listMsgOutput.add(msgEnviado);
         try {
             if (Alerts.alert(socket == null, "Debe haber un cliente conectado", 1)) {
@@ -194,7 +216,8 @@ public class Comunication {
             OutputStream os = socket.getOutputStream();
             os.write(data);
             os.flush();
-            panel.rspBox("  CAJA " + "========>  " + msgOnScreen(msgEnviado) + "  ========> "+ "  POS "+"\n");
+            panel.rspBox("CAJA ->  " + msgOnScreen(msgEnviado));
+            panel.rspBox("Trama:  " + stringBuilder.toString() + "\n");
             receiveRsp();
             return true;
         } catch (IOException ex) {
@@ -411,5 +434,327 @@ public class Comunication {
                 throw new AssertionError();
         }
         return msgOnScreen;
+    }
+    
+    /**
+     * metodo utilizado para calcular la longitud de la trama a enviar
+     * corresponde: primer byte transportHeader hasta el byte anterior al ETX
+     * @param size tamaño de la trama (TransportHeader+PresentationHeader+Campos)
+     * @return
+     * Creado por Deskin Velasquez
+     */
+    public static byte[] calcularLongitudMensaje(int size) {
+        return Util.int2bcd(size, 2);
+    }
+    
+    /**
+     * Metodo utilizado para armar la parte variable de la trama
+     * Valida que tipo de transacción es y procede a armar la trama
+     *
+     * @param presentationHeader
+     * @return
+     */
+    public byte[] armarParteVariable(String presentationHeader) {
+        byte[] retorno = null;
+        switch (presentationHeader) {
+            case Constans.SOLICITUD_DATOS:
+               retorno =  armarSoliDataQr();        
+        }
+        return retorno;
+    }
+
+    private byte[] armarSoliDataQr() {
+        byte[] retorno = new byte[25]; //
+        //----1er campo---- Nombre: Solicitud Nueva Pantalla (cod 87), Long: 2 byte, formto: HEXA
+        //Nombre del campo (codigo: 48 en ascii ; 34 38 en hexa )
+
+        byte[] codigoResp = hacerCodigoRespuesta(true);
+        System.arraycopy(codigoResp,0,retorno,0, codigoResp.length);
+
+        retorno[7] = Constans.SEPARADOR;
+        //se agrega el 2do campo, el campo 40
+        //codigo del campo
+        byte[] montoBytes = crearCampo(Constans.getMONTO(), 40, 12);
+        System.arraycopy(montoBytes, 0, retorno, 8, montoBytes.length);
+        
+
+        return retorno;
+    }
+    
+    /**
+     * Metodo que permite hacer un campo de codigo de respuesta, correcto o incorrecto dependiendo
+     * del boolean enviando
+     * @param tipo el tipo de codigo de respuesta, true si es correcto, de lo contrario false
+     * @return el campo de codigo de respuesta
+     */
+    public static byte[] hacerCodigoRespuesta(boolean tipo){
+        byte retorno[] = new byte[7];
+        retorno[0] = Constans.SEPARADOR;
+        //Nombre del campo
+        retorno[1] = 0x34;
+        retorno[2] = 0x38;
+
+        //Longitud
+        retorno[3] = 0x00;
+        retorno[4] = 0x02;
+        //campo
+        if (tipo){
+            retorno[5] = 0x20;
+            retorno[6] = 0x20;
+        }else{
+            retorno[5] = 0x58;
+            retorno[6] = 0x58;
+        }
+        return retorno;
+    }
+    
+    /**
+     * converts to BCD
+     *
+     * @param s       - the number
+     * @param padLeft - flag indicating left/right padding
+     * @return BCD representation of the number
+     */
+    public static byte[] str2bcd(String s, boolean padLeft) {
+        if (s == null)
+            return null;
+        int len = s.length();
+        byte[] d = new byte[len + 1 >> 1];
+        return str2bcd(s, padLeft, d, 0);
+    }
+
+    /**
+     * converts to BCD
+     *
+     * @param s       - the number
+     * @param padLeft - flag indicating left/right padding
+     * @param d       The byte array to copy into.
+     * @param offset  Where to start copying into.
+     * @return BCD representation of the number
+     */
+    public static byte[] str2bcd(String s, boolean padLeft, byte[] d, int offset) {
+        char c;
+        int len = s.length();
+        int start = (len & 1) == 1 && padLeft ? 1 : 0;
+        for (int i = start; i < len + start; i++) {
+            c = s.charAt(i - start);
+            if (c >= '0' && c <= '?') // 30~3f
+                c -= '0';
+            else {
+                c &= ~0x20;
+                c -= 'A' - 10;
+            }
+            d[offset + (i >> 1)] |= c << ((i & 1) == 1 ? 0 : 4);
+        }
+        return d;
+    }
+    
+    
+    //-------------------------------------------------------------------------------------------
+    
+    /**
+     * Metodo utilizado para armar la trama de acuerdo que será enviada a la caja
+     *
+     * @param tamTrama           tamaño que va a tener la trama completa
+     * @param tipoTrans          tipo de transacción realizada ASCII
+     * @param presentationHeader arreglo de byte del tipo de transacción
+     * @return arreglo de bytes de la trama que será enviada
+     */
+    public byte[] armarTrama(int tamTrama, String tipoTrans, byte[] presentationHeader) {
+        byte[] retorno = new byte[tamTrama];
+
+        retorno[0] = Constans.STX;
+        //en la pos [1]y[2] va la longitud de la trama
+        //se lleva un registro de en que parte debemos escribir
+        int con = 3;
+        //agregar TransportHeader--desde pos [3] hasta pos[12]
+        for (int i = 0; i < Constans.transportHeader.length; i++) {
+            retorno[i + 3] = Constans.transportHeader[i];
+            con++;
+        }
+        //agregar presentationHeader--desde posi [13]  hasta [19]
+        for (int i = 0; i < presentationHeader.length; i++) {
+            retorno[i + 13] = presentationHeader[i];
+            con++;
+        }
+        //La longitud de este campo es variable dependiendo de lo que se vaya a enviar
+        //campos --desde[20] hasta [37] en ultima transaccion
+        //desde --[20] hasta 34 en nueva pantalla ingreso de tarjeta y nueva pantalla ingreso de PIN
+        //desde --[20] hasta el 27 en solicitud de datos
+        //desde --[20] hasta el [207] en respuesta host
+        byte[] parteVariable = armarParteVariable(tipoTrans);
+        for (int i = 0; i < parteVariable.length; i++) {
+            retorno[i + 20] = parteVariable[i];
+            con++;
+        }
+        int longMensaje = Constans.transportHeader.length + Constans.NUEVA_PANTALLA_BYTE.length + parteVariable.length;
+        byte[] longMsj = calcularLongitudMensaje(longMensaje);
+        retorno[1] = longMsj[0];
+        retorno[2] = longMsj[1];
+
+        retorno[con] = Constans.ETX;
+        con++;
+        retorno[con] = calcularLRC(retorno);
+
+        return retorno;
+    }
+    
+    /**
+     * Metodo utilizado para calcular el LRC de la trama
+     * LRC = XOR de todos los bytes después del STX [0] (sin incluir) hasta el ETX [leng-2](incluyéndolo)
+     *
+     * @param arreglo
+     * @return
+     */
+    public static byte calcularLRC(byte[] arreglo) {
+        byte LRC = 0x00;
+        //definir nuevo arreglo sin incluir la primera y la ultima posicion del arreglo
+        byte[] trama = new byte[arreglo.length - 2];
+
+        //llenar el [] trama quitando el STX (primer elemento) y el ultimo elemento de la trama (LRC)
+        for (int i = 1; i < arreglo.length - 1; i++) {
+            trama[i - 1] = arreglo[i];
+        }
+        //calculo del LRC
+        for (int i = 0; i < trama.length; i++) {
+            LRC ^= trama[i];//XOR
+        }
+        return LRC;
+    }
+    
+    /**
+     * Metodo que permite crear un campo especifico de un dato
+     * @param campo el valor del dato Ej: 5000
+     * @param idCampo el id del campo
+     * @param longitud la longitud del campo
+     * @return un arreglo de bytes con todos los datos del campo: separador - id - longitud - valor
+     */
+    public byte[] crearCampo(String campo, Integer idCampo, Integer longitud) {
+        byte[] totalByte = new byte[longitud + 5];
+        byte[] idCampoByte = new byte[2];
+        byte[] longitudCampoByte = new byte[2];
+        byte[] campoByte = converT2byteHexa(longitud, campo);
+        totalByte[0] = Constans.SEPARADOR;
+        switch (idCampo) {
+            case 1: //Codigo de Autorizacion
+                idCampoByte[0] = 0x30;
+                idCampoByte[1] = 0x31;
+                longitudCampoByte[0] = 0x00;
+                longitudCampoByte[1] = 0x06;
+                break;
+            case 30: //Envio Bin de tarjeta
+                idCampoByte[0] = 0x33;
+                idCampoByte[1] = 0x30;
+                longitudCampoByte[0] = 0x00;
+                longitudCampoByte[1] = 0x0C;
+                break;
+            case 40: //Monto de transaccion
+                idCampoByte[0] = 0x34;
+                idCampoByte[1] = 0x30;
+                longitudCampoByte[0] = 0x00;
+                longitudCampoByte[1] = 0x0C;
+                break;
+            case 43: //Numero del recibo
+                idCampoByte[0] = 0x34;
+                idCampoByte[1] = 0x33;
+                longitudCampoByte[0] = 0x00;
+                longitudCampoByte[1] = 0x06;
+                break;
+            case 44: //RNN
+                idCampoByte[0] = 0x34;
+                idCampoByte[1] = 0x34;
+                longitudCampoByte[0] = 0x00;
+                longitudCampoByte[1] = 0x0C;
+                break;
+            case 45: //Terminal ID
+                idCampoByte[0] = 0x34;
+                idCampoByte[1] = 0x35;
+                longitudCampoByte[0] = 0x00;
+                longitudCampoByte[1] = 0x08;
+                break;
+            case 46: //Fecha
+                idCampoByte[0] = 0x34;
+                idCampoByte[1] = 0x36;
+                longitudCampoByte[0] = 0x00;
+                longitudCampoByte[1] = 0x04;
+                break;
+            case 47: //Hora
+                idCampoByte[0] = 0x34;
+                idCampoByte[1] = 0x37;
+                longitudCampoByte[0] = 0x00;
+                longitudCampoByte[1] = 0x04;
+                break;
+            case 48://cod de respuesta
+                idCampoByte[0] = 0x34;
+                idCampoByte[1] = 0x38;
+                longitudCampoByte[0] = 0x00;
+                longitudCampoByte[1] = 0x02;
+                break;
+            case 54: //Ultimos 4 digitos
+                idCampoByte[0] = 0x35;
+                idCampoByte[1] = 0x34;
+                longitudCampoByte[0] = 0x00;
+                longitudCampoByte[1] = 0x04;
+                break;
+            case 75: //BIN
+                idCampoByte[0] = 0x37;
+                idCampoByte[1] = 0x35;
+                longitudCampoByte[0] = 0x00;
+                longitudCampoByte[1] = 0x06;
+                break;
+            case 77: //idcomercio
+                idCampoByte[0] = 0x37;
+                idCampoByte[1] = 0x37;
+                longitudCampoByte[0] = 0x00;
+                longitudCampoByte[1] = 0x17;
+                break;
+            case 50:
+                idCampoByte[0] = 0x35;
+                idCampoByte[1] = 0x30;
+                longitudCampoByte[0] = 0x00;
+                longitudCampoByte[1] = 0x02;
+                break;
+            case 51:
+                idCampoByte[0] = 0x35;
+                idCampoByte[1] = 0x31;
+                longitudCampoByte[0] = 0x00;
+                longitudCampoByte[1] = 0x02;
+                break;
+            case 61:
+                Arrays.fill(totalByte, (byte) 0x20);
+                idCampoByte[0] = 0x36;
+                idCampoByte[1] = 0x31;
+                longitudCampoByte[0] = 0x00;
+                longitudCampoByte[1] = 0x45;
+                totalByte[0] = Constans.SEPARADOR;
+                break;
+            case 82:
+                idCampoByte[0] = 0x38;
+                idCampoByte[1] = 0x32;
+                longitudCampoByte[0] = 0x00;
+                longitudCampoByte[1] = 0x0C;
+                break;
+
+        }
+        System.arraycopy(idCampoByte, 0, totalByte, 1, idCampoByte.length);
+        System.arraycopy(longitudCampoByte, 0, totalByte, 3, longitudCampoByte.length);
+        if(longitud!=0){
+            System.arraycopy(campoByte, 0, totalByte, 5, campoByte.length);
+        }
+        return totalByte;
+    }
+    
+    /**
+     * Metodo que permite convertir un String a un arreglo de bytes en hexadecimal
+     *
+     * @param size
+     * @param value
+     * @return
+     */
+    public static byte[] converT2byteHexa(Integer size, String value) {
+        //Logger.debug("Convirtiendo a hexa el valor " + value);
+        byte[] retorno = new byte[size];
+        if(value != null)retorno = value.getBytes(StandardCharsets.US_ASCII);//convertir cadena en []ascii
+        return retorno;
     }
 }

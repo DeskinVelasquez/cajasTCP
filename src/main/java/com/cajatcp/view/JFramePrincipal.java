@@ -75,6 +75,7 @@ public class JFramePrincipal extends JFrame  {
         
         JToolBar jToolBar = new JToolBar("Comunicación");
         jToolBar.add(panel.showBtnConect());
+        jToolBar.add(panel.showBtnClear());
         add(jToolBar, BorderLayout.NORTH);
         
     }

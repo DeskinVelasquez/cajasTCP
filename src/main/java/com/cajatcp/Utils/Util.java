@@ -40,4 +40,29 @@ public class Util {
         return fecha;
     }
     
+    public static byte[] int2bcd(int data, int len) {
+        byte[] bb = null;
+        if (len == 1) {
+            data = data % 100;
+            bb = new byte[1];
+            bb[0] = (byte) (((data / 10) << 4) + (data % 10));
+            return bb;
+        } else if (len == 2) {
+            bb = new byte[2];
+            bb[0] = (byte) (data / 100);
+
+            bb[1] = (byte) ((((data / 10) % 10) << 4) + (data % 10));
+            return bb;
+        } else
+            return null;
+    }
+    
+    /**
+     * Devuelve true si el string es nulo o vacio
+     * @param str
+     * @return 
+     */
+    public static boolean isNullWithTrim(String str) {
+        return str == null || str.trim().equals("")||str.trim().equals("null");
+    }
 }

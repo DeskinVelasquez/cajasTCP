@@ -57,6 +57,7 @@ public final class JPanelPrincipal extends JPanel /*implements ActionListener*/ 
     private JButton btnPagoQR;
     private JButton btnPagoIcc;
     private JButton enableConnect;
+    private JButton clearTextArea;
     private JTextField textField1;
     private JLabel jLabelMonto;
     private JLabel jLabelTitle;
@@ -242,6 +243,13 @@ public final class JPanelPrincipal extends JPanel /*implements ActionListener*/ 
     public JButton showBtnConect () {
         return enableConnect;
     }
+    public JButton showBtnClear () {
+        return clearTextArea;
+    }
+    
+    public void clearRegistry(){
+        jTextArea.setText("");
+    }
     
     private void insertarMenuEmergente(){
         String[] fonts = getFonts();
@@ -340,12 +348,14 @@ public final class JPanelPrincipal extends JPanel /*implements ActionListener*/ 
         ExtAbstractAction actionQR = new ExtAbstractAction(Constans.PAGO_QR, redimensionarIcono(new ImageIcon("src/images/ic_qr.png").getImage()), this);
         ExtAbstractAction actionIcc = new ExtAbstractAction(Constans.PAGO_ICC, redimensionarIcono(new ImageIcon("src/images/ic_icc.png").getImage()), this);
         ExtAbstractAction actionEnableConnect = new ExtAbstractAction(Constans.STR_ENABLE_CONNECT, this);
+        ExtAbstractAction actionClearTextArea = new ExtAbstractAction(Constans.STR_CLEAR, this);
         //ExtAbstractAction actionGenerico = new ExtAbstractAction("generico", this);
         
         //Para el tema de multifuentes, podemos instanciar los botones de la siguiente manera. 
         btnPagoQR = new JButton(actionQR);
         btnPagoIcc = new JButton(actionIcc);
         enableConnect = new JButton(actionEnableConnect);
+        clearTextArea = new JButton(actionClearTextArea);
        // generico = new JButton(actionGenerico);
         
         /*
@@ -371,6 +381,7 @@ public final class JPanelPrincipal extends JPanel /*implements ActionListener*/ 
         btnPagoQR.setBounds(30, 50, 130, 20);
         btnPagoIcc.setBounds(30, 80, 130, 20);
         //enableConnect.setBounds(505, 32, 90, 15);
+        clearTextArea.setSize(150, 15); 
         add(btnPagoQR);
         add(btnPagoIcc);
         //add(enableConnect);
@@ -476,7 +487,14 @@ public final class JPanelPrincipal extends JPanel /*implements ActionListener*/ 
         }
     }
     public  void drawPort() {
-        g.drawString("PORT: " + Constans.getPORT(), 150, 40);
+        //g.drawString("PORT: " + Constans.getPORT(), 150, 40);
+        if (jLabelPORT == null) {
+           jLabelPORT = new JLabel("PORT: " + Constans.getPORT()); 
+        } else {
+            jLabelPORT.removeAll();
+            jLabelPORT.setText("PORT: " + Constans.getPORT());
+        }
+        
     }
     /*
     private void showOthersComponetsSwing() {
@@ -561,7 +579,7 @@ public final class JPanelPrincipal extends JPanel /*implements ActionListener*/ 
     public void showLabels() {
         jLabelTitle = new JLabel(Constans.STR_TITLE);
         jLabelIP = new JLabel("IP: " + obtenerIP());
-        jLabelPORT = new JLabel("PORT: " + Constans.getPORT());
+        drawPort();
         //jLabelMonto = new JLabel("Monto");
         
         jLabelTitle.setBounds(30, 20, 150, 20);
