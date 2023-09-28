@@ -20,7 +20,6 @@ import static com.cajatcp.Utils.Constans.STR_SIZE_12;
 import static com.cajatcp.Utils.Constans.STR_SIZE_14;
 import static com.cajatcp.Utils.Constans.STR_SIZE_16;
 import static com.cajatcp.Utils.Constans.STR_SIZE_8;
-import static com.cajatcp.Utils.Constans.STR_STYLE;
 import static com.cajatcp.Utils.Constans.STR_STYLE_BOLD;
 import static com.cajatcp.Utils.Constans.STR_STYLE_ITALIC;
 import static com.cajatcp.Utils.Constans.STR_STYLE_PLAIN;
@@ -28,18 +27,14 @@ import com.cajatcp.Utils.Comunication.Comunication;
 import static com.cajatcp.Utils.Constans.STR_CLEAR;
 import static com.cajatcp.Utils.Constans.STR_READ_FILE;
 import static com.cajatcp.Utils.Constans.STR_SAVE;
-import static com.cajatcp.Utils.Constans.STR_SAVE_AS;
+import static com.cajatcp.Utils.Constans.STR_SAVE_TRX;
+import static com.cajatcp.Utils.Constans.STR_VIEW_TRXS;
 import com.cajatcp.view.JPanelPrincipal;
-import java.awt.Color;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
-import java.util.ArrayList;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.Icon;
-import javax.swing.JPanel;
-import java.util.ArrayList;
-import javax.swing.JOptionPane;
 
 /**
  *
@@ -120,16 +115,19 @@ public class ExtAbstractAction /*implements Action*/ extends AbstractAction {
                 panel.sizeViewMain(Integer.parseInt(e.getActionCommand()));
                 break;
             case STR_READ_FILE:
-                panel.leerByteFichero();;
+                panel.leerBufferFichero();
                 break;
             case STR_SAVE:
-                panel.escribirByteFichero();
+                panel.escribirBufferFichero();
                 break;
-            case STR_SAVE_AS:
-                panel.marcoEmergente();
+            case STR_SAVE_TRX:
+                panel.saveTrxs();
                 break;
             case STR_CLEAR:
                 panel.clearRegistry();
+                break;
+            case STR_VIEW_TRXS:
+                panel.viewTrxs();
                 break;
             default:
                 System.out.println(e.getActionCommand());

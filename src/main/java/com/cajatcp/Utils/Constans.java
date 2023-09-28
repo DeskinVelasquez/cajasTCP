@@ -143,8 +143,9 @@ public class Constans {
     public static final String STR_FONT = "Fuente";
     public static final String STR_SIZE = "Tamaño";
     public static final String STR_SAVE = "Guardar";
-    public static final String STR_SAVE_AS = "Guardar como";
+    public static final String STR_SAVE_TRX = "Guardar datos Trxs";
     public static final String STR_READ_FILE = "Leer fichero";
+    public static final String STR_VIEW_TRXS = "Ver trxs";
     
     //labels
     public static final String STR_TITLE = "DemoCajas TCP";

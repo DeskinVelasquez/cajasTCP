@@ -4,6 +4,8 @@
  */
 package DataManager;
 
+import DataManager.DataClasses.Trx;
+import com.cajatcp.Utils.Comunication.Comunication;
 import com.cajatcp.Utils.Util;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -14,6 +16,9 @@ import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -22,8 +27,9 @@ import java.util.logging.Logger;
  * @author Deskin
  */
 public class Fichero {
+
     String carpeta, archivo;
-    
+
     public Fichero(boolean isByte) {
 
         if (isByte) {
@@ -41,7 +47,7 @@ public class Fichero {
 
     public String leerFichero() {
         StringBuilder stringBuilder = new StringBuilder();
-        
+
         File file = new File(carpeta, archivo);
         try {
             FileReader fileReader = new FileReader(file);
@@ -71,15 +77,15 @@ public class Fichero {
             File file = new File(carpeta, archivo);
             FileWriter fileWriter = new FileWriter(file, noSobreEscribir);
             //para escritura de pocos caracteres, hasta el tamaño del tipo de variable string
-            fileWriter.write(s); 
-            
+            fileWriter.write(s);
+
             fileWriter.close();
         } catch (IOException ex) {
             Logger.getLogger(Fichero.class.getName()).log(Level.SEVERE, null, ex);
             System.out.println("No se encuentra el archivo");
         }
     }
-    
+
     public String leerBufferFichero() {
         StringBuilder stringBuilder = new StringBuilder();
 
@@ -110,13 +116,13 @@ public class Fichero {
         }
         return stringBuilder.toString();
     }
-    
+
     public void escribirBufferFichero(String s, boolean noSobreEscribir) {
         try {
 
             File file = new File(carpeta, archivo);
             FileWriter fileWriter = new FileWriter(file, noSobreEscribir);
-            
+
             BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
             bufferedWriter.write(s);
             bufferedWriter.close();
@@ -125,7 +131,7 @@ public class Fichero {
             System.out.println("No se encuentra el archivo");
         }
     }
-    
+
     public String leerByteFichero() {
         StringBuilder stringBuilder = new StringBuilder();
 
@@ -153,13 +159,13 @@ public class Fichero {
         }
         return stringBuilder.toString();
     }
-    
+
     public void escribirByteFichero(int[] bs, boolean noSobreEscribir) {
         try {
             File file = new File(carpeta, archivo);
             FileOutputStream fos = new FileOutputStream(file, noSobreEscribir);
             for (int i = 0; i < bs.length; i++) {
-                fos.write(bs[i]); 
+                fos.write(bs[i]);
             }
             fos.close();
         } catch (IOException ex) {
@@ -167,5 +173,81 @@ public class Fichero {
             System.out.println("No se encuentra el archivo");
         }
     }
+
+    public boolean escribirTrxSerealizado() {
+        List<Trx> listTrxs = Comunication.getListTrx();
+        if (listTrxs == null || listTrxs.isEmpty()) {
+            return false;
+        }
+        carpeta = "src/datatrx";
+        File carp = new File(carpeta);
+        if (!carp.exists()) {
+            carp.mkdirs();
+        }
+        archivo = Util.getDate() + "_trxs.dat";
+
+        File file = new File(carpeta, archivo);
+        if (!file.exists()) {
+            try {
+                file.createNewFile();
+            } catch (IOException ex) {
+                Logger.getLogger(Fichero.class.getName()).log(Level.SEVERE, null, ex);
+                System.out.println("No se creo el archivo trxs");
+                return false;
+            }
+        }
+
+        //uso se try with resource, cierra los objetos que necesitan ser cerrados automaticamente
+        try ( FileOutputStream fos = new FileOutputStream(file, true);  ObjectOutputStream oos = new ObjectOutputStream(fos)) {
+
+            oos.writeObject(listTrxs);
+
+            return true;
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(Fichero.class.getName()).log(Level.SEVERE, null, ex);
+            System.out.println("No se encuentra el archivo");
+        } catch (IOException ex) {
+            Logger.getLogger(Fichero.class.getName()).log(Level.SEVERE, null, ex);
+            System.out.println("Error al leer el archivo");
+
+        }
+
+        return false;
+    }
     
+    public List<Trx> leerTrxSerealizado() {
+         List<Trx> listTrxs = null;
+        carpeta = "src/datatrx";
+        File carp = new File(carpeta);
+        if (!carp.exists()) {
+            carp.mkdirs();
+        }
+        archivo = Util.getDate() + "_trxs.dat";
+        
+        File file = new File(carpeta, archivo);
+        
+        try {
+            FileInputStream fis = new FileInputStream(file);
+            ObjectInputStream ois = new ObjectInputStream(fis);
+            listTrxs = (List<Trx>) ois.readObject();
+            
+            fis.close();
+            ois.close();
+            
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(Fichero.class.getName()).log(Level.SEVERE, null, ex);
+            System.out.println("No se encuentra el archivo");
+        } catch (IOException ex) {
+            Logger.getLogger(Fichero.class.getName()).log(Level.SEVERE, null, ex);
+            System.out.println("Error al leer el archivo");
+
+        } catch (ClassNotFoundException ex) {
+            Logger.getLogger(Fichero.class.getName()).log(Level.SEVERE, null, ex);
+            System.out.println("ClassNotFoundException");
+        }
+        
+        
+        return listTrxs;
+    }
+
 }

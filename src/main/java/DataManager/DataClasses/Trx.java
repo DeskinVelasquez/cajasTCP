@@ -4,11 +4,13 @@
  */
 package DataManager.DataClasses;
 
+import java.io.Serializable;
+
 /**
  *
  * @author Deskin
  */
-public class Trx {
+public class Trx implements Serializable {
     private String codigoAutorizacion; //Campo 01 Codigo de Autorizacion, 6
     private String montoCompra;    //Campo 40 Monto Compra, 10
     private String numeroRecibo;  //Campo 43 Numero de Recibo, 6

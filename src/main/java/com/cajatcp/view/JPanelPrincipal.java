@@ -4,9 +4,12 @@
  */
 package com.cajatcp.view;
 
+import DataManager.DataClasses.Trx;
 import DataManager.Fichero;
 import com.cajatcp.Utils.Alerts;
+import com.cajatcp.Utils.Comunication.Comunication;
 import com.cajatcp.Utils.Constans;
+import com.cajatcp.Utils.Util;
 import com.cajatcp.view.listeners.ImpFocusListener;
 import com.cajatcp.view.listeners.ExtAbstractAction;
 import com.cajatcp.view.listeners.ImpDocumentListener;
@@ -24,6 +27,7 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JButton;
@@ -135,8 +139,11 @@ public final class JPanelPrincipal extends JPanel /*implements ActionListener*/ 
         ImageIcon icFileScaled = new ImageIcon(iconFile.getImage().getScaledInstance(iconFile.getIconWidth()/35, iconFile.getIconHeight()/35, Image.SCALE_DEFAULT));
         
         JMenuItem save = new JMenuItem(Constans.STR_SAVE, icScaled);
-        JMenuItem saveAs = new JMenuItem(Constans.STR_SAVE_AS, icScaled);
+        JMenuItem saveTrx = new JMenuItem(Constans.STR_SAVE_TRX, icScaled);
         JMenuItem readFile = new JMenuItem(Constans.STR_READ_FILE, icFileScaled);
+        
+        
+        JMenuItem viewTrxs = new JMenuItem(Constans.STR_VIEW_TRXS);
         
         //para checkBoxMenuItem------------------------------------------------
         //styleItalic = new JCheckBoxMenuItem(Constans.STR_STYLE_ITALIC);
@@ -181,8 +188,9 @@ public final class JPanelPrincipal extends JPanel /*implements ActionListener*/ 
         listItems.add(size14);
         listItems.add(size16);
         listItems.add(save);
-        listItems.add(saveAs);
+        listItems.add(saveTrx);
         listItems.add(readFile);
+        listItems.add(viewTrxs);
 
         String[] fonts = getFonts();
         for (String font1 : fonts) {
@@ -196,7 +204,7 @@ public final class JPanelPrincipal extends JPanel /*implements ActionListener*/ 
 
         //añadir a archivo----------------------------------
         archivo.add(save);
-        archivo.add(saveAs);
+        archivo.add(saveTrx);
         archivo.add(readFile);
 
         //añadir a apariencia----------------------------------
@@ -205,6 +213,7 @@ public final class JPanelPrincipal extends JPanel /*implements ActionListener*/ 
 
         //añadir a vista----------------------------------
         view.add(menuAppearance);
+        view.add(viewTrxs);
 
         //añadir a configuracion----------------------------------
         settings.add(configPort);
@@ -735,19 +744,49 @@ public final class JPanelPrincipal extends JPanel /*implements ActionListener*/ 
          }
          fichero.escribirByteFichero(ibs, true);
      }
-     
-     
-     public void marcoEmergente() {
-         JFrame marco = new JFrame("Caiste");
-         ImageIcon imagen = new ImageIcon("src/images/tres_dedos.png");
-         marco.setBounds(500, 100, imagen.getIconWidth()/2, imagen.getIconHeight()/2);
-         ImageIcon iScaled = new ImageIcon(imagen.getImage().getScaledInstance(imagen.getIconWidth()/2, imagen.getIconHeight()/2, Image.SCALE_DEFAULT));
-         JLabel image = new JLabel(iScaled);
-         JPanel panel = new JPanel();
-         panel.add(image);
-         panel.setSize(imagen.getIconWidth()/2, imagen.getIconHeight()/2);
-         marco.add(panel);
-         marco.setVisible(true);
-     }
-     
+
+    public void saveTrxs() {
+        Fichero fichero = new Fichero(false);
+        boolean b = fichero.escribirTrxSerealizado();
+        if (b) {
+            Alerts.alert(true, "guardo correctamente", 1);
+        } else {
+            Alerts.alert(true, "no guardo", 2);
+        }  
+    }
+    
+    public void viewTrxs() {
+        Fichero fichero = new Fichero(false);
+        List<Trx> listTrxs = fichero.leerTrxSerealizado();
+        if (listTrxs != null && !listTrxs.isEmpty()) {
+            
+            for (Trx trx : listTrxs) {
+                rspBox(dataTrx(trx));
+            }
+            
+        } else {
+            Alerts.alert(true, "no se encontro datos trxs", 2);
+        }  
+    }
+    
+    public String dataTrx(Trx trx) {
+        String data;
+        if (trx != null) {
+            data
+                    = "DATOS DE LA TRANSACCIÓN" + "\n"
+                    + "codigoAut:     " + trx.getCodigoAutorizacion() + "\n"
+                    + "monto:     " + trx.getMontoCompra() + "\n"
+                    + "numRecibo:     " + trx.getNumeroRecibo() + "\n"
+                    + "RRN:   " + trx.getRRN() + "\n"
+                    + "terminalId:    " + trx.getTerminalID() + "\n"
+                    + "dateTXR:   " + trx.getDateTRX() + "\n"
+                    + "timeTXR:   " + trx.getTimeTRX() + "\n"
+                    + "codRsp:    " + trx.getCodRSP() + "\n"
+                    + "typeAccount:   " + trx.getCodRSP() + "\n"
+                    + "msgError:  " + trx.getMsgError() + "\n";
+            return data;
+        }
+        return null;
+    }
+
 }

@@ -39,12 +39,16 @@ public class Comunication {
     private static ArrayList<String> listMsgInput;
     private static ArrayList<String> listMsgOutput;
     private static ArrayList<String> msgComplete;
+    private static final ArrayList<Trx> listTrx = new ArrayList<>();;
 
     public Comunication() {
       listMsgInput = new ArrayList<>();
       listMsgOutput = new ArrayList<>();
     }
     
+    public static ArrayList<Trx> getListTrx() {
+        return listTrx;
+    }
     public void setPanel(JPanelPrincipal panel) {
         this.panel = panel;
     }
@@ -828,19 +832,8 @@ public class Comunication {
             String msgError = Util.conversorAString(buscarDato(mensaje,61));
             
             Trx trx = new Trx(codigoAut, montoString, numRecibo, RRN, tid, dateTXR, timeTXR, codRsp, typeAccount, numCuotas, last4Digits, msgError);
-            panel.rspBox(
-                    "DATOS DE LA TRANSACCIÓN" + "\n"+
-                    "codigoAut:     " + trx.getCodigoAutorizacion()+ "\n" +
-                    "monto:     "+ trx.getMontoCompra()+ "\n" +
-                    "numRecibo:     " + trx.getNumeroRecibo()+ "\n" +
-                    "RRN:   " + trx.getRRN()+ "\n" +
-                    "terminalId:    " + trx.getTerminalID()+ "\n" +
-                    "dateTXR:   " + trx.getDateTRX()+ "\n" +
-                    "timeTXR:   " + trx.getTimeTRX()+ "\n" +
-                    "codRsp:    " + trx.getCodRSP()+ "\n" +
-                    "typeAccount:   " + trx.getCodRSP()+ "\n" +
-                    "msgError:  " + trx.getMsgError()+ "\n"
-            );
+            listTrx.add(trx);
+            panel.rspBox(panel.dataTrx(trx));            
         } catch (Exception e) {
             System.out.println("Error al desempaquetar los datos ");
             return 2;
