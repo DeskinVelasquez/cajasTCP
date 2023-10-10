@@ -7,7 +7,7 @@ package com.cajatcp.view;
 import DataManager.DataClasses.Trx;
 import DataManager.Fichero;
 import com.cajatcp.Utils.Alerts;
-import com.cajatcp.Utils.Comunication.Comunication;
+import com.cajatcp.Utils.Comunication.ComunicationTools;
 import com.cajatcp.Utils.Constans;
 import com.cajatcp.Utils.Util;
 import com.cajatcp.view.listeners.ImpFocusListener;
@@ -87,7 +87,7 @@ public final class JPanelPrincipal extends JPanel /*implements ActionListener*/ 
         //showMenuBar();
         showTextArea();
         showButtons();
-        //showTextField();
+        showTextField();
     }
 
     @Override
@@ -468,17 +468,21 @@ public final class JPanelPrincipal extends JPanel /*implements ActionListener*/ 
         //agregando cuadros de texto, para el tema del evento foco
         //primero invalidamos el layout: el layuot es la disposicion que tienen los componentes en el panel (orden de componentes), por defecto java los ubica automaticamente por ello lo invalidamos
         
-        textField1 = new JTextField("27");
+        textField1 = new JTextField("");
         
         //agregando el listener de texto al jtextfield
         ImpDocumentListener documentListener = new ImpDocumentListener();
         Document document = textField1.getDocument();
         document.addDocumentListener(documentListener);
-        textField1.setBounds(30, 80, 70, 20);
+        textField1.setBounds(70, 20, 50, 20);
         add(textField1);
         
         //agregando cuadros de texto, para el tema del evento foco
         textField1.addFocusListener(new ImpFocusListener(textField1));
+    }
+    
+    public String getMonto() {
+        return textField1.getText();
     }
     
     public void configPort() {
@@ -589,23 +593,23 @@ public final class JPanelPrincipal extends JPanel /*implements ActionListener*/ 
         jLabelTitle = new JLabel(Constans.STR_TITLE);
         jLabelIP = new JLabel("IP: " + obtenerIP());
         drawPort();
-        //jLabelMonto = new JLabel("Monto");
+        jLabelMonto = new JLabel("Monto");
         
-        jLabelTitle.setBounds(30, 20, 150, 20);
-        jLabelIP.setBounds(190, 20, 150, 20);
-        jLabelPORT.setBounds(360, 20, 150, 20);
-        //jLabelMonto.setBounds(30, 60, 70, 20);
+        jLabelTitle.setBounds(200, 20, 150, 20);
+        jLabelIP.setBounds(370, 20, 150, 20);
+        jLabelPORT.setBounds(500, 20, 150, 20);
+        jLabelMonto.setBounds(30, 20, 70, 20);
         
         
         
         add(jLabelTitle);
         add(jLabelIP);
         add(jLabelPORT);
-        //add(jLabelMonto);
+        add(jLabelMonto);
     }
     
     public void darkTheme(){
-        setBackground(Color.BLACK);
+        setBackground(Color.DARK_GRAY);
         jTextArea.setBackground(Color.LIGHT_GRAY);
         jLabelTitle.setForeground(Color.WHITE);
         jLabelIP.setForeground(Color.WHITE);
@@ -788,5 +792,5 @@ public final class JPanelPrincipal extends JPanel /*implements ActionListener*/ 
         }
         return null;
     }
-
+    
 }

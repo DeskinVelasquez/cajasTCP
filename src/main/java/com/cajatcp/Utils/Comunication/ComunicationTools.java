@@ -29,22 +29,15 @@ import java.util.Timer;
  *
  * @author deskin
  */
-public class Comunication {
+public class ComunicationTools {
     InputStream inputStream;
     OutputStream outputStream;
     private static Socket socket;
     private static ServerSocket serverSocket;
     private JPanelPrincipal panel;
     String retorno = "";
-    private static ArrayList<String> listMsgInput;
-    private static ArrayList<String> listMsgOutput;
-    private static ArrayList<String> msgComplete;
-    private static final ArrayList<Trx> listTrx = new ArrayList<>();;
+    private static final ArrayList<Trx> listTrx = new ArrayList<>();; 
 
-    public Comunication() {
-      listMsgInput = new ArrayList<>();
-      listMsgOutput = new ArrayList<>();
-    }
     
     public static ArrayList<Trx> getListTrx() {
         return listTrx;
@@ -63,7 +56,7 @@ public class Comunication {
             }
             return "Comunicación cerrada";
         } catch (IOException ex) {
-            Logger.getLogger(Comunication.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(ComunicationTools.class.getName()).log(Level.SEVERE, null, ex);
         }
         return "Error al desconectar";
     }
@@ -110,112 +103,45 @@ public class Comunication {
         }).start();
     }
     
-    public void receiveRsp() {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    byte[] temporary = new byte[5000];
-                    byte[] frame = null;
-                    //BufferedReader entrada = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-                    InputStream is = socket.getInputStream();
-                    int len = is.read(temporary);
-                    if (len > 1) {
-                        frame = dicardEmpty(temporary);
-                    } else if (len == 1) {
-                        frame = new byte[1];
-                        frame[0] = temporary[0];
-                    }
+    public byte[] receiveRsp() {
 
-                    StringBuilder stringBuilder = new StringBuilder();
-                    msgComplete = toListStringFrame(frame);
+        byte[] temporary = new byte[5000];
+        byte[] frame = null;
+        int len = 0;
+        try {
+            //BufferedReader entrada = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            InputStream is = socket.getInputStream();
+            len = is.read(temporary);
+        } catch (IOException ex) {
+            Logger.getLogger(ComunicationTools.class.getName()).log(Level.SEVERE, null, ex);
+        } 
+        
+        if (len > 1) {
+            frame = dicardEmpty(temporary);
+        } else if (len == 1) {
+            frame = new byte[1];
+            frame[0] = temporary[0];
+        } else {
+            return null;
+        }
 
-                    for (String element : msgComplete) {
-                        stringBuilder.append(element);
-                    }
+        return frame;
 
-                    System.out.println("rsp: " + frame);
-                    String msgRecibido;
-                    if (frame.length == 1) {
-                        msgRecibido = decodeMsg(frame);
-                    } else {
-                        msgRecibido = hex2AsciiStr(decodeMsg(frame));
-                    }
-                    listMsgInput.add(msgRecibido);
-                    panel.rspBox("POS ->  " + msgOnScreen(msgRecibido));
-                    panel.rspBox("Trama:  " + stringBuilder.toString() + "\n");
-                    stringBuilder = null;
-                    validateMsgInput(msgRecibido);
-
-                } catch (IOException ex) {
-                    Logger.getLogger(Comunication.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            }
-        }).start();
     }
     
-    private String decodeMsg(byte[] frame) {
-        ArrayList<String> StrListFrame = toListStringFrame(frame);
+    public String decodeMsg(byte[] frame) {
+        ArrayList<String> strListFrame = toListStringFrame(frame);
 
         String msgRecibido = "";
-        if (StrListFrame.size() == 1) {
-            msgRecibido = StrListFrame.get(0);
+        if (strListFrame.size() == 1) {
+            msgRecibido = strListFrame.get(0);
         } else {
-            msgRecibido = obtenerPresentationHeader(StrListFrame);
+            msgRecibido = obtenerPresentationHeader(strListFrame);
         }
         return msgRecibido;
     }
     
-    private void validateMsgInput(String msgRecibido) {
-        String ultimoMsgEnviado = listMsgOutput.get(listMsgOutput.size() -1);
-        switch(msgRecibido){
-            case Constans.ACK_STRING:
-                receiveRsp();  
-                break;
-            case Constans.ULTIMA_TRANS:
-                if (ultimoMsgEnviado.equals(Constans.SOLICITUD_CONEXION)) {
-                   send(Constans.BT_ACK);
-                   send(Constans.BT_TRANS_NO_REV);
-                }
-                receiveRsp(); 
-                break;
-            case Constans.NUEVA_PANTALLA:
-                send(Constans.BT_ACK);
-                receiveRsp();
-                break;
-            case Constans.SOLICITUD_DATOS:
-                send(Constans.BT_ACK);
-                //send(obtenerTramaData());
-                //byte[] trama = armarTrama(121, Constans.SOLICITUD_DATOS, Constans.ENVIO_DATOS_BYTE);
-                //send(trama);
-                send(Constans.BT_SEND_DATA);
-                receiveRsp();
-                break;
-            case Constans.RESP_HOST:
-                send(Constans.BT_ACK);
-                desempaquetarDatos(msgComplete);
-                break;
-        }
-    }
-    
-    
     public boolean send(byte[] data) {
-        String msgEnviado = decodeMsg(data);
-        StringBuilder stringBuilder = new StringBuilder();
-
-        if (data.length == 1) {
-            msgEnviado = decodeMsg(data);
-        } else {
-            msgEnviado = hex2AsciiStr(decodeMsg(data));
-        }
-
-        ArrayList<String> msgComplete = toListStringFrame(data);
-
-        for (String element : msgComplete) {
-            stringBuilder.append(element);
-        }
-
-        listMsgOutput.add(msgEnviado);
         try {
             if (Alerts.alert(socket == null, "Debe haber un cliente conectado", 1)) {
                 return false;
@@ -223,15 +149,11 @@ public class Comunication {
             OutputStream os = socket.getOutputStream();
             os.write(data);
             os.flush();
-            panel.rspBox("CAJA ->  " + msgOnScreen(msgEnviado));
-            panel.rspBox("Trama:  " + stringBuilder.toString() + "\n");
-            receiveRsp();
             return true;
         } catch (IOException ex) {
-            Logger.getLogger(Comunication.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(ComunicationTools.class.getName()).log(Level.SEVERE, null, ex);
         }
         return false;
-
     }
     
     /**
@@ -241,10 +163,13 @@ public class Comunication {
      * @param data
      * @return arreglo de bytes con los datos exactos de la trama
      */
-    private static byte[] dicardEmpty(byte[] data) {
+    public static byte[] dicardEmpty(byte[] data) {
         byte etx = 0x03;
         byte[] frame = null;
         int len = data.length;
+        if (len == 1) {
+            return data;
+        }
         byte[] temporary = new byte[len];
         int i = 0;
         if (!manyAckAndNack(data)) {
@@ -292,7 +217,7 @@ public class Comunication {
      * @param frame
      * @return trama covertida a String
      */
-    private  ArrayList<String> toListStringFrame(byte[] frame) {
+    ArrayList<String> toListStringFrame(byte[] frame) {
         ArrayList<String> result = new ArrayList<>();
         int numRead = frame.length;
         String hexa;
@@ -350,24 +275,6 @@ public class Comunication {
         return presentationHeader;
     }
     
-    private String hex2AsciiStr(String hex) {
-        StringBuilder sb = new StringBuilder();
-        StringBuilder temp = new StringBuilder();
-        //49204c6f7665204a617661 split into two characters 49, 20, 4c...
-        for (int i = 0; i < hex.length() - 1; i += 2) {
-
-            //grab the hex in pairs
-            String output = hex.substring(i, (i + 2));
-            //convert hex to decimal
-            int decimal = Integer.parseInt(output, 16);
-            //convert the decimal to character
-            sb.append((char) decimal);
-            temp.append(decimal);
-        }
-
-        return sb.toString();
-    }
-    
     public byte[] obtenerTramaData() {
         StringBuilder datos = new StringBuilder();
         for (byte b : BT_SEND_DATA) {
@@ -391,10 +298,10 @@ public class Comunication {
         return btData;
     }
 
-    private String msgOnScreen(String msg) {
+    public String msgOnScreen(String msg) {
         String msgOnScreen = "";
         switch (msg) {
-            case Constans.SOLICITUD_CONEXION:
+            case Constans.ASCII_SOLICITUD_CONEXION:
                 msgOnScreen = Constans.STR_SOLICITUD_CONEXION;
                 break;
             case Constans.SOLICITUD_CONEXION_QR:
@@ -437,8 +344,12 @@ public class Comunication {
             case Constans.NACK_STRING:
                 msgOnScreen = Constans.STR_NACK_STRING;
                 break;
+            case Constans.RESP_ERROR:
+                msgOnScreen = Constans.ERROR;
+                break;
             default:
-                throw new AssertionError();
+                Alerts.alert(true, "mensaje sobre pantalla no contemplado", 2);
+                
         }
         return msgOnScreen;
     }
@@ -464,8 +375,15 @@ public class Comunication {
     public byte[] armarParteVariable(String presentationHeader) {
         byte[] retorno = null;
         switch (presentationHeader) {
-            case Constans.SOLICITUD_DATOS:
-               retorno =  armarSoliDataQr();        
+            case Constans.ASCII_SOLICITUD_CONEXION:
+                //retorno = ComunicationICC.armarTrama48XX();
+                break;
+            case Constans.TRANS_REV_No:
+                retorno = ComunicationICC.armarTrama48XX();
+                break;
+            case Constans.TRANSACCION_ENVIO_DATOS:
+                retorno = ComunicationICC.tramaEnvioDatos();
+                break;
         }
         return retorno;
     }
@@ -505,6 +423,7 @@ public class Comunication {
         retorno[3] = 0x00;
         retorno[4] = 0x02;
         //campo
+           
         if (tipo){
             retorno[5] = 0x20;
             retorno[6] = 0x20;
@@ -584,20 +503,28 @@ public class Comunication {
             retorno[i + 13] = presentationHeader[i];
             con++;
         }
+        //hasta aqui ocupó 19 bytes
         //La longitud de este campo es variable dependiendo de lo que se vaya a enviar
         //campos --desde[20] hasta [37] en ultima transaccion
         //desde --[20] hasta 34 en nueva pantalla ingreso de tarjeta y nueva pantalla ingreso de PIN
         //desde --[20] hasta el 27 en solicitud de datos
         //desde --[20] hasta el [207] en respuesta host
         byte[] parteVariable = armarParteVariable(tipoTrans);
-        for (int i = 0; i < parteVariable.length; i++) {
-            retorno[i + 20] = parteVariable[i];
-            con++;
+        int longMensaje;
+        if (parteVariable != null) {
+            for (int i = 0; i < parteVariable.length; i++) {
+                retorno[i + 20] = parteVariable[i];
+                con++;
+            }
+            longMensaje = Constans.transportHeader.length + Constans.PH_SOLICITUD_CONEXION.length + parteVariable.length;
+        } else {
+            longMensaje = Constans.transportHeader.length + Constans.PH_SOLICITUD_CONEXION.length;
         }
-        int longMensaje = Constans.transportHeader.length + Constans.NUEVA_PANTALLA_BYTE.length + parteVariable.length;
+        
+        //int longMensaje = Constans.transportHeader.length + Constans.PH_SOLICITUD_CONEXION.length + parteVariable.length;
         byte[] longMsj = calcularLongitudMensaje(longMensaje);
         retorno[1] = longMsj[0];
-        retorno[2] = longMsj[1];
+        retorno[2] = longMsj[1]; 
 
         retorno[con] = Constans.ETX;
         con++;
@@ -636,7 +563,7 @@ public class Comunication {
      * @param longitud la longitud del campo
      * @return un arreglo de bytes con todos los datos del campo: separador - id - longitud - valor
      */
-    public byte[] crearCampo(String campo, Integer idCampo, Integer longitud) {
+    public static byte[] crearCampo(String campo, Integer idCampo, Integer longitud) {
         byte[] totalByte = new byte[longitud + 5];
         byte[] idCampoByte = new byte[2];
         byte[] longitudCampoByte = new byte[2];
@@ -658,6 +585,12 @@ public class Comunication {
             case 40: //Monto de transaccion
                 idCampoByte[0] = 0x34;
                 idCampoByte[1] = 0x30;
+                longitudCampoByte[0] = 0x00;
+                longitudCampoByte[1] = 0x0C;
+                break;
+            case 42: //Numero caja
+                idCampoByte[0] = 0x34;
+                idCampoByte[1] = 0x32;
                 longitudCampoByte[0] = 0x00;
                 longitudCampoByte[1] = 0x0C;
                 break;
@@ -697,12 +630,6 @@ public class Comunication {
                 longitudCampoByte[0] = 0x00;
                 longitudCampoByte[1] = 0x02;
                 break;
-            case 54: //Ultimos 4 digitos
-                idCampoByte[0] = 0x35;
-                idCampoByte[1] = 0x34;
-                longitudCampoByte[0] = 0x00;
-                longitudCampoByte[1] = 0x04;
-                break;
             case 75: //BIN
                 idCampoByte[0] = 0x37;
                 idCampoByte[1] = 0x35;
@@ -727,6 +654,18 @@ public class Comunication {
                 longitudCampoByte[0] = 0x00;
                 longitudCampoByte[1] = 0x02;
                 break;
+            case 53: //numero trx
+                idCampoByte[0] = 0x35;
+                idCampoByte[1] = 0x33;
+                longitudCampoByte[0] = 0x00;
+                longitudCampoByte[1] = 0x0C;
+                break;
+            case 54: //Ultimos 4 digitos
+                idCampoByte[0] = 0x35;
+                idCampoByte[1] = 0x34;
+                longitudCampoByte[0] = 0x00;
+                longitudCampoByte[1] = 0x04;
+                break;
             case 61:
                 Arrays.fill(totalByte, (byte) 0x20);
                 idCampoByte[0] = 0x36;
@@ -738,6 +677,12 @@ public class Comunication {
             case 82:
                 idCampoByte[0] = 0x38;
                 idCampoByte[1] = 0x32;
+                longitudCampoByte[0] = 0x00;
+                longitudCampoByte[1] = 0x0C;
+                break;
+            case 88:
+                idCampoByte[0] = 0x38;
+                idCampoByte[1] = 0x38;
                 longitudCampoByte[0] = 0x00;
                 longitudCampoByte[1] = 0x0C;
                 break;

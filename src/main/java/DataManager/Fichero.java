@@ -5,7 +5,7 @@
 package DataManager;
 
 import DataManager.DataClasses.Trx;
-import com.cajatcp.Utils.Comunication.Comunication;
+import com.cajatcp.Utils.Comunication.ComunicationTools;
 import com.cajatcp.Utils.Util;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -175,7 +175,7 @@ public class Fichero {
     }
 
     public boolean escribirTrxSerealizado() {
-        List<Trx> listTrxs = Comunication.getListTrx();
+        List<Trx> listTrxs = ComunicationTools.getListTrx();
         if (listTrxs == null || listTrxs.isEmpty()) {
             return false;
         }

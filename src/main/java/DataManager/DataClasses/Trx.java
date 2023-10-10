@@ -11,6 +11,11 @@ import java.io.Serializable;
  * @author Deskin
  */
 public class Trx implements Serializable {
+    /**
+     * variable serialVersionUID para el tema de SHA, cambios de version y evitar problemas en la lectura de objetoc previamente serealizados
+     */
+    private static final long serialVersionUID = 1L; 
+    
     private String codigoAutorizacion; //Campo 01 Codigo de Autorizacion, 6
     private String montoCompra;    //Campo 40 Monto Compra, 10
     private String numeroRecibo;  //Campo 43 Numero de Recibo, 6

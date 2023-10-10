@@ -17,9 +17,10 @@ public class Constans {
     //Strings Variables de tramas
     public final static String STR_ACK_STRING = "ACK";
     public final static String STR_NACK_STRING = "NACK";
+    public final static String ERROR = "ERROR";
     
     //Ventas tramas enviadas
-    public final static String SOLICITUD_CONEXION = "1000000";
+    public final static String ASCII_SOLICITUD_CONEXION = "1000000";
     public final static String SOLICITUD_CONEXION_QR = "1008000";
     public final static String SOLICITUD_CONEXION_TIGOMONEY = "1009000";
     public final static String SOLICITUD_CONEXION_CONTACTLESS = "1006000";
@@ -62,6 +63,7 @@ public class Constans {
     public final static String SOLICITUD_DATOS = "1000  2";
     public final static String RESP_HOST = "1000  3";
     public final static String RESP_HOST_CONTACTLESS = "1006  0";
+    public final static String RESP_ERROR = "1007  0";
     
     //Strings Ventas tramas recibidas
     public final static String STR_ULTIMA_TRANS = "ULTIMA TRANS";
@@ -161,10 +163,14 @@ public class Constans {
     
     //Presentation Header para las tramas enviadas al MPK en formato Bytes
     //venta
-    public final static byte[] NUEVA_PANTALLA_BYTE ={ 0x31, 0x30, 0x30, 0x34, 0x20, 0x20, 0x30 };
-    public final static byte[] ENVIO_DATOS_BYTE ={ 0x31, 0x30, 0x30, 0x30, 0x30, 0x30, 0x32 };
-    public final static byte[] RESP_HOST_BYTES ={ 0x31, 0x30, 0x30, 0x30, 0x20, 0x20, 0x33 };
-    public final static byte[] RESP_HOST_CONTACTLESS_BYTES ={ 0x31, 0x30, 0x30, 0x36, 0x20, 0x20, 0x30 };
+    public final static byte[] PH_NUEVA_PANTALLA_BYTE ={ 0x31, 0x30, 0x30, 0x34, 0x20, 0x20, 0x30 };
+    public final static byte[] PH_ENVIO_DATOS_BYTE ={ 0x31, 0x30, 0x30, 0x30, 0x30, 0x30, 0x32 };
+    public final static byte[] PH_RESP_HOST_BYTES ={ 0x31, 0x30, 0x30, 0x30, 0x20, 0x20, 0x33 };
+    public final static byte[] PH_RESP_HOST_CONTACTLESS_BYTES ={ 0x31, 0x30, 0x30, 0x36, 0x20, 0x20, 0x30 };
+    
+    public final static byte[] PH_SOLICITUD_CONEXION ={ 0x31, 0x30, 0x30, 0x30, 0x30, 0x30, 0x30};
+    public final static byte[] PH_TRANS_NO_REV ={ 0x31, 0x30, 0x30, 0x30, 0x30, 0x30, 0x31};
+    public final static byte[] PH_ENVIO_DATA ={ 0x31, 0x30, 0x30, 0x30, 0x30, 0x30, 0x32};
     
     
 }

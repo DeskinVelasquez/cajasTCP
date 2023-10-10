@@ -5,6 +5,7 @@
 package com.cajatcp.view.listeners;
 
 import com.cajatcp.Utils.Alerts;
+import com.cajatcp.Utils.Comunication.ComunicationICC;
 import com.cajatcp.Utils.Constans;
 import static com.cajatcp.Utils.Constans.APPEARANCE_DARK;
 import static com.cajatcp.Utils.Constans.APPEARANCE_LIGHT;
@@ -23,7 +24,7 @@ import static com.cajatcp.Utils.Constans.STR_SIZE_8;
 import static com.cajatcp.Utils.Constans.STR_STYLE_BOLD;
 import static com.cajatcp.Utils.Constans.STR_STYLE_ITALIC;
 import static com.cajatcp.Utils.Constans.STR_STYLE_PLAIN;
-import com.cajatcp.Utils.Comunication.Comunication;
+import com.cajatcp.Utils.Comunication.ComunicationTools;
 import static com.cajatcp.Utils.Constans.STR_CLEAR;
 import static com.cajatcp.Utils.Constans.STR_READ_FILE;
 import static com.cajatcp.Utils.Constans.STR_SAVE;
@@ -32,6 +33,8 @@ import static com.cajatcp.Utils.Constans.STR_VIEW_TRXS;
 import com.cajatcp.view.JPanelPrincipal;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.Icon;
@@ -60,20 +63,30 @@ public class ExtAbstractAction /*implements Action*/ extends AbstractAction {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        final Comunication co = new Comunication();
-        co.setPanel(panel);
-        
+        final ComunicationTools co = new ComunicationTools();
+
         switch (e.getActionCommand()) {
             case PAGO_ICC:
-                if (/*!Alerts.alert(Constans.getMONTO().equals("0"), "Debe haber un monto", 2)
-                        &&*/ co.send(BT_SOLICITUD_CONEXION)) {
-                    System.out.println("Envio exitoso");
-                }
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        String monto = panel.getMonto();
+                        if (!Alerts.alert(monto.isEmpty(), "Debe haber un monto", 2)) {
+                            try {
+                                ComunicationICC cICC = new ComunicationICC(monto, panel);
+                                cICC.iniciarProceso();
+                            } catch (InterruptedException ex) {
+                                Logger.getLogger(ExtAbstractAction.class.getName()).log(Level.SEVERE, null, ex);
+                                System.out.println("Error en ");
+                            }
+                        }
+                    }
+                }).start();
                 break;
             case STR_ENABLE_CONNECT:
                 panel.cambiarNombreBtnConecct(STR_DISABLE_CONNECT);
+                co.setPanel(panel);
                 co.openConnect();
-                co.receiveRsp();
                 break;
             case PAGO_QR:
                 if (/*!Alerts.alert(Constans.getMONTO().equals("0"), "Debe haber un monto", 2)
@@ -135,7 +148,7 @@ public class ExtAbstractAction /*implements Action*/ extends AbstractAction {
                 break;
         }
     }
-    
+
    
 
 }
