@@ -6,6 +6,7 @@ package com.cajatcp.view.listeners;
 
 import com.cajatcp.Utils.Alerts;
 import com.cajatcp.Utils.Comunication.ComunicationICC;
+import com.cajatcp.Utils.Comunication.ComunicationQR;
 import com.cajatcp.Utils.Constans;
 import static com.cajatcp.Utils.Constans.APPEARANCE_DARK;
 import static com.cajatcp.Utils.Constans.APPEARANCE_LIGHT;
@@ -89,10 +90,21 @@ public class ExtAbstractAction /*implements Action*/ extends AbstractAction {
                 co.openConnect();
                 break;
             case PAGO_QR:
-                if (/*!Alerts.alert(Constans.getMONTO().equals("0"), "Debe haber un monto", 2)
-                        &&*/co.send(BT_SOLICITUD_CONEXION_QR)) {
-                    System.out.println("Envio exitoso");
-                }
+               new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        String monto = panel.getMonto();
+                        if (!Alerts.alert(monto.isEmpty(), "Debe haber un monto", 2)) {
+                            try {
+                                ComunicationQR cQR = new ComunicationQR(monto, panel);
+                                cQR.iniciarProceso();
+                            } catch (InterruptedException ex) {
+                                Logger.getLogger(ExtAbstractAction.class.getName()).log(Level.SEVERE, null, ex);
+                                System.out.println("Error en ");
+                            }
+                        }
+                    }
+                }).start();
                 break;
             case STR_DISABLE_CONNECT:
                 System.out.println("desconectado");

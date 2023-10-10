@@ -36,12 +36,7 @@ public class ComunicationTools {
     private static ServerSocket serverSocket;
     private JPanelPrincipal panel;
     String retorno = "";
-    private static final ArrayList<Trx> listTrx = new ArrayList<>();; 
 
-    
-    public static ArrayList<Trx> getListTrx() {
-        return listTrx;
-    }
     public void setPanel(JPanelPrincipal panel) {
         this.panel = panel;
     }
@@ -376,7 +371,8 @@ public class ComunicationTools {
         byte[] retorno = null;
         switch (presentationHeader) {
             case Constans.ASCII_SOLICITUD_CONEXION:
-                //retorno = ComunicationICC.armarTrama48XX();
+            case Constans.SOLICITUD_CONEXION_QR:
+                //aqui de debe validar si tiene id de comercio
                 break;
             case Constans.TRANS_REV_No:
                 retorno = ComunicationICC.armarTrama48XX();
@@ -752,38 +748,6 @@ public class ComunicationTools {
      */
     public static boolean isSeparador(String entrada){
         return entrada.equalsIgnoreCase(Constans.SEPARADOR_STRING);
-    }
-    
-    /**
-     * Metodo que desempaqueta los campos que llegan a la caja
-     * @param mensaje El mensaje o la trama completa recibida
-     */
-
-
-    public int desempaquetarDatos(ArrayList<String> mensaje) {
-       
-        try {
-            String codigoAut = Util.conversorAString(buscarDato(mensaje,01));
-            String montoString = Util.conversorAString(buscarDato(mensaje,40));
-            String numRecibo = Util.conversorAString(buscarDato(mensaje,43));
-            String RRN = Util.conversorAString(buscarDato(mensaje,44));
-            String tid = Util.conversorAString(buscarDato(mensaje,45));
-            String dateTXR = Util.conversorAString(buscarDato(mensaje,46));
-            String timeTXR = Util.conversorAString(buscarDato(mensaje,47));
-            String codRsp = Util.conversorAString(buscarDato(mensaje,48));
-            String typeAccount = Util.conversorAString(buscarDato(mensaje,50));
-            String numCuotas = Util.conversorAString(buscarDato(mensaje,51));
-            String last4Digits = Util.conversorAString(buscarDato(mensaje,54));
-            String msgError = Util.conversorAString(buscarDato(mensaje,61));
-            
-            Trx trx = new Trx(codigoAut, montoString, numRecibo, RRN, tid, dateTXR, timeTXR, codRsp, typeAccount, numCuotas, last4Digits, msgError);
-            listTrx.add(trx);
-            panel.rspBox(panel.dataTrx(trx));            
-        } catch (Exception e) {
-            System.out.println("Error al desempaquetar los datos ");
-            return 2;
-        }
-        return 0;
     }
     
     /**

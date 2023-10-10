@@ -4,18 +4,17 @@
  */
 package com.cajatcp.Utils.Comunication;
 
-import DataManager.DataClasses.Trx;
 import com.cajatcp.Utils.Alerts;
-import static com.cajatcp.Utils.Comunication.ComunicationTools.buscarDato;
 import com.cajatcp.Utils.Constans;
 import com.cajatcp.Utils.Util;
 import com.cajatcp.view.JPanelPrincipal;
 import java.util.ArrayList;
+
 /**
  *
- * @author Deskin
+ * @author deskin
  */
-public class ComunicationICC {
+public class ComunicationQR {
     private static String monto;
     private ComunicationTools ct;
     private JPanelPrincipal panel;
@@ -26,9 +25,8 @@ public class ComunicationICC {
     private static ArrayList<String> listMsgOutput;
     private static ArrayList<String> listMsgInput;
     private static int comando = 0;
-    private static final ArrayList<Trx> listTrx = new ArrayList<>();; 
     
-    public ComunicationICC(String monto, JPanelPrincipal panel) {
+    public ComunicationQR(String monto, JPanelPrincipal panel) {
         
         this.monto = monto;
         this.panel = panel;
@@ -41,7 +39,7 @@ public class ComunicationICC {
     
     public void iniciarProceso() throws InterruptedException {
 
-        msgSend = Constans.ASCII_SOLICITUD_CONEXION;
+        msgSend = Constans.STR_SOLICITUD_CONEXION_QR;
         needSend = true;
         needReceived = true;
 
@@ -51,7 +49,7 @@ public class ComunicationICC {
                 enviarMsg(msgSend);
             }
 
-            if (needReceived) {;
+            if (needReceived) {
                 recibir();
             }
             
@@ -133,8 +131,8 @@ public class ComunicationICC {
     private void enviarMsg(String tipoMsg) {
         byte[] trama;
         switch (tipoMsg) {
-            case Constans.ASCII_SOLICITUD_CONEXION:
-                trama = ct.armarTrama(300, tipoMsg, Constans.PH_SOLICITUD_CONEXION);
+            case Constans.SOLICITUD_CONEXION_QR:
+                trama = ct.armarTrama(300, tipoMsg, Constans.PH_SOLICITUD_CONEXION_QR);
                 enviar(trama);
                 break;
             case Constans.ACK_STRING:
@@ -159,7 +157,7 @@ public class ComunicationICC {
             msgEnviado = ct.decodeMsg(trama);
         } else {
             msgEnviado = Util.hex2AsciiStr(ct.decodeMsg(trama));
-            ComunicationICC.listMsgOutput.add(msgEnviado);
+            ComunicationQR.listMsgOutput.add(msgEnviado);
         }
 
         ArrayList<String> msgComplete = ct.toListStringFrame(trama);
@@ -171,10 +169,10 @@ public class ComunicationICC {
         if (ct.send(trama)) {
             panel.rspBox("CAJA ->  " + ct.msgOnScreen(msgEnviado));
             panel.rspBox("Trama:  " + stringBuilder.toString() + "\n");
-            ComunicationICC.comando++;
+            ComunicationQR.comando++;
         } else {
             panel.rspBox("Error en el envio de la trama: " + stringBuilder.toString() + "\n");
-            ComunicationICC.comando = -1;
+            ComunicationQR.comando = -1;
         }
         
     }
@@ -182,10 +180,10 @@ public class ComunicationICC {
     public void recibir() {
 
         byte[] tramaReceived = ct.receiveRsp();
-        ComunicationICC.comando++;
+        ComunicationQR.comando++;
 
         if (tramaReceived == null) {
-            ComunicationICC.comando = -1;
+            ComunicationQR.comando = -1;
             panel.rspBox("POS ->  null");
             return;
         }
@@ -204,7 +202,7 @@ public class ComunicationICC {
             msgRecibido = ct.decodeMsg(tramaReceived);
         } else {
             msgRecibido = Util.hex2AsciiStr(ct.decodeMsg(tramaReceived));
-            ComunicationICC.listMsgInput.add(msgRecibido);
+            ComunicationQR.listMsgInput.add(msgRecibido);
         }
         panel.rspBox("POS ->  " + ct.msgOnScreen(msgRecibido));
         panel.rspBox("Trama:  " + stringBuilder.toString() + "\n");
@@ -212,14 +210,11 @@ public class ComunicationICC {
         if (msgRecibido.equals(Constans.RESP_ERROR)) {
             panel.rspBox("POS ->  " + manejoError(msgComplete));
         }
-        if (comando == 17) {
-            desempaquetarDatos(msgComplete);
-        }
     }
      
      private String manejoError(ArrayList<String> mensaje) {
        
-       int typeError = Integer.parseInt(Util.conversorAString(buscarDato(mensaje,48)));
+       int typeError = Integer.parseInt(Util.conversorAString(ct.buscarDato(mensaje,48)));
        String msgEror;
        
          switch (typeError) {
@@ -322,37 +317,5 @@ public class ComunicationICC {
         }
          
         return retorno;
-    }
-    
-    /**
-     * Metodo que desempaqueta los campos que llegan a la caja
-     * @param mensaje El mensaje o la trama completa recibida
-     */
-
-
-    public int desempaquetarDatos(ArrayList<String> mensaje) {
-       
-        try {
-            String codigoAut = Util.conversorAString(buscarDato(mensaje,01));
-            String montoString = Util.conversorAString(buscarDato(mensaje,40));
-            String numRecibo = Util.conversorAString(buscarDato(mensaje,43));
-            String RRN = Util.conversorAString(buscarDato(mensaje,44));
-            String tid = Util.conversorAString(buscarDato(mensaje,45));
-            String dateTXR = Util.conversorAString(buscarDato(mensaje,46));
-            String timeTXR = Util.conversorAString(buscarDato(mensaje,47));
-            String codRsp = Util.conversorAString(buscarDato(mensaje,48));
-            String typeAccount = Util.conversorAString(buscarDato(mensaje,50));
-            String numCuotas = Util.conversorAString(buscarDato(mensaje,51));
-            String last4Digits = Util.conversorAString(buscarDato(mensaje,54));
-            String msgError = Util.conversorAString(buscarDato(mensaje,61));
-            
-            Trx trx = new Trx(codigoAut, montoString, numRecibo, RRN, tid, dateTXR, timeTXR, codRsp, typeAccount, numCuotas, last4Digits, msgError);
-            listTrx.add(trx);
-            panel.rspBox(panel.dataTrx(trx));            
-        } catch (Exception e) {
-            System.out.println("Error al desempaquetar los datos ");
-            return 2;
-        }
-        return 0;
     }
 }
