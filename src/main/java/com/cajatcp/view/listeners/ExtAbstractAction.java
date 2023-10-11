@@ -64,7 +64,7 @@ public class ExtAbstractAction /*implements Action*/ extends AbstractAction {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        final ComunicationTools co = new ComunicationTools();
+        ComunicationTools co = new ComunicationTools();
 
         switch (e.getActionCommand()) {
             case PAGO_ICC:
@@ -85,6 +85,7 @@ public class ExtAbstractAction /*implements Action*/ extends AbstractAction {
                 }).start();
                 break;
             case STR_ENABLE_CONNECT:
+                
                 panel.cambiarNombreBtnConecct(STR_DISABLE_CONNECT);
                 co.setPanel(panel);
                 co.openConnect();

@@ -14,7 +14,7 @@ import java.util.ArrayList;
  *
  * @author deskin
  */
-public class ComunicationQR {
+public class ComunicationQR  implements ImpComunication{
     private static String monto;
     private ComunicationTools ct;
     private JPanelPrincipal panel;
@@ -30,7 +30,7 @@ public class ComunicationQR {
         
         this.monto = monto;
         this.panel = panel;
-        ct = new ComunicationTools();
+        ct = new ComunicationTools(this);
         
         listMsgOutput = new ArrayList<>();
         listMsgInput = new ArrayList<>();
@@ -78,13 +78,13 @@ public class ComunicationQR {
                 needReceived = false;
                 break;
             case 5: //comando 5
-                msgSend = Constans.TRANS_REV_No;
+                msgSend = Constans.TRANSACCION_ENVIO_DATOS;
                 needSend = true;
                 needReceived = true;
                 break;
             case 7:
                 needSend = false;
-                needReceived = true;
+                needReceived = true; //aqui va a recibir la referencia pendiente
                 break;
             case 8:
                 msgSend = Constans.ACK_STRING;
@@ -92,32 +92,22 @@ public class ComunicationQR {
                 needReceived = true;
                 break;
             case 10:
-                msgSend = Constans.ACK_STRING;
-                needSend = true;
-                needReceived = false;
-                break;
-            case 11:
-                msgSend = Constans.TRANSACCION_ENVIO_DATOS;
-                needSend = true;
-                needReceived = true;
-                break;
-            case 13:
                 needSend = false;
                 needReceived = true;
                 break;
-            case 14:
+            case 11:
                 msgSend = Constans.ACK_STRING;
                 needSend = true;
                 comando++; //el envio del dispositivo al host
                 comando++; //el envio del host al dispositivo
-                needReceived = true;
+                needReceived = true; //aqui se recibe la respuesta del autorizador
                 break;
-            case 18:
+            case 15:
                 msgSend = Constans.ACK_STRING;
                 needSend = true;
                 needReceived = false;
                 break;
-            case 19:
+            case 16:
                 lastMsg = true;
                 break;
             default:
@@ -128,7 +118,8 @@ public class ComunicationQR {
         }
     }
     
-    private void enviarMsg(String tipoMsg) {
+    @Override
+    public void enviarMsg(String tipoMsg) {
         byte[] trama;
         switch (tipoMsg) {
             case Constans.SOLICITUD_CONEXION_QR:
@@ -137,10 +128,6 @@ public class ComunicationQR {
                 break;
             case Constans.ACK_STRING:
                 enviar(Constans.BT_ACK);
-                break;
-            case Constans.TRANS_REV_No:
-                trama = ct.armarTrama(300, tipoMsg, Constans.PH_TRANS_NO_REV);
-                enviar(trama);
                 break;
             case Constans.TRANSACCION_ENVIO_DATOS:
                 trama = ct.armarTrama(300, tipoMsg, Constans.PH_ENVIO_DATA);
@@ -177,6 +164,7 @@ public class ComunicationQR {
         
     }
      
+    @Override
     public void recibir() {
 
         byte[] tramaReceived = ct.receiveRsp();
@@ -318,4 +306,42 @@ public class ComunicationQR {
          
         return retorno;
     }
+
+    @Override
+    public byte[] armarTramaVariable(String tipo) {
+        byte[] retorno;
+        
+        switch (tipo) {
+            case Constans.TRANSACCION_ENVIO_DATOS:
+                retorno = armarEnvioDatos();
+                break;
+            default:
+                retorno = null;
+                System.out.println("Error switch comunicationQR-armarTramaVariable");
+                
+        }
+        return retorno;
+    }
+
+    private byte[] armarEnvioDatos() {
+        
+        String montoPadleft = Util.padleft(monto + "", 12, '0');
+
+        byte[] frame = new byte[50];
+        byte[] campoMonto = ComunicationTools.crearCampo(montoPadleft, 40, 12);
+        System.arraycopy(campoMonto, 0, frame, 0, campoMonto.length);
+        
+        byte[] etx = {Constans.ETX};
+        System.arraycopy(etx, 0, frame, campoMonto.length, etx.length);
+        
+         byte[] frame2 = ComunicationTools.dicardEmpty(frame);
+         byte[] retorno = new byte[frame2.length-2];
+         for (int i = 0; i < frame2.length-2; i++) {
+            retorno[i] = frame2[i];
+        }
+         
+        return retorno;
+    }
+    
+    
 }

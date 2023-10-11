@@ -15,7 +15,7 @@ import java.util.ArrayList;
  *
  * @author Deskin
  */
-public class ComunicationICC {
+public class ComunicationICC implements ImpComunication {
     private static String monto;
     private ComunicationTools ct;
     private JPanelPrincipal panel;
@@ -23,8 +23,8 @@ public class ComunicationICC {
     private static String msgSend;
     private static boolean needReceived;;
     private static boolean needSend;
-    private static ArrayList<String> listMsgOutput;
-    private static ArrayList<String> listMsgInput;
+    public static ArrayList<String> listMsgOutput;
+    public static ArrayList<String> listMsgInput;
     private static int comando = 0;
     private static final ArrayList<Trx> listTrx = new ArrayList<>();; 
     
@@ -32,7 +32,7 @@ public class ComunicationICC {
         
         this.monto = monto;
         this.panel = panel;
-        ct = new ComunicationTools();
+        ct = new ComunicationTools(this);
         
         listMsgOutput = new ArrayList<>();
         listMsgInput = new ArrayList<>();
@@ -130,7 +130,8 @@ public class ComunicationICC {
         }
     }
     
-    private void enviarMsg(String tipoMsg) {
+    @Override
+    public void enviarMsg(String tipoMsg) {
         byte[] trama;
         switch (tipoMsg) {
             case Constans.ASCII_SOLICITUD_CONEXION:
@@ -179,6 +180,7 @@ public class ComunicationICC {
         
     }
      
+    @Override
     public void recibir() {
 
         byte[] tramaReceived = ct.receiveRsp();
@@ -354,5 +356,25 @@ public class ComunicationICC {
             return 2;
         }
         return 0;
+    }
+
+    @Override
+    public byte[] armarTramaVariable(String tipo) {
+        byte[] retorno;
+        
+        switch (tipo) {
+            case Constans.TRANS_REV_No:
+                retorno = armarTrama48XX();
+                break;
+            case Constans.TRANSACCION_ENVIO_DATOS:
+                retorno = tramaEnvioDatos();
+                break;
+            default:
+                retorno = null;
+                System.out.println("Error switch comunicationQR-armarTramaVariable");
+                
+        }
+        
+        return retorno;
     }
 }

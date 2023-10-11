@@ -36,6 +36,13 @@ public class ComunicationTools {
     private static ServerSocket serverSocket;
     private JPanelPrincipal panel;
     String retorno = "";
+    private ImpComunication impComunication;
+    
+    public ComunicationTools(ImpComunication impComunication) {
+       this.impComunication = impComunication;
+    }
+    
+    public ComunicationTools() {}
 
     public void setPanel(JPanelPrincipal panel) {
         this.panel = panel;
@@ -269,7 +276,7 @@ public class ComunicationTools {
         }
         return presentationHeader;
     }
-    
+    /*
     public byte[] obtenerTramaData() {
         StringBuilder datos = new StringBuilder();
         for (byte b : BT_SEND_DATA) {
@@ -291,7 +298,7 @@ public class ComunicationTools {
             System.out.print(btData[i] + ", ");
         }
         return btData;
-    }
+    }*/
 
     public String msgOnScreen(String msg) {
         String msgOnScreen = "";
@@ -372,36 +379,18 @@ public class ComunicationTools {
         switch (presentationHeader) {
             case Constans.ASCII_SOLICITUD_CONEXION:
             case Constans.SOLICITUD_CONEXION_QR:
-                //aqui de debe validar si tiene id de comercio
+                //aqui se debe validar si tiene id de comercio
                 break;
             case Constans.TRANS_REV_No:
-                retorno = ComunicationICC.armarTrama48XX();
+                retorno = impComunication.armarTramaVariable(Constans.STR_TRANS_REV_No);
                 break;
             case Constans.TRANSACCION_ENVIO_DATOS:
-                retorno = ComunicationICC.tramaEnvioDatos();
+                retorno = impComunication.armarTramaVariable(Constans.TRANSACCION_ENVIO_DATOS);
                 break;
         }
         return retorno;
     }
 
-    private byte[] armarSoliDataQr() {
-        byte[] retorno = new byte[25]; //
-        //----1er campo---- Nombre: Solicitud Nueva Pantalla (cod 87), Long: 2 byte, formto: HEXA
-        //Nombre del campo (codigo: 48 en ascii ; 34 38 en hexa )
-
-        byte[] codigoResp = hacerCodigoRespuesta(true);
-        System.arraycopy(codigoResp,0,retorno,0, codigoResp.length);
-
-        retorno[7] = Constans.SEPARADOR;
-        //se agrega el 2do campo, el campo 40
-        //codigo del campo
-        byte[] montoBytes = crearCampo(Constans.getMONTO(), 40, 12);
-        System.arraycopy(montoBytes, 0, retorno, 8, montoBytes.length);
-        
-
-        return retorno;
-    }
-    
     /**
      * Metodo que permite hacer un campo de codigo de respuesta, correcto o incorrecto dependiendo
      * del boolean enviando
