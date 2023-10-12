@@ -1,0 +1,4 @@
+Esperando una conexión...
+Comunicación cerrada
+No se ha conectado ningun cliente
+Comunicación cerrada

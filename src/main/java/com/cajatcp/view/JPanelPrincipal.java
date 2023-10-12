@@ -20,6 +20,8 @@ import java.awt.Graphics;
 import java.awt.GraphicsEnvironment;
 import java.awt.Image;
 import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.io.File;
@@ -662,6 +664,14 @@ public final class JPanelPrincipal extends JPanel /*implements ActionListener*/ 
             JTextField textField = defaultEditor.getTextField();
             textField.setEditable(false);
         }
+        jSpnAcquirer.setEnabled(false);
+        
+        checkMulti.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                jSpnAcquirer.setEnabled(checkMulti.isSelected());
+            }
+        });
 
         add(jLabelMulti);
         add(checkMulti);
@@ -683,7 +693,7 @@ public final class JPanelPrincipal extends JPanel /*implements ActionListener*/ 
         add(jlMoneda);
         
     }
-    
+ 
     public void showCuotas() {
         JLabel jlCuota = new JLabel(Constans.STR_CUOTAS);
         jlCuota.setBounds(30, 50, 150, 20);
@@ -699,6 +709,15 @@ public final class JPanelPrincipal extends JPanel /*implements ActionListener*/ 
             JTextField textField = defaultEditor.getTextField();
             textField.setEditable(false);
         }
+
+        jSpnCuotas.setEnabled(false);
+
+        checkCuota.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                jSpnCuotas.setEnabled(checkCuota.isSelected());
+            }
+        });
 
         add(jlCuota);
         add(jSpnCuotas);
