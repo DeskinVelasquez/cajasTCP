@@ -35,6 +35,8 @@ import javax.swing.JPanel;
 import javax.swing.ButtonGroup;
 import javax.swing.ImageIcon;
 import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
+import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
@@ -44,10 +46,13 @@ import javax.swing.JPopupMenu;
 import javax.swing.JRadioButtonMenuItem;
 import javax.swing.JScrollPane;
 import javax.swing.JSlider;
+import javax.swing.JSpinner;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.KeyStroke;
+import javax.swing.SpinnerNumberModel;
 import javax.swing.text.DefaultCaret;
+import javax.swing.text.DefaultFormatter;
 import javax.swing.text.Document;
 
 /**
@@ -60,16 +65,22 @@ public final class JPanelPrincipal extends JPanel /*implements ActionListener*/ 
     private int heightScreen = 0;
     private JButton btnPagoQR;
     private JButton btnPagoIcc;
+    private JButton btnPagoCtl;
+    private JButton btnPagoTigo;
+    private JButton btnInit;
+    private JButton btnClose;
+    private JButton btnVoid;
     private JButton enableConnect;
     private JButton clearTextArea;
     private JTextField textField1;
+    private JTextField tfVoid;
     private JLabel jLabelMonto;
-    private JLabel jLabelTitle;
+    private JLabel jLabelMulti;
     private JLabel jLabelIP;
     private JLabel jLabelPORT;
-    //private JPasswordField textField2;
     private final JTextArea jTextArea = new JTextArea();
-    private JCheckBox jCheckBox;
+    public static  JCheckBox checkMulti;
+    public static  JSpinner jSpnAcquirer;
     private JSlider jSlider;
     private Graphics g;
     private JMenuItem styleItalic;
@@ -82,12 +93,9 @@ public final class JPanelPrincipal extends JPanel /*implements ActionListener*/ 
         //se deshabilita el posicionamiento de componestes para hacerlo manualmente
         setLayout(null);
         
-        //se muestran los botones UI
-        showLabels();
-        //showMenuBar();
-        showTextArea();
-        showButtons();
-        showTextField();
+        //se muestran loscomponentes
+        showComponents();
+        
     }
 
     @Override
@@ -354,8 +362,13 @@ public final class JPanelPrincipal extends JPanel /*implements ActionListener*/ 
         //ImageIcon imageIcon = new ImageIcon("src/images/ic_logo.png");
         
         //se crean las instancias de multifuente para cada boton
-        ExtAbstractAction actionQR = new ExtAbstractAction(Constans.PAGO_QR, redimensionarIcono(new ImageIcon("src/images/ic_qr.png").getImage()), this);
-        ExtAbstractAction actionIcc = new ExtAbstractAction(Constans.PAGO_ICC, redimensionarIcono(new ImageIcon("src/images/ic_icc.png").getImage()), this);
+        ExtAbstractAction actionQR = new ExtAbstractAction(Constans.PAGO_QR, redimensionarIcono(new ImageIcon("src/images/ic_qr.png").getImage(), 120), this);
+        ExtAbstractAction actionIcc = new ExtAbstractAction(Constans.PAGO_ICC, redimensionarIcono(new ImageIcon("src/images/ic_icc.png").getImage(), 30), this);
+        ExtAbstractAction actionCtl = new ExtAbstractAction(Constans.PAGO_CTL, redimensionarIcono(new ImageIcon("src/images/ic_ctl.png").getImage(), 20), this);
+        ExtAbstractAction actionTigo = new ExtAbstractAction(Constans.PAGO_TG, redimensionarIcono(new ImageIcon("src/images/ic_tigo.png").getImage(), 30), this);
+        ExtAbstractAction actionInit = new ExtAbstractAction(Constans.STR_INIT, redimensionarIcono(new ImageIcon("src/images/ic_init.png").getImage(), 60), this);
+        ExtAbstractAction actionClose = new ExtAbstractAction(Constans.STR_CLOSE, redimensionarIcono(new ImageIcon("src/images/ic_close.png").getImage(), 60), this);
+        ExtAbstractAction actionVoid = new ExtAbstractAction(Constans.STR_VOID, this);
         ExtAbstractAction actionEnableConnect = new ExtAbstractAction(Constans.STR_ENABLE_CONNECT, this);
         ExtAbstractAction actionClearTextArea = new ExtAbstractAction(Constans.STR_CLEAR, this);
         //ExtAbstractAction actionGenerico = new ExtAbstractAction("generico", this);
@@ -363,6 +376,11 @@ public final class JPanelPrincipal extends JPanel /*implements ActionListener*/ 
         //Para el tema de multifuentes, podemos instanciar los botones de la siguiente manera. 
         btnPagoQR = new JButton(actionQR);
         btnPagoIcc = new JButton(actionIcc);
+        btnPagoCtl = new JButton(actionCtl);
+        btnPagoTigo = new JButton(actionTigo);
+        btnInit = new JButton(actionInit);
+        btnClose = new JButton(actionClose);
+        btnVoid = new JButton(actionVoid);
         enableConnect = new JButton(actionEnableConnect);
         clearTextArea = new JButton(actionClearTextArea);
        // generico = new JButton(actionGenerico);
@@ -387,12 +405,22 @@ public final class JPanelPrincipal extends JPanel /*implements ActionListener*/ 
         //Se rehubican los botones
         //30, 60, 70, 20
         //btnPagoQR.setBounds(120, 80, 130, 20);
-        btnPagoQR.setBounds(30, 50, 130, 20);
-        btnPagoIcc.setBounds(30, 80, 130, 20);
+        btnPagoQR.setBounds(210, 50, 130, 20);
+        btnPagoIcc.setBounds(210, 80, 130, 20);
+        btnPagoCtl.setBounds(370, 50, 130, 20);
+        btnPagoTigo.setBounds(370, 80, 130, 20);
+        btnInit.setBounds(530, 50, 130, 20);
+        btnClose.setBounds(530, 80, 130, 20);
+        btnVoid.setBounds(330, 20, 85, 20);
         //enableConnect.setBounds(505, 32, 90, 15);
-        clearTextArea.setSize(150, 15); 
+        //clearTextArea.setSize(150, 15); 
         add(btnPagoQR);
         add(btnPagoIcc);
+        add(btnPagoCtl);
+        add(btnPagoTigo);
+        add(btnInit);
+        add(btnClose);
+        add(btnVoid);
         //add(enableConnect);
         //add(p4);
         /*
@@ -425,9 +453,9 @@ public final class JPanelPrincipal extends JPanel /*implements ActionListener*/ 
         actionMap.put("fondo_rojo", actionP3);;*/
     }
     
-    private ImageIcon redimensionarIcono(Image image){
-        int newSizeX = image.getWidth(null)/30;
-        int newSizeY = image.getHeight(null)/30;
+    private ImageIcon redimensionarIcono(Image image, int div){
+        int newSizeX = image.getWidth(null)/div;
+        int newSizeY = image.getHeight(null)/div;
         return new ImageIcon(image.getScaledInstance(newSizeX, newSizeY, Image.SCALE_DEFAULT));
     }
     
@@ -474,11 +502,17 @@ public final class JPanelPrincipal extends JPanel /*implements ActionListener*/ 
         ImpDocumentListener documentListener = new ImpDocumentListener();
         Document document = textField1.getDocument();
         document.addDocumentListener(documentListener);
-        textField1.setBounds(70, 20, 50, 20);
+        textField1.setBounds(90, 20, 95, 20);
         add(textField1);
         
         //agregando cuadros de texto, para el tema del evento foco
         textField1.addFocusListener(new ImpFocusListener(textField1));
+        
+        //textfield de anulacion
+        tfVoid = new JTextField("");
+        
+        tfVoid.setBounds(430, 20, 100, 20);
+        add(tfVoid);
     }
     
     public String getMonto() {
@@ -589,51 +623,104 @@ public final class JPanelPrincipal extends JPanel /*implements ActionListener*/ 
        add(jSpinner);
     }
     */
+    
+    public void showComponents() {
+        showLabels();
+        showTextArea();
+        showButtons();
+        showTextField();
+        showMulticomercio();
+        showMoneda();
+        showCuotas();
+    }
+    
     public void showLabels() {
-        jLabelTitle = new JLabel(Constans.STR_TITLE);
         jLabelIP = new JLabel("IP: " + obtenerIP());
         drawPort();
         jLabelMonto = new JLabel("Monto");
-        
-        jLabelTitle.setBounds(200, 20, 150, 20);
-        jLabelIP.setBounds(370, 20, 150, 20);
-        jLabelPORT.setBounds(500, 20, 150, 20);
+        jLabelIP.setBounds(550, 3, 150, 20);
+        jLabelPORT.setBounds(660, 3, 150, 20);
         jLabelMonto.setBounds(30, 20, 70, 20);
         
-        
-        
-        add(jLabelTitle);
         add(jLabelIP);
         add(jLabelPORT);
         add(jLabelMonto);
     }
     
+    public void showMulticomercio() {
+        jLabelMulti = new JLabel(Constans.STR_MULTI_ACQ);
+        jLabelMulti.setBounds(30, 80, 150, 20);
+
+        checkMulti = new JCheckBox();
+        checkMulti.setBounds(110, 80, 35, 20);
+
+        jSpnAcquirer = new JSpinner(new SpinnerNumberModel(1, 1, 12, 1));
+        jSpnAcquirer.setBounds(145, 80, 40, 20);
+        JComponent editor = jSpnAcquirer.getEditor();
+        if (editor instanceof JSpinner.DefaultEditor) {
+            JSpinner.DefaultEditor defaultEditor = (JSpinner.DefaultEditor) editor;
+            JTextField textField = defaultEditor.getTextField();
+            textField.setEditable(false);
+        }
+
+        add(jLabelMulti);
+        add(checkMulti);
+        add(jSpnAcquirer);
+    }
+    
+    public void showMoneda() {
+        //30, 20, 70, 20
+        JLabel jlMoneda = new JLabel(Constans.STR_COIN); 
+        jlMoneda.setBounds(200, 20, 150, 20);
+        
+        JComboBox jComboBox = new JComboBox();
+        jComboBox.setBounds(250, 20, 53, 20);
+        String[] itemsComboBox = {"BS", "USD"};
+        jComboBox.addItem(itemsComboBox[0]);
+        jComboBox.addItem(itemsComboBox[1]);
+        
+        add(jComboBox);
+        add(jlMoneda);
+        
+    }
+    
+    public void showCuotas() {
+        JLabel jlCuota = new JLabel(Constans.STR_CUOTAS);
+        jlCuota.setBounds(30, 50, 150, 20);
+
+        JCheckBox checkCuota = new JCheckBox();
+        checkCuota.setBounds(80, 50, 35, 20);
+
+        JSpinner jSpnCuotas = new JSpinner(new SpinnerNumberModel(1, 1, 12, 1));
+        jSpnCuotas.setBounds(145, 50, 40, 20);
+        JComponent editor = jSpnCuotas.getEditor();
+        if (editor instanceof JSpinner.DefaultEditor) {
+            JSpinner.DefaultEditor defaultEditor = (JSpinner.DefaultEditor) editor;
+            JTextField textField = defaultEditor.getTextField();
+            textField.setEditable(false);
+        }
+
+        add(jlCuota);
+        add(jSpnCuotas);
+        add(checkCuota);
+    }
+    
     public void darkTheme(){
         setBackground(Color.DARK_GRAY);
         jTextArea.setBackground(Color.LIGHT_GRAY);
-        jLabelTitle.setForeground(Color.WHITE);
+        jLabelMulti.setForeground(Color.WHITE);
         jLabelIP.setForeground(Color.WHITE);
         jLabelPORT.setForeground(Color.WHITE);
-        jLabelMonto.setForeground(Color.WHITE);
-        //btnPagoIcc.set (Color.white);
-        //btnPagoQR.setBackground(Color.BLACK);
-        //btnPagoIcc.setBackground(Color.BLACK);
-        //btnPagoQR.setForeground(Color.WHITE);
-        //btnPagoIcc.setForeground(Color.WHITE);
+        jLabelMonto.setForeground(Color.WHITE);;
     }
     
     public void lightTheme(){
         setBackground(new Color(238, 238, 238));
         jTextArea.setBackground(Color.WHITE);
-        jLabelTitle.setForeground(Color.BLACK);
+        jLabelMulti.setForeground(Color.BLACK);
         jLabelIP.setForeground(Color.BLACK);
         jLabelPORT.setForeground(Color.BLACK);
         jLabelMonto.setForeground(Color.BLACK);
-        //btnPagoIcc.set (Color.white);
-        //btnPagoQR.setBackground(Color.BLACK);
-        //btnPagoIcc.setBackground(Color.BLACK);
-        //btnPagoQR.setForeground(Color.WHITE);
-        //btnPagoIcc.setForeground(Color.WHITE);
     }
     
     public void fontsViewMain(String fuente) {
@@ -725,8 +812,13 @@ public final class JPanelPrincipal extends JPanel /*implements ActionListener*/ 
      }
      
      public void escribirBufferFichero() {
+         String nameFile = Alerts.inputAlert("Nombre del archivo");
+         if (nameFile == null) {
+             Alerts.alert(true, "Cancelo guardado de archivo", 1);
+             return;
+         }
          Fichero fichero = new Fichero(false);
-         fichero.escribirBufferFichero(jTextArea.getText(), true);
+         fichero.escribirBufferFichero(jTextArea.getText(),nameFile, true);
      }
      
      public void leerBufferFichero(){
@@ -750,8 +842,13 @@ public final class JPanelPrincipal extends JPanel /*implements ActionListener*/ 
      }
 
     public void saveTrxs() {
+        String name = Alerts.inputAlert("Nombre de lote");
+         if (name == null) {
+             Alerts.alert(true, "Cancelo guardado de lote", 1);
+             return;
+         }
         Fichero fichero = new Fichero(false);
-        boolean b = fichero.escribirTrxSerealizado();
+        boolean b = fichero.escribirTrxSerealizado(name);
         if (b) {
             Alerts.alert(true, "guardo correctamente", 1);
         } else {

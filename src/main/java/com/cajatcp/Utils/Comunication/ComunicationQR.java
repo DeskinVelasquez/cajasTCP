@@ -357,9 +357,7 @@ public class ComunicationQR  implements ImpComunication{
 
     private void finalizarCo() {
         comando = 0;
-        //panel.cambiarNombreBtnConecct(Constans.STR_DISABLE_CONNECT);
         ct.disaableConnect();
-        //panel.cambiarNombreBtnConecct(Constans.STR_ENABLE_CONNECT);
         ct.openConnect();
      }
     

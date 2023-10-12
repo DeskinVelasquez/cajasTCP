@@ -119,9 +119,10 @@ public class Fichero {
         return stringBuilder.toString();
     }
 
-    public void escribirBufferFichero(String s, boolean noSobreEscribir) {
+    public void escribirBufferFichero(String s, String name, boolean noSobreEscribir) {
         try {
-
+            
+            archivo = Util.getDate() + " " + name + ".txt";
             File file = new File(carpeta, archivo);
             FileWriter fileWriter = new FileWriter(file, noSobreEscribir);
 
@@ -176,7 +177,7 @@ public class Fichero {
         }
     }
 
-    public boolean escribirTrxSerealizado() {
+    public boolean escribirTrxSerealizado(String name) {
         ArrayList<String> listTrxs = ComunicationICC.listMsgInput;
         if (listTrxs == null || listTrxs.isEmpty()) {
             return false;
@@ -186,7 +187,7 @@ public class Fichero {
         if (!carp.exists()) {
             carp.mkdirs();
         }
-        archivo = Util.getDate() + "_trxs.dat";
+        archivo = Util.getDate() + " "+name+".dat";
 
         File file = new File(carpeta, archivo);
         if (!file.exists()) {

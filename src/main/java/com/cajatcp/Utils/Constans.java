@@ -40,7 +40,12 @@ public class Constans {
     
     //strings programa
     public final static String PAGO_ICC = "PAGO ICC";
+    public final static String PAGO_CTL = "PAGO CTL";
     public final static String PAGO_QR = "PAGO QR";
+    public final static String PAGO_TG = "PAGO TG";
+    public final static String STR_INIT = "INICIALIZAR";
+    public final static String STR_CLOSE = "CIERRE";
+    public final static String STR_VOID = "ANULAR";
     public final static String STR_ENABLE_CONNECT = "conectar";
     public final static String STR_DISABLE_CONNECT = "desconectar";
     public final static String STR_CLEAR = "Limpiar registro";
@@ -153,6 +158,9 @@ public class Constans {
     
     //labels
     public static final String STR_TITLE = "DemoCajas TCP";
+    public static final String STR_MULTI_ACQ = "Multicomercio";
+    public static final String STR_COIN = "Moneda";
+    public static final String STR_CUOTAS = "Cuotas";
     
     
     //bytes para armado de tramas-----------------------------------------------------------------
