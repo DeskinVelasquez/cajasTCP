@@ -33,6 +33,7 @@ public class ComunicationICC implements ImpComunication {
         this.monto = monto;
         this.panel = panel;
         ct = new ComunicationTools(this);
+        ct.setPanel(panel);
         
         listMsgOutput = new ArrayList<>();
         listMsgInput = new ArrayList<>();
@@ -58,7 +59,8 @@ public class ComunicationICC implements ImpComunication {
             validaMsg();
             
         } while (!lastMsg);
-
+        
+        finalizarCo();
     }
 
     /**
@@ -125,7 +127,6 @@ public class ComunicationICC implements ImpComunication {
             default:
                 Alerts.alert(true, "Error en la comunicación", 2);
                 lastMsg = true;
-                throw new AssertionError();
                 
         }
     }
@@ -371,10 +372,16 @@ public class ComunicationICC implements ImpComunication {
                 break;
             default:
                 retorno = null;
-                System.out.println("Error switch comunicationQR-armarTramaVariable");
+                System.out.println("Error switch comunicationICC-armarTramaVariable");
                 
         }
         
         return retorno;
     }
+    
+    private void finalizarCo() {
+        comando = 0;
+        ct.disaableConnect();
+        ct.openConnect();
+     }
 }

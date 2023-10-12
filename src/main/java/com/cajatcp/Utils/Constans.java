@@ -36,6 +36,7 @@ public class Constans {
     public final static String STR_TRANS_REV_No = "TRANS REV No";
     public final static String STR_TRANSACCION_ENVIO_DATOS = "TRANSACCION ENVIO DATOS";
     public final static String STR_TARJETA_CONTACTLESS = "TARJETA CONTACTLESS";
+    public final static String STR_SEND_REF_PENDING = "REFERENCIA PENDIENTE";
     
     //strings programa
     public final static String PAGO_ICC = "PAGO ICC";
@@ -64,6 +65,7 @@ public class Constans {
     public final static String RESP_HOST = "1000  3";
     public final static String RESP_HOST_CONTACTLESS = "1006  0";
     public final static String RESP_ERROR = "1007  0";
+    public final static String SEND_REF_PENDING = "1008  0";
     
     //Strings Ventas tramas recibidas
     public final static String STR_ULTIMA_TRANS = "ULTIMA TRANS";
@@ -173,7 +175,7 @@ public class Constans {
     public final static byte[] PH_ENVIO_DATA ={ 0x31, 0x30, 0x30, 0x30, 0x30, 0x30, 0x32};
     
     //qr
-    public final static byte[] PH_SOLICITUD_CONEXION_QR ={ 0x31, 0x30, 0x38, 0x30, 0x30, 0x30, 0x30};
+    public final static byte[] PH_SOLICITUD_CONEXION_QR ={ 0x31, 0x30, 0x30, 0x38, 0x30, 0x30, 0x30};
     
 }
 

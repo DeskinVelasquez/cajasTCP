@@ -31,6 +31,7 @@ public class ComunicationQR  implements ImpComunication{
         this.monto = monto;
         this.panel = panel;
         ct = new ComunicationTools(this);
+        ct.setPanel(panel);
         
         listMsgOutput = new ArrayList<>();
         listMsgInput = new ArrayList<>();
@@ -39,7 +40,7 @@ public class ComunicationQR  implements ImpComunication{
     
     public void iniciarProceso() throws InterruptedException {
 
-        msgSend = Constans.STR_SOLICITUD_CONEXION_QR;
+        msgSend = Constans.SOLICITUD_CONEXION_QR;
         needSend = true;
         needReceived = true;
 
@@ -56,18 +57,19 @@ public class ComunicationQR  implements ImpComunication{
             validaMsg();
             
         } while (!lastMsg);
-
+        finalizarCo();
     }
 
     /**
-     * termina con el valor del comando anterior (por ello se le suma una unidad),
-     * es decir, para preparar el siguiente comando
+     * termina con el valor del comando anterior (por ello se le suma una
+     * unidad), es decir, para preparar el siguiente comando
      */
     private void validaMsg() {
-        
+
         msgSend = "";
-        
-          switch (comando + 1) {
+        System.out.println("Preparó comando: " + (comando + 1));
+
+        switch (comando + 1) {
             case 3: //comando 3
                 needSend = false;
                 needReceived = true;
@@ -113,8 +115,7 @@ public class ComunicationQR  implements ImpComunication{
             default:
                 Alerts.alert(true, "Error en la comunicación", 2);
                 lastMsg = true;
-                throw new AssertionError();
-                
+
         }
     }
     
@@ -193,9 +194,14 @@ public class ComunicationQR  implements ImpComunication{
             ComunicationQR.listMsgInput.add(msgRecibido);
         }
         panel.rspBox("POS ->  " + ct.msgOnScreen(msgRecibido));
-        panel.rspBox("Trama:  " + stringBuilder.toString() + "\n");
+        if (msgRecibido.equals(Constans.SEND_REF_PENDING)) {
+            panel.rspBox("Trama:  " + stringBuilder.toString());
+            panel.rspBox("Referencia pendiente: "+Util.conversorAString(ct.buscarDato(msgComplete,43)) + "\n");
+        } else {
+            panel.rspBox("Trama:  " + stringBuilder.toString() + "\n");
+        }
 
-        if (msgRecibido.equals(Constans.RESP_ERROR)) {
+        if (msgRecibido.equals(Constans.RESP_ERROR) || msgRecibido.equals(Constans.NACK_STRING)) {
             panel.rspBox("POS ->  " + manejoError(msgComplete));
         }
     }
@@ -244,6 +250,9 @@ public class ComunicationQR  implements ImpComunication{
                  break;
              case 14:
                  msgEror = "TRANSACCION NO PERMITIDA";
+                 break;
+             case 15:
+                 msgEror = "YA TE LA SABES";
                  break;
              case 16:
                  msgEror = "ERROR EN LA BUSQUEDA DE LA TARJETA";
@@ -331,8 +340,11 @@ public class ComunicationQR  implements ImpComunication{
         byte[] campoMonto = ComunicationTools.crearCampo(montoPadleft, 40, 12);
         System.arraycopy(campoMonto, 0, frame, 0, campoMonto.length);
         
+         byte[] codigoResp = ComunicationTools.hacerCodigoRespuesta(true);
+        System.arraycopy(codigoResp, 0, frame, campoMonto.length, codigoResp.length);
+        
         byte[] etx = {Constans.ETX};
-        System.arraycopy(etx, 0, frame, campoMonto.length, etx.length);
+        System.arraycopy(etx, 0, frame, campoMonto.length+codigoResp.length, etx.length);
         
          byte[] frame2 = ComunicationTools.dicardEmpty(frame);
          byte[] retorno = new byte[frame2.length-2];
@@ -342,6 +354,14 @@ public class ComunicationQR  implements ImpComunication{
          
         return retorno;
     }
+
+    private void finalizarCo() {
+        comando = 0;
+        //panel.cambiarNombreBtnConecct(Constans.STR_DISABLE_CONNECT);
+        ct.disaableConnect();
+        //panel.cambiarNombreBtnConecct(Constans.STR_ENABLE_CONNECT);
+        ct.openConnect();
+     }
     
     
 }

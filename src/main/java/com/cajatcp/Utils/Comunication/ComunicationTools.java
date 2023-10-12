@@ -349,6 +349,9 @@ public class ComunicationTools {
             case Constans.RESP_ERROR:
                 msgOnScreen = Constans.ERROR;
                 break;
+            case Constans.SEND_REF_PENDING:
+                msgOnScreen = Constans.STR_SEND_REF_PENDING;
+                break;
             default:
                 Alerts.alert(true, "mensaje sobre pantalla no contemplado", 2);
                 
