@@ -88,6 +88,7 @@ public class ComunicationTools {
             if (socket != null && socket.isConnected()) {
                 System.out.println("cliente conectado");
                 panel.rspBox("cliente conectado");
+                panel.setEnableButtons(true);
                 return;
             }
             panel.rspBox("fallo en la conexion con el cliente");
@@ -392,7 +393,7 @@ public class ComunicationTools {
                 retorno = impComunication.armarTramaVariable(Constans.TRANSACCION_ENVIO_DATOS);
                 break;
             case Constans.TARJETA_CONTACTLESS:
-                retorno = impComunication.armarTramaVariable(Constans.TARJETA_CONTACTLESS);
+                //retorno = impComunication.armarTramaVariable(Constans.TARJETA_CONTACTLESS);
                 break;
         }
         return retorno;

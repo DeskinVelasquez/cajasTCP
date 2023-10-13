@@ -5,6 +5,7 @@
 package com.cajatcp.view.listeners;
 
 import com.cajatcp.Utils.Alerts;
+import com.cajatcp.Utils.Comunication.ComunicationCTL;
 import com.cajatcp.Utils.Comunication.ComunicationICC;
 import com.cajatcp.Utils.Comunication.ComunicationQR;
 import com.cajatcp.Utils.Constans;
@@ -26,6 +27,7 @@ import static com.cajatcp.Utils.Constans.STR_STYLE_BOLD;
 import static com.cajatcp.Utils.Constans.STR_STYLE_ITALIC;
 import static com.cajatcp.Utils.Constans.STR_STYLE_PLAIN;
 import com.cajatcp.Utils.Comunication.ComunicationTools;
+import static com.cajatcp.Utils.Constans.PAGO_CTL;
 import static com.cajatcp.Utils.Constans.STR_CLEAR;
 import static com.cajatcp.Utils.Constans.STR_READ_FILE;
 import static com.cajatcp.Utils.Constans.STR_SAVE;
@@ -68,6 +70,7 @@ public class ExtAbstractAction /*implements Action*/ extends AbstractAction {
 
         switch (e.getActionCommand()) {
             case PAGO_ICC:
+                panel.setEnableButtons(false);
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
@@ -85,12 +88,12 @@ public class ExtAbstractAction /*implements Action*/ extends AbstractAction {
                 }).start();
                 break;
             case STR_ENABLE_CONNECT:
-                
                 panel.cambiarNombreBtnConecct(STR_DISABLE_CONNECT);
                 co.setPanel(panel);
                 co.openConnect();
                 break;
             case PAGO_QR:
+               panel.setEnableButtons(false);
                new Thread(new Runnable() {
                     @Override
                     public void run() {
@@ -107,10 +110,29 @@ public class ExtAbstractAction /*implements Action*/ extends AbstractAction {
                     }
                 }).start();
                 break;
+            case PAGO_CTL:
+               panel.setEnableButtons(false);
+               new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        String monto = panel.getMonto();
+                        if (!Alerts.alert(monto.isEmpty(), "Debe haber un monto", 2)) {
+                            try {
+                                ComunicationCTL cCTL = new ComunicationCTL(monto, panel);
+                                cCTL.iniciarProceso();
+                            } catch (InterruptedException ex) {
+                                Logger.getLogger(ExtAbstractAction.class.getName()).log(Level.SEVERE, null, ex);
+                                System.out.println("Error en ");
+                            }
+                        }
+                    }
+                }).start();
+                break;
             case STR_DISABLE_CONNECT:
                 System.out.println("desconectado");
                 panel.cambiarNombreBtnConecct(STR_ENABLE_CONNECT);
                 panel.rspBox(co.disaableConnect());
+                panel.setEnableButtons(false);
                 break;
             case STR_CONFIG_PORT:
                 panel.configPort();

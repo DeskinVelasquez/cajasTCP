@@ -14,10 +14,12 @@ import com.cajatcp.view.listeners.ImpFocusListener;
 import com.cajatcp.view.listeners.ExtAbstractAction;
 import com.cajatcp.view.listeners.ImpDocumentListener;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.GraphicsEnvironment;
+import java.awt.GridLayout;
 import java.awt.Image;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
@@ -88,6 +90,7 @@ public final class JPanelPrincipal extends JPanel /*implements ActionListener*/ 
     private JMenuItem styleItalic;
     private JMenuItem styleBold;
     private JMenuItem stylePlain;
+    private JPanel jpBtns;
        
     public JPanelPrincipal(int widthScreen, int heightScreen) {
         this.widthScreen = widthScreen;
@@ -358,7 +361,7 @@ public final class JPanelPrincipal extends JPanel /*implements ActionListener*/ 
     }
     */
     private void showButtons() {
-        
+        jpBtns = new JPanel(new GridLayout(2, 3, 5, 5));
         //Se crea el icono de la imagen para redimensionarlo
         // ImageIcon imageIcon = redimensionarIcono(new ImageIcon("src/images/ic_logo.png").getImage());
         //ImageIcon imageIcon = new ImageIcon("src/images/ic_logo.png");
@@ -386,7 +389,16 @@ public final class JPanelPrincipal extends JPanel /*implements ActionListener*/ 
         enableConnect = new JButton(actionEnableConnect);
         clearTextArea = new JButton(actionClearTextArea);
        // generico = new JButton(actionGenerico);
-        
+       
+       jpBtns.add(btnPagoQR);
+       jpBtns.add(btnPagoIcc);
+       jpBtns.add(btnInit);
+       jpBtns.add(btnPagoCtl);
+       jpBtns.add(btnPagoTigo);
+       jpBtns.add(btnClose);
+       
+       jpBtns.setBounds(210, 50, 500, 50);
+       
         /*
         //se instancian los botones
         p1 = new JButton("Producto 1");
@@ -407,24 +419,34 @@ public final class JPanelPrincipal extends JPanel /*implements ActionListener*/ 
         //Se rehubican los botones
         //30, 60, 70, 20
         //btnPagoQR.setBounds(120, 80, 130, 20);
+        /*
         btnPagoQR.setBounds(210, 50, 130, 20);
         btnPagoIcc.setBounds(210, 80, 130, 20);
         btnPagoCtl.setBounds(370, 50, 130, 20);
         btnPagoTigo.setBounds(370, 80, 130, 20);
         btnInit.setBounds(530, 50, 130, 20);
         btnClose.setBounds(530, 80, 130, 20);
+         */
         btnVoid.setBounds(330, 20, 85, 20);
+        
+        setEnableButtons(false);
+       
         //enableConnect.setBounds(505, 32, 90, 15);
         //clearTextArea.setSize(150, 15); 
+        
+        /*
         add(btnPagoQR);
         add(btnPagoIcc);
         add(btnPagoCtl);
         add(btnPagoTigo);
         add(btnInit);
         add(btnClose);
+        */
         add(btnVoid);
         //add(enableConnect);
         //add(p4);
+        
+        add(jpBtns);
         /*
         //trabajando con posicionamientos de componentes del panel.
         setLayout(new BorderLayout());
@@ -453,6 +475,16 @@ public final class JPanelPrincipal extends JPanel /*implements ActionListener*/ 
         actionMap.put("fondo_amarillo", actionP1);
         actionMap.put("fondo_azul", actionP2);
         actionMap.put("fondo_rojo", actionP3);;*/
+    }
+    
+    public void setEnableButtons(boolean isEnable) {
+        Component[] components = jpBtns.getComponents();
+
+        for (Component component : components) {
+            component.setEnabled(isEnable); // Deshabilitar el botón
+        }
+
+        btnVoid.setEnabled(isEnable);
     }
     
     private ImageIcon redimensionarIcono(Image image, int div){

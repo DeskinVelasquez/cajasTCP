@@ -3,10 +3,11 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 package com.cajatcp.Utils.Comunication;
-
 import DataManager.DataClasses.Trx;
 import com.cajatcp.Utils.Alerts;
+import com.cajatcp.Utils.Comunication.ComunicationTools;
 import static com.cajatcp.Utils.Comunication.ComunicationTools.buscarDato;
+import com.cajatcp.Utils.Comunication.ImpComunication;
 import com.cajatcp.Utils.Constans;
 import com.cajatcp.Utils.Util;
 import com.cajatcp.view.JPanelPrincipal;
@@ -176,7 +177,7 @@ public class ComunicationCTL implements ImpComunication  {
             msgEnviado = ct.decodeMsg(trama);
         } else {
             msgEnviado = Util.hex2AsciiStr(ct.decodeMsg(trama));
-            ComunicationICC.listMsgOutput.add(msgEnviado);
+            ComunicationCTL.listMsgOutput.add(msgEnviado);
         }
 
         ArrayList<String> msgComplete = ct.toListStringFrame(trama);
@@ -222,7 +223,7 @@ public class ComunicationCTL implements ImpComunication  {
             msgRecibido = ct.decodeMsg(tramaReceived);
         } else {
             msgRecibido = Util.hex2AsciiStr(ct.decodeMsg(tramaReceived));
-            ComunicationICC.listMsgInput.add(msgRecibido);
+            ComunicationCTL.listMsgInput.add(msgRecibido);
         }
         panel.rspBox("POS ->  " + ct.msgOnScreen(msgRecibido));
         panel.rspBox("Trama:  " + stringBuilder.toString() + "\n");
