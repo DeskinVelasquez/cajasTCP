@@ -382,6 +382,7 @@ public class ComunicationTools {
         switch (presentationHeader) {
             case Constans.ASCII_SOLICITUD_CONEXION:
             case Constans.SOLICITUD_CONEXION_QR:
+            case Constans.SOLICITUD_CONEXION_CONTACTLESS:
                 //aqui se debe validar si tiene id de comercio
                 break;
             case Constans.TRANS_REV_No:
@@ -389,6 +390,9 @@ public class ComunicationTools {
                 break;
             case Constans.TRANSACCION_ENVIO_DATOS:
                 retorno = impComunication.armarTramaVariable(Constans.TRANSACCION_ENVIO_DATOS);
+                break;
+            case Constans.TARJETA_CONTACTLESS:
+                retorno = impComunication.armarTramaVariable(Constans.TARJETA_CONTACTLESS);
                 break;
         }
         return retorno;
