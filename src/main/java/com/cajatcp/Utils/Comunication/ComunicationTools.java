@@ -7,7 +7,6 @@ package com.cajatcp.Utils.Comunication;
 import DataManager.DataClasses.Trx;
 import com.cajatcp.Utils.Alerts;
 import com.cajatcp.Utils.Constans;
-import static com.cajatcp.Utils.Constans.BT_SEND_DATA;
 import static com.cajatcp.Utils.Constans.STR_ENABLE_CONNECT;
 import com.cajatcp.Utils.Util;
 import com.cajatcp.view.JPanelPrincipal;
@@ -29,23 +28,32 @@ import java.util.Timer;
  *
  * @author deskin
  */
-public class ComunicationTools {
+public abstract class ComunicationTools {
     InputStream inputStream;
     OutputStream outputStream;
     private static Socket socket;
     private static ServerSocket serverSocket;
     private JPanelPrincipal panel;
     String retorno = "";
-    private ImpComunication impComunication;
+    private static final ArrayList<Trx> listTrx = new ArrayList<>();
     
-    public ComunicationTools(ImpComunication impComunication) {
-       this.impComunication = impComunication;
-    }
-    
-    public ComunicationTools() {}
-
-    public void setPanel(JPanelPrincipal panel) {
+    //heredar
+    protected static int comando = 0;
+    protected String msgSend;
+    protected boolean needSend;
+    protected boolean needReceived;
+    protected boolean lastMsg;
+    protected ArrayList<String> listMsgOutput;
+    protected static ArrayList<String> listMsgInput;
+    protected ArrayList<String> msgComplete;
+    protected int monto;
+   
+    public ComunicationTools(JPanelPrincipal panel) {
         this.panel = panel;
+        monto = panel.getMonto();
+    }
+    public static ArrayList<String> getListMsgInput() {
+        return listMsgInput;
     }
     
      public String disaableConnect() {
@@ -304,7 +312,7 @@ public class ComunicationTools {
     public String msgOnScreen(String msg) {
         String msgOnScreen = "";
         switch (msg) {
-            case Constans.ASCII_SOLICITUD_CONEXION:
+            case Constans.SOLICITUD_CONEXION:
                 msgOnScreen = Constans.STR_SOLICITUD_CONEXION;
                 break;
             case Constans.SOLICITUD_CONEXION_QR:
@@ -381,21 +389,38 @@ public class ComunicationTools {
     public byte[] armarParteVariable(String presentationHeader) {
         byte[] retorno = null;
         switch (presentationHeader) {
-            case Constans.ASCII_SOLICITUD_CONEXION:
+            case Constans.SOLICITUD_CONEXION:
             case Constans.SOLICITUD_CONEXION_QR:
             case Constans.SOLICITUD_CONEXION_CONTACTLESS:
                 //aqui se debe validar si tiene id de comercio
+                if (panel.checkMulti.isSelected()) {
+                   int idAcq = (int) panel.jSpnAcquirer.getValue();
+                   retorno = armarTramaIDACQ(idAcq);
+                }
                 break;
             case Constans.TRANS_REV_No:
-                retorno = impComunication.armarTramaVariable(Constans.STR_TRANS_REV_No);
+                retorno = armarTramaVariable(Constans.STR_TRANS_REV_No);
                 break;
             case Constans.TRANSACCION_ENVIO_DATOS:
-                retorno = impComunication.armarTramaVariable(Constans.TRANSACCION_ENVIO_DATOS);
+                retorno = armarTramaVariable(Constans.TRANSACCION_ENVIO_DATOS);
                 break;
             case Constans.TARJETA_CONTACTLESS:
                 //retorno = impComunication.armarTramaVariable(Constans.TARJETA_CONTACTLESS);
                 break;
         }
+        return retorno;
+    }
+    
+    private byte[] armarTramaIDACQ(int idacq) {
+        String dato = "";
+        if (idacq < 10) {
+            dato = "0"+idacq;
+        } else {
+            dato = String.valueOf(idacq);
+        }
+        
+        byte[] retorno = crearCampo(dato, 79, 2);
+
         return retorno;
     }
 
@@ -471,60 +496,6 @@ public class ComunicationTools {
     
     //-------------------------------------------------------------------------------------------
     
-    /**
-     * Metodo utilizado para armar la trama de acuerdo que será enviada a la caja
-     *
-     * @param tamTrama           tamaño que va a tener la trama completa
-     * @param tipoTrans          tipo de transacción realizada ASCII
-     * @param presentationHeader arreglo de byte del tipo de transacción
-     * @return arreglo de bytes de la trama que será enviada
-     */
-    public byte[] armarTrama(int tamTrama, String tipoTrans, byte[] presentationHeader) {
-        byte[] retorno = new byte[tamTrama];
-
-        retorno[0] = Constans.STX;
-        //en la pos [1]y[2] va la longitud de la trama
-        //se lleva un registro de en que parte debemos escribir
-        int con = 3;
-        //agregar TransportHeader--desde pos [3] hasta pos[12]
-        for (int i = 0; i < Constans.transportHeader.length; i++) {
-            retorno[i + 3] = Constans.transportHeader[i];
-            con++;
-        }
-        //agregar presentationHeader--desde posi [13]  hasta [19]
-        for (int i = 0; i < presentationHeader.length; i++) {
-            retorno[i + 13] = presentationHeader[i];
-            con++;
-        }
-        //hasta aqui ocupó 19 bytes
-        //La longitud de este campo es variable dependiendo de lo que se vaya a enviar
-        //campos --desde[20] hasta [37] en ultima transaccion
-        //desde --[20] hasta 34 en nueva pantalla ingreso de tarjeta y nueva pantalla ingreso de PIN
-        //desde --[20] hasta el 27 en solicitud de datos
-        //desde --[20] hasta el [207] en respuesta host
-        byte[] parteVariable = armarParteVariable(tipoTrans);
-        int longMensaje;
-        if (parteVariable != null) {
-            for (int i = 0; i < parteVariable.length; i++) {
-                retorno[i + 20] = parteVariable[i];
-                con++;
-            }
-            longMensaje = Constans.transportHeader.length + Constans.PH_SOLICITUD_CONEXION.length + parteVariable.length;
-        } else {
-            longMensaje = Constans.transportHeader.length + Constans.PH_SOLICITUD_CONEXION.length;
-        }
-        
-        //int longMensaje = Constans.transportHeader.length + Constans.PH_SOLICITUD_CONEXION.length + parteVariable.length;
-        byte[] longMsj = calcularLongitudMensaje(longMensaje);
-        retorno[1] = longMsj[0];
-        retorno[2] = longMsj[1]; 
-
-        retorno[con] = Constans.ETX;
-        con++;
-        retorno[con] = calcularLRC(retorno);
-
-        return retorno;
-    }
     
     /**
      * Metodo utilizado para calcular el LRC de la trama
@@ -667,6 +638,14 @@ public class ComunicationTools {
                 longitudCampoByte[1] = 0x45;
                 totalByte[0] = Constans.SEPARADOR;
                 break;
+            case 79:
+                Arrays.fill(totalByte, (byte) 0x20);
+                idCampoByte[0] = 0x37;
+                idCampoByte[1] = 0x39;
+                longitudCampoByte[0] = 0x00;
+                longitudCampoByte[1] = 0x02;
+                totalByte[0] = Constans.SEPARADOR;
+                break;
             case 82:
                 idCampoByte[0] = 0x38;
                 idCampoByte[1] = 0x32;
@@ -763,4 +742,340 @@ public class ComunicationTools {
         }
         return false;
     }
+    
+    
+    
+    private void finalizarCo() {
+        comando = 0;
+        disaableConnect();
+        openConnect();
+    }
+
+    private String manejoError(ArrayList<String> mensaje) {
+
+        int typeError = Integer.parseInt(Util.conversorAString(buscarDato(mensaje, 48)));
+        String msgEror;
+
+        switch (typeError) {
+            case 1:
+                msgEror = "TIEMPO DE ESPERA AGOTADO";
+                break;
+            case 2:
+                msgEror = "ERROR AL LEER TARJETA";
+                break;
+            case 3:
+                msgEror = "TRANSACCION NO EXISTE";
+                break;
+            case 4:
+                msgEror = "NO EXISTEN TRANSACCIONES";
+                break;
+            case 5:
+                msgEror = "LA TRANSACCION YA ESTA ANULADA";
+                break;
+            case 7:
+                msgEror = "LOTE LLENO, REALICE CIERRE";
+                break;
+            case 8:
+                msgEror = "MONTO INVALIDO";
+                break;
+            case 9:
+                msgEror = "TARJETA NO SOPORTADA";
+                break;
+            case 10:
+                msgEror = "LA TARJETA NO ES LA ORIGINAL";
+                break;
+            case 11:
+                msgEror = "TARJETA EXPIRADA";
+                break;
+            case 12:
+                msgEror = "USUARIO CANCELO";
+                break;
+            case 13:
+                msgEror = "PIN INVALIDO";
+                break;
+            case 14:
+                msgEror = "TRANSACCION NO PERMITIDA";
+                break;
+            case 16:
+                msgEror = "ERROR EN LA BUSQUEDA DE LA TARJETA";
+                break;
+            case 17:
+                msgEror = "ERROR DURANTE EL PROCESO DE TRANSACCION";
+                break;
+            case 18:
+                msgEror = "MENSAJE INESPERADO";
+                break;
+            case 19:
+                msgEror = "ERROR EN LA PANTALLA DE PIN";
+                break;
+            case 20:
+                msgEror = "ERROR DE COMUNICACIÓN";
+                break;
+            default:
+                msgEror = "ERROR NO CONTEMPLADO";
+        }
+        comando = -1;
+        return msgEror;
+    }
+
+    
+    //metodos heredados---------------------------------------------------------
+    protected void iniciarProceso(String typeSend) throws InterruptedException {
+
+        msgSend = typeSend;
+        needSend = true;
+        needReceived = true;
+
+        do {
+
+            if (needSend) {
+                enviarMsg(msgSend);
+            }
+
+            if (needReceived) {
+                recibir();
+            }
+            
+            mensajeria();
+            
+        } while (!lastMsg);
+        finalizarCo();
+    }
+    
+    protected void enviarMsg(String tipoMsg) {
+        byte[] trama;
+        switch (tipoMsg) {
+            case Constans.SOLICITUD_CONEXION_CONTACTLESS:
+                trama = armarTrama(300, tipoMsg, Constans.PH_SOLICITUD_CONEXION_CTL);
+                enviar(trama);
+                break;
+            case Constans.ACK_STRING:
+                enviar(Constans.BT_ACK);
+                break;
+            case Constans.TRANS_REV_No:
+                trama = armarTrama(300, tipoMsg, Constans.PH_TRANS_NO_REV);
+                enviar(trama);
+                break;
+            case Constans.TRANSACCION_ENVIO_DATOS:
+                trama = armarTrama(300, tipoMsg, Constans.PH_ENVIO_DATA);
+                enviar(trama);
+                break;
+            case Constans.TARJETA_CONTACTLESS://se Debe validar este mensaje
+                trama = armarTrama(300, tipoMsg, Constans.PH_TARJETA_CTL);
+                enviar(trama);
+                break;
+            case Constans.SOLICITUD_CONEXION_QR:
+                trama = armarTrama(300, tipoMsg, Constans.PH_SOLICITUD_CONEXION_QR);
+                enviar(trama);
+                break;
+           case Constans.SOLICITUD_CONEXION:
+                trama = armarTrama(300, tipoMsg, Constans.PH_SOLICITUD_CONEXION);
+                enviar(trama);
+                break;
+            default:
+                retorno = null;
+                System.out.println("Error switch comunicationQR-armarTramaVariable");
+           
+        }
+    }
+   
+    protected void enviar(byte[] frame) {
+        byte[] trama = ComunicationTools.dicardEmpty(frame);
+        String msgEnviado = decodeMsg(trama);
+        StringBuilder stringBuilder = new StringBuilder();
+
+        if (trama.length == 1) {
+            msgEnviado = decodeMsg(trama);
+        } else {
+            msgEnviado = Util.hex2AsciiStr(decodeMsg(trama));
+            listMsgOutput.add(msgEnviado);
+        }
+
+        ArrayList<String> msgComplete = toListStringFrame(trama);
+
+        for (String element : msgComplete) {
+            stringBuilder.append(element);
+        }
+
+        if (send(trama)) {
+            panel.rspBox("CAJA ->  " + msgOnScreen(msgEnviado));
+            panel.rspBox("Trama:  " + stringBuilder.toString() + "\n");
+            comando++;
+        } else {
+            panel.rspBox("Error en el envio de la trama: " + stringBuilder.toString() + "\n");
+            comando = -1;
+        }
+
+    }
+    
+    public void recibir() {
+
+        byte[] tramaReceived = receiveRsp();
+        comando++;
+
+        if (tramaReceived == null) {
+            comando = -1;
+            panel.rspBox("POS ->  null");
+            return;
+        }
+
+        StringBuilder stringBuilder = new StringBuilder();
+        msgComplete = toListStringFrame(tramaReceived);
+
+        for (String element : msgComplete) {
+            stringBuilder.append(element);
+        }
+
+        System.out.println("rsp: " + stringBuilder.toString());
+        String msgRecibido;
+
+        if (tramaReceived.length == 1) {
+            msgRecibido = decodeMsg(tramaReceived);
+        } else {
+            msgRecibido = Util.hex2AsciiStr(decodeMsg(tramaReceived));
+            listMsgInput.add(msgRecibido);
+        }
+        panel.rspBox("POS ->  " + msgOnScreen(msgRecibido));
+        if (msgRecibido.equals(Constans.SEND_REF_PENDING)) {
+            panel.rspBox("Trama:  " + stringBuilder.toString());
+            panel.rspBox("Referencia pendiente: "+Util.conversorAString(buscarDato(msgComplete,43)) + "\n");
+        } else {
+            panel.rspBox("Trama:  " + stringBuilder.toString() + "\n");
+        }
+
+        if (msgRecibido.equals(Constans.RESP_ERROR) || msgRecibido.equals(Constans.NACK_STRING)) {
+            panel.rspBox("POS ->  " + manejoError(msgComplete));
+        }
+    }
+    
+    /**
+     * Metodo utilizado para armar la trama de acuerdo que será enviada a la caja
+     *
+     * @param tamTrama           tamaño que va a tener la trama completa
+     * @param tipoTrans          tipo de transacción realizada ASCII
+     * @param presentationHeader arreglo de byte del tipo de transacción
+     * @return arreglo de bytes de la trama que será enviada
+     */
+    protected byte[] armarTrama(int tamTrama, String tipoTrans, byte[] presentationHeader) {
+        byte[] retorno = new byte[tamTrama];
+
+        retorno[0] = Constans.STX;
+        //en la pos [1]y[2] va la longitud de la trama
+        //se lleva un registro de en que parte debemos escribir
+        int con = 3;
+        //agregar TransportHeader--desde pos [3] hasta pos[12]
+        for (int i = 0; i < Constans.transportHeader.length; i++) {
+            retorno[i + 3] = Constans.transportHeader[i];
+            con++;
+        }
+        //agregar presentationHeader--desde posi [13]  hasta [19]
+        for (int i = 0; i < presentationHeader.length; i++) {
+            retorno[i + 13] = presentationHeader[i];
+            con++;
+        }
+        //hasta aqui ocupó 19 bytes
+        //La longitud de este campo es variable dependiendo de lo que se vaya a enviar
+        //campos --desde[20] hasta [37] en ultima transaccion
+        //desde --[20] hasta 34 en nueva pantalla ingreso de tarjeta y nueva pantalla ingreso de PIN
+        //desde --[20] hasta el 27 en solicitud de datos
+        //desde --[20] hasta el [207] en respuesta host
+        byte[] parteVariable = armarParteVariable(tipoTrans);
+        int longMensaje;
+        if (parteVariable != null) {
+            for (int i = 0; i < parteVariable.length; i++) {
+                retorno[i + 20] = parteVariable[i];
+                con++;
+            }
+            longMensaje = Constans.transportHeader.length + Constans.PH_SOLICITUD_CONEXION.length + parteVariable.length;
+        } else {
+            longMensaje = Constans.transportHeader.length + Constans.PH_SOLICITUD_CONEXION.length;
+        }
+        
+        //int longMensaje = Constans.transportHeader.length + Constans.PH_SOLICITUD_CONEXION.length + parteVariable.length;
+        byte[] longMsj = calcularLongitudMensaje(longMensaje);
+        retorno[1] = longMsj[0];
+        retorno[2] = longMsj[1]; 
+
+        retorno[con] = Constans.ETX;
+        con++;
+        retorno[con] = calcularLRC(retorno);
+
+        return retorno;
+    }
+    
+    /**
+     * Metodo que desempaqueta los campos que llegan a la caja
+     * @param mensaje El mensaje o la trama completa recibida
+     */
+    protected int desempaquetarDatos(ArrayList<String> mensaje) {
+       
+        try {
+            String codigoAut = Util.conversorAString(buscarDato(mensaje,01));
+            String montoString = Util.conversorAString(buscarDato(mensaje,40));
+            String numRecibo = Util.conversorAString(buscarDato(mensaje,43));
+            String RRN = Util.conversorAString(buscarDato(mensaje,44));
+            String tid = Util.conversorAString(buscarDato(mensaje,45));
+            String dateTXR = Util.conversorAString(buscarDato(mensaje,46));
+            String timeTXR = Util.conversorAString(buscarDato(mensaje,47));
+            String codRsp = Util.conversorAString(buscarDato(mensaje,48));
+            String typeAccount = Util.conversorAString(buscarDato(mensaje,50));
+            String numCuotas = Util.conversorAString(buscarDato(mensaje,51));
+            String last4Digits = Util.conversorAString(buscarDato(mensaje,54));
+            String msgError = Util.conversorAString(buscarDato(mensaje,61));
+            
+            Trx trx = new Trx(codigoAut, montoString, numRecibo, RRN, tid, dateTXR, timeTXR, codRsp, typeAccount, numCuotas, last4Digits, msgError);
+            listTrx.add(trx);
+            panel.rspBox(panel.dataTrx(trx));            
+        } catch (Exception e) {
+            System.out.println("Error al desempaquetar los datos ");
+            return 2;
+        }
+        return 0;
+    }
+    
+    public static byte[] armarTrama48XX() {
+        byte[] retorno = new byte[7]; 
+        byte[] codigoResp = ComunicationTools.hacerCodigoRespuesta(false);
+        System.arraycopy(codigoResp, 0, retorno, 0, codigoResp.length);
+
+        return retorno;
+    }
+    
+    protected byte[] tramaEnvioDatos() {
+
+        String montoPadleft = Util.padleft(monto + "", 12, '0');
+
+        byte[] frame = new byte[100];
+        byte[] campoMonto = ComunicationTools.crearCampo(montoPadleft, 40, 12);
+        System.arraycopy(campoMonto, 0, frame, 0, campoMonto.length );
+
+        byte[] noCaja = ComunicationTools.crearCampo("123", 42, 10);//10
+        System.arraycopy(noCaja, 0, frame, campoMonto.length, noCaja.length);
+
+        byte[] codigoResp = ComunicationTools.hacerCodigoRespuesta(true);
+        System.arraycopy(codigoResp, 0, frame, campoMonto.length+noCaja.length, codigoResp.length);
+
+        byte[] noTrx = ComunicationTools.crearCampo("123456", 53, 10);//10
+        System.arraycopy(noTrx, 0, frame, campoMonto.length+noCaja.length+codigoResp.length, noTrx.length);
+
+        byte[] typeAccount = ComunicationTools.crearCampo("1", 88, 12);//12
+        System.arraycopy(typeAccount, 0, frame,campoMonto.length+noCaja.length+codigoResp.length+noTrx.length, typeAccount.length);
+        
+        byte[] etx = {Constans.ETX};
+        System.arraycopy(etx, 0, frame, typeAccount.length+campoMonto.length+noCaja.length+codigoResp.length+noTrx.length, etx.length);
+        
+         byte[] frame2 = ComunicationTools.dicardEmpty(frame);
+         byte[] retorno = new byte[frame2.length-2];
+         for (int i = 0; i < frame2.length-2; i++) {
+            retorno[i] = frame2[i];
+        }
+         
+        return retorno;
+    }
+    
+    //metodos abstractos---------------------------------------------------------------------------
+    
+    public abstract byte[] armarTramaVariable(String tipo);
+    
+    public abstract void mensajeria();
 }

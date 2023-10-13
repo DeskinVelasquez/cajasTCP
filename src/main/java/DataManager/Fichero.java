@@ -5,7 +5,6 @@
 package DataManager;
 
 import DataManager.DataClasses.Trx;
-import com.cajatcp.Utils.Comunication.ComunicationICC;
 import com.cajatcp.Utils.Comunication.ComunicationTools;
 import com.cajatcp.Utils.Util;
 import java.io.BufferedReader;
@@ -178,7 +177,7 @@ public class Fichero {
     }
 
     public boolean escribirTrxSerealizado(String name) {
-        ArrayList<String> listTrxs = ComunicationICC.listMsgInput;
+        ArrayList<String> listTrxs = ComunicationTools.getListMsgInput();
         if (listTrxs == null || listTrxs.isEmpty()) {
             return false;
         }

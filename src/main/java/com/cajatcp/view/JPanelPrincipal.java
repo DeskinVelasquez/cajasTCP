@@ -83,8 +83,8 @@ public final class JPanelPrincipal extends JPanel /*implements ActionListener*/ 
     private JLabel jLabelIP;
     private JLabel jLabelPORT;
     private final JTextArea jTextArea = new JTextArea();
-    public static  JCheckBox checkMulti;
-    public static  JSpinner jSpnAcquirer;
+    public  JCheckBox checkMulti;
+    public  JSpinner jSpnAcquirer;
     private JSlider jSlider;
     private Graphics g;
     private JMenuItem styleItalic;
@@ -549,8 +549,15 @@ public final class JPanelPrincipal extends JPanel /*implements ActionListener*/ 
         add(tfVoid);
     }
     
-    public String getMonto() {
-        return textField1.getText();
+    public int getMonto() {
+        int monto = 0;
+        try{
+            monto = Integer.parseInt(textField1.getText());
+        } catch(Exception e) {
+            System.out.println("Error try Catch: "+ e.getMessage());
+            Alerts.alert(true, "Monto invalido", 1);
+        }
+        return monto;
     }
     
     public void configPort() {

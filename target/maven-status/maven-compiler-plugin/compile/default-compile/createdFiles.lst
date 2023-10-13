@@ -5,6 +5,7 @@ com\cajatcp\view\listeners\ImpDocumentListener.class
 com\cajatcp\practice\MarcoPractica.class
 com\cajatcp\practice\JFrameCalculadora.class
 com\cajatcp\Utils\Util.class
+com\cajatcp\view\listeners\ExtAbstractAction$3.class
 com\cajatcp\Utils\Comunication\ComunicationICC.class
 com\cajatcp\view\listeners\ExtWindowAdapter.class
 com\cajatcp\Utils\Alerts.class
@@ -12,9 +13,10 @@ com\mycompany\cajatcp\Cajatcp.class
 com\cajatcp\view\listeners\ExtAbstractAction$2.class
 com\cajatcp\view\listeners\ImpWindowFocusListener.class
 com\cajatcp\view\listeners\ImpKeyListener.class
-com\cajatcp\Utils\Comunication\ImpComunication.class
 com\cajatcp\view\listeners\ImpMouseMotionListener.class
+com\cajatcp\view\listeners\ExtAbstractAction$4.class
 com\cajatcp\Utils\Constans.class
+com\cajatcp\Utils\Comunication\ComunicationCTL.class
 com\cajatcp\view\JPanelPrincipal$1.class
 com\cajatcp\Utils\Comunication\ComunicationQR.class
 com\cajatcp\Utils\Comunication\ComunicationTools.class

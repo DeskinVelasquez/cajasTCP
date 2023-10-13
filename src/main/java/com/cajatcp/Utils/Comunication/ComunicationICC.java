@@ -4,70 +4,38 @@
  */
 package com.cajatcp.Utils.Comunication;
 
-import DataManager.DataClasses.Trx;
 import com.cajatcp.Utils.Alerts;
-import static com.cajatcp.Utils.Comunication.ComunicationTools.buscarDato;
 import com.cajatcp.Utils.Constans;
-import com.cajatcp.Utils.Util;
 import com.cajatcp.view.JPanelPrincipal;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 /**
  *
  * @author Deskin
  */
-public class ComunicationICC implements ImpComunication {
-    private static String monto;
-    private ComunicationTools ct;
-    private JPanelPrincipal panel;
-    public static boolean lastMsg;
-    private static String msgSend;
-    private static boolean needReceived;;
-    private static boolean needSend;
-    public static ArrayList<String> listMsgOutput;
-    public static ArrayList<String> listMsgInput;
-    private static int comando = 0;
-    private static final ArrayList<Trx> listTrx = new ArrayList<>();; 
+public class ComunicationICC extends ComunicationTools {
     
-    public ComunicationICC(String monto, JPanelPrincipal panel) {
-        
-        this.monto = monto;
-        this.panel = panel;
-        ct = new ComunicationTools(this);
-        ct.setPanel(panel);
-        
+    public ComunicationICC(JPanelPrincipal panel) {
+        super(panel);
         listMsgOutput = new ArrayList<>();
         listMsgInput = new ArrayList<>();
-        
     }
     
-    public void iniciarProceso() throws InterruptedException {
-
-        msgSend = Constans.ASCII_SOLICITUD_CONEXION;
-        needSend = true;
-        needReceived = true;
-
-        do {
-
-            if (needSend) {
-                enviarMsg(msgSend);
-            }
-
-            if (needReceived) {;
-                recibir();
-            }
-            
-            validaMsg();
-            
-        } while (!lastMsg);
-        
-        finalizarCo();
+    public void iniciarProceso() {
+        try {
+            super.iniciarProceso(Constans.SOLICITUD_CONEXION);
+        } catch (InterruptedException ex) {
+            Logger.getLogger(ComunicationICC.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     /**
      * termina con el valor del comando anterior (por ello se le suma una unidad),
      * es decir, para preparar el siguiente comando
      */
-    private void validaMsg() {
+    @Override
+    public void mensajeria() {
         
         msgSend = "";
         
@@ -117,6 +85,7 @@ public class ComunicationICC implements ImpComunication {
                 needReceived = true;
                 break;
             case 18:
+                desempaquetarDatos(msgComplete);
                 msgSend = Constans.ACK_STRING;
                 needSend = true;
                 needReceived = false;
@@ -131,234 +100,6 @@ public class ComunicationICC implements ImpComunication {
         }
     }
     
-    @Override
-    public void enviarMsg(String tipoMsg) {
-        byte[] trama;
-        switch (tipoMsg) {
-            case Constans.ASCII_SOLICITUD_CONEXION:
-                trama = ct.armarTrama(300, tipoMsg, Constans.PH_SOLICITUD_CONEXION);
-                enviar(trama);
-                break;
-            case Constans.ACK_STRING:
-                enviar(Constans.BT_ACK);
-                break;
-            case Constans.TRANS_REV_No:
-                trama = ct.armarTrama(300, tipoMsg, Constans.PH_TRANS_NO_REV);
-                enviar(trama);
-                break;
-            case Constans.TRANSACCION_ENVIO_DATOS:
-                trama = ct.armarTrama(300, tipoMsg, Constans.PH_ENVIO_DATA);
-                enviar(trama);
-                break;
-        }
-    }
-     public void enviar(byte[] frame) {
-         byte[] trama = ComunicationTools.dicardEmpty(frame); 
-        String msgEnviado = ct.decodeMsg(trama);
-        StringBuilder stringBuilder = new StringBuilder();
-
-        if (trama.length == 1) {
-            msgEnviado = ct.decodeMsg(trama);
-        } else {
-            msgEnviado = Util.hex2AsciiStr(ct.decodeMsg(trama));
-            ComunicationICC.listMsgOutput.add(msgEnviado);
-        }
-
-        ArrayList<String> msgComplete = ct.toListStringFrame(trama);
-
-        for (String element : msgComplete) {
-            stringBuilder.append(element);
-        }
-        
-        if (ct.send(trama)) {
-            panel.rspBox("CAJA ->  " + ct.msgOnScreen(msgEnviado));
-            panel.rspBox("Trama:  " + stringBuilder.toString() + "\n");
-            ComunicationICC.comando++;
-        } else {
-            panel.rspBox("Error en el envio de la trama: " + stringBuilder.toString() + "\n");
-            ComunicationICC.comando = -1;
-        }
-        
-    }
-     
-    @Override
-    public void recibir() {
-
-        byte[] tramaReceived = ct.receiveRsp();
-        ComunicationICC.comando++;
-
-        if (tramaReceived == null) {
-            ComunicationICC.comando = -1;
-            panel.rspBox("POS ->  null");
-            return;
-        }
-
-        StringBuilder stringBuilder = new StringBuilder();
-        ArrayList<String> msgComplete = ct.toListStringFrame(tramaReceived);
-
-        for (String element : msgComplete) {
-            stringBuilder.append(element);
-        }
-
-        System.out.println("rsp: " + stringBuilder.toString());
-        String msgRecibido;
-
-        if (tramaReceived.length == 1) {
-            msgRecibido = ct.decodeMsg(tramaReceived);
-        } else {
-            msgRecibido = Util.hex2AsciiStr(ct.decodeMsg(tramaReceived));
-            ComunicationICC.listMsgInput.add(msgRecibido);
-        }
-        panel.rspBox("POS ->  " + ct.msgOnScreen(msgRecibido));
-        panel.rspBox("Trama:  " + stringBuilder.toString() + "\n");
-
-        if (msgRecibido.equals(Constans.RESP_ERROR)) {
-            panel.rspBox("POS ->  " + manejoError(msgComplete));
-        }
-        if (comando == 17) {
-            desempaquetarDatos(msgComplete);
-        }
-    }
-     
-     private String manejoError(ArrayList<String> mensaje) {
-       
-       int typeError = Integer.parseInt(Util.conversorAString(buscarDato(mensaje,48)));
-       String msgEror;
-       
-         switch (typeError) {
-             case 1:
-                 msgEror = "TIEMPO DE ESPERA AGOTADO";
-                 break;
-             case 2:
-                 msgEror = "ERROR AL LEER TARJETA";
-                 break;
-             case 3:
-                 msgEror = "TRANSACCION NO EXISTE";
-                 break;
-             case 4:
-                 msgEror = "NO EXISTEN TRANSACCIONES";
-                 break;
-             case 5:
-                 msgEror = "LA TRANSACCION YA ESTA ANULADA";
-                 break;
-             case 7:
-                 msgEror = "LOTE LLENO, REALICE CIERRE";
-                 break;
-             case 8:
-                 msgEror = "MONTO INVALIDO";
-                 break;
-             case 9:
-                 msgEror = "TARJETA NO SOPORTADA";
-                 break;
-             case 10:
-                 msgEror = "LA TARJETA NO ES LA ORIGINAL";
-                 break;
-             case 11:
-                 msgEror = "TARJETA EXPIRADA";
-                 break;
-             case 12:
-                 msgEror = "USUARIO CANCELO";
-                 break;
-             case 13:
-                 msgEror = "PIN INVALIDO";
-                 break;
-             case 14:
-                 msgEror = "TRANSACCION NO PERMITIDA";
-                 break;
-             case 16:
-                 msgEror = "ERROR EN LA BUSQUEDA DE LA TARJETA";
-                 break;
-             case 17:
-                 msgEror = "ERROR DURANTE EL PROCESO DE TRANSACCION";
-                 break;
-             case 18:
-                 msgEror = "MENSAJE INESPERADO";
-                 break;
-             case 19:
-                 msgEror = "ERROR EN LA PANTALLA DE PIN";
-                 break;
-             case 20:
-                 msgEror = "ERROR DE COMUNICACIÓN";
-                 break;
-             default:
-                 msgEror = "ERROR NO CONTEMPLADO";
-         }
-       comando = -1;
-       return msgEror;
-    }
-    
-    public static byte[] armarTrama48XX() {
-        byte[] retorno = new byte[7]; 
-        byte[] codigoResp = ComunicationTools.hacerCodigoRespuesta(false);
-        System.arraycopy(codigoResp, 0, retorno, 0, codigoResp.length);
-
-        return retorno;
-    }
-    
-    public static byte[] tramaEnvioDatos() {
-
-        String montoPadleft = Util.padleft(monto + "", 12, '0');
-
-        byte[] frame = new byte[100];
-        byte[] campoMonto = ComunicationTools.crearCampo(montoPadleft, 40, 12);
-        System.arraycopy(campoMonto, 0, frame, 0, campoMonto.length );
-
-        byte[] noCaja = ComunicationTools.crearCampo("123", 42, 10);//10
-        System.arraycopy(noCaja, 0, frame, campoMonto.length, noCaja.length);
-
-        byte[] codigoResp = ComunicationTools.hacerCodigoRespuesta(true);
-        System.arraycopy(codigoResp, 0, frame, campoMonto.length+noCaja.length, codigoResp.length);
-
-        byte[] noTrx = ComunicationTools.crearCampo("123456", 53, 10);//10
-        System.arraycopy(noTrx, 0, frame, campoMonto.length+noCaja.length+codigoResp.length, noTrx.length);
-
-        byte[] typeAccount = ComunicationTools.crearCampo("1", 88, 12);//12
-        System.arraycopy(typeAccount, 0, frame,campoMonto.length+noCaja.length+codigoResp.length+noTrx.length, typeAccount.length);
-        
-        byte[] etx = {Constans.ETX};
-        System.arraycopy(etx, 0, frame, typeAccount.length+campoMonto.length+noCaja.length+codigoResp.length+noTrx.length, etx.length);
-        
-         byte[] frame2 = ComunicationTools.dicardEmpty(frame);
-         byte[] retorno = new byte[frame2.length-2];
-         for (int i = 0; i < frame2.length-2; i++) {
-            retorno[i] = frame2[i];
-        }
-         
-        return retorno;
-    }
-    
-    /**
-     * Metodo que desempaqueta los campos que llegan a la caja
-     * @param mensaje El mensaje o la trama completa recibida
-     */
-
-
-    public int desempaquetarDatos(ArrayList<String> mensaje) {
-       
-        try {
-            String codigoAut = Util.conversorAString(buscarDato(mensaje,01));
-            String montoString = Util.conversorAString(buscarDato(mensaje,40));
-            String numRecibo = Util.conversorAString(buscarDato(mensaje,43));
-            String RRN = Util.conversorAString(buscarDato(mensaje,44));
-            String tid = Util.conversorAString(buscarDato(mensaje,45));
-            String dateTXR = Util.conversorAString(buscarDato(mensaje,46));
-            String timeTXR = Util.conversorAString(buscarDato(mensaje,47));
-            String codRsp = Util.conversorAString(buscarDato(mensaje,48));
-            String typeAccount = Util.conversorAString(buscarDato(mensaje,50));
-            String numCuotas = Util.conversorAString(buscarDato(mensaje,51));
-            String last4Digits = Util.conversorAString(buscarDato(mensaje,54));
-            String msgError = Util.conversorAString(buscarDato(mensaje,61));
-            
-            Trx trx = new Trx(codigoAut, montoString, numRecibo, RRN, tid, dateTXR, timeTXR, codRsp, typeAccount, numCuotas, last4Digits, msgError);
-            listTrx.add(trx);
-            panel.rspBox(panel.dataTrx(trx));            
-        } catch (Exception e) {
-            System.out.println("Error al desempaquetar los datos ");
-            return 2;
-        }
-        return 0;
-    }
-
     @Override
     public byte[] armarTramaVariable(String tipo) {
         byte[] retorno;
@@ -378,10 +119,4 @@ public class ComunicationICC implements ImpComunication {
         
         return retorno;
     }
-    
-    private void finalizarCo() {
-        comando = 0;
-        ct.disaableConnect();
-        ct.openConnect();
-     }
 }

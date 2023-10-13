@@ -6,7 +6,7 @@ package com.cajatcp.Utils;
 
 /**
  *
- * @author WPOSS
+ * @author deskin
  */
 public class Constans {
     //Variables de tramas
@@ -20,7 +20,7 @@ public class Constans {
     public final static String ERROR = "ERROR";
     
     //Ventas tramas enviadas
-    public final static String ASCII_SOLICITUD_CONEXION = "1000000";
+    public final static String SOLICITUD_CONEXION = "1000000";
     public final static String SOLICITUD_CONEXION_QR = "1008000";
     public final static String SOLICITUD_CONEXION_TIGOMONEY = "1009000";
     public final static String SOLICITUD_CONEXION_CONTACTLESS = "1006000";

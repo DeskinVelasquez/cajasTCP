@@ -11,8 +11,6 @@ import com.cajatcp.Utils.Comunication.ComunicationQR;
 import com.cajatcp.Utils.Constans;
 import static com.cajatcp.Utils.Constans.APPEARANCE_DARK;
 import static com.cajatcp.Utils.Constans.APPEARANCE_LIGHT;
-import static com.cajatcp.Utils.Constans.BT_SOLICITUD_CONEXION;
-import static com.cajatcp.Utils.Constans.BT_SOLICITUD_CONEXION_QR;
 import static com.cajatcp.Utils.Constans.PAGO_ICC;
 import static com.cajatcp.Utils.Constans.PAGO_QR;
 import static com.cajatcp.Utils.Constans.STR_CONFIG_PORT;
@@ -36,8 +34,6 @@ import static com.cajatcp.Utils.Constans.STR_VIEW_TRXS;
 import com.cajatcp.view.JPanelPrincipal;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.Icon;
@@ -47,16 +43,17 @@ import javax.swing.Icon;
  * @author Deskin Velasquez
  */
 public class ExtAbstractAction /*implements Action*/ extends AbstractAction {
+
     public static final String COLOR_OBJETO_OYENTE = "COLOR_OBJETO_OYENTE";
     private JPanelPrincipal panel;
-    
-    public ExtAbstractAction(String nombre, Icon icono, JPanelPrincipal panel){
+
+    public ExtAbstractAction(String nombre, Icon icono, JPanelPrincipal panel) {
         //se guardan los parametro en clave valor, esto se guardara en el objeto evento del tipo ActionEvent
         putValue(Action.NAME, nombre);
         putValue(Action.SMALL_ICON, icono);
         this.panel = panel;
-    } 
-    
+    }
+
     public ExtAbstractAction(String nombre, JPanelPrincipal jpanel) {
 
         //se guardan los parametro en clave valor, esto se guardara en el objeto evento del tipo ActionEvent
@@ -66,72 +63,74 @@ public class ExtAbstractAction /*implements Action*/ extends AbstractAction {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        ComunicationTools co = new ComunicationTools();
-
         switch (e.getActionCommand()) {
             case PAGO_ICC:
                 panel.setEnableButtons(false);
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
-                        String monto = panel.getMonto();
-                        if (!Alerts.alert(monto.isEmpty(), "Debe haber un monto", 2)) {
-                            try {
-                                ComunicationICC cICC = new ComunicationICC(monto, panel);
-                                cICC.iniciarProceso();
-                            } catch (InterruptedException ex) {
-                                Logger.getLogger(ExtAbstractAction.class.getName()).log(Level.SEVERE, null, ex);
-                                System.out.println("Error en ");
-                            }
+                        int monto = panel.getMonto();
+                        if (!Alerts.alert(monto == 0, "Debe haber un monto", 2)) {
+                            ComunicationICC cICC = new ComunicationICC(panel);
+                            cICC.iniciarProceso();
                         }
                     }
                 }).start();
                 break;
             case STR_ENABLE_CONNECT:
+                ComunicationTools co = new ComunicationTools(panel) {
+                    @Override
+                    public byte[] armarTramaVariable(String tipo) {
+                        return null;
+                    }
+
+                    @Override
+                    public void mensajeria() {
+                    }
+                };
                 panel.cambiarNombreBtnConecct(STR_DISABLE_CONNECT);
-                co.setPanel(panel);
                 co.openConnect();
                 break;
             case PAGO_QR:
-               panel.setEnableButtons(false);
-               new Thread(new Runnable() {
+                panel.setEnableButtons(false);
+                new Thread(new Runnable() {
                     @Override
                     public void run() {
-                        String monto = panel.getMonto();
-                        if (!Alerts.alert(monto.isEmpty(), "Debe haber un monto", 2)) {
-                            try {
-                                ComunicationQR cQR = new ComunicationQR(monto, panel);
-                                cQR.iniciarProceso();
-                            } catch (InterruptedException ex) {
-                                Logger.getLogger(ExtAbstractAction.class.getName()).log(Level.SEVERE, null, ex);
-                                System.out.println("Error en ");
-                            }
+                        int monto = panel.getMonto();
+                        if (!Alerts.alert(monto == 0, "Debe haber un monto", 2)) {
+                            ComunicationQR cQR = new ComunicationQR(panel);
+                            cQR.iniciarProceso();
                         }
                     }
                 }).start();
                 break;
             case PAGO_CTL:
-               panel.setEnableButtons(false);
-               new Thread(new Runnable() {
+                panel.setEnableButtons(false);
+                new Thread(new Runnable() {
                     @Override
                     public void run() {
-                        String monto = panel.getMonto();
-                        if (!Alerts.alert(monto.isEmpty(), "Debe haber un monto", 2)) {
-                            try {
-                                ComunicationCTL cCTL = new ComunicationCTL(monto, panel);
-                                cCTL.iniciarProceso();
-                            } catch (InterruptedException ex) {
-                                Logger.getLogger(ExtAbstractAction.class.getName()).log(Level.SEVERE, null, ex);
-                                System.out.println("Error en ");
-                            }
+                        int monto = panel.getMonto();
+                        if (!Alerts.alert(monto == 0, "Debe haber un monto", 2)) {
+                            ComunicationCTL cCTL = new ComunicationCTL(panel);
+                            cCTL.iniciarProceso();
                         }
                     }
                 }).start();
                 break;
             case STR_DISABLE_CONNECT:
+                ComunicationTools ca = new ComunicationTools(panel) {
+                    @Override
+                    public byte[] armarTramaVariable(String tipo) {
+                        return null;
+                    }
+
+                    @Override
+                    public void mensajeria() {
+                    }
+                };
                 System.out.println("desconectado");
                 panel.cambiarNombreBtnConecct(STR_ENABLE_CONNECT);
-                panel.rspBox(co.disaableConnect());
+                panel.rspBox(ca.disaableConnect());
                 panel.setEnableButtons(false);
                 break;
             case STR_CONFIG_PORT:
@@ -183,7 +182,5 @@ public class ExtAbstractAction /*implements Action*/ extends AbstractAction {
                 break;
         }
     }
-
-   
 
 }
