@@ -86,6 +86,7 @@ public final class JPanelPrincipal extends JPanel /*implements ActionListener*/ 
     public  JCheckBox checkMulti;
     public  JSpinner jSpnAcquirer;
     public  JCheckBox checkCuota;
+    public  JComboBox cbxMoneda;
     public  JSpinner jSpnCuotas;
     private JSlider jSlider;
     private Graphics g;
@@ -724,13 +725,13 @@ public final class JPanelPrincipal extends JPanel /*implements ActionListener*/ 
         JLabel jlMoneda = new JLabel(Constans.STR_COIN); 
         jlMoneda.setBounds(200, 20, 150, 20);
         
-        JComboBox jComboBox = new JComboBox();
-        jComboBox.setBounds(250, 20, 53, 20);
+        cbxMoneda = new JComboBox();
+        cbxMoneda.setBounds(250, 20, 53, 20);
         String[] itemsComboBox = {"BS", "USD"};
-        jComboBox.addItem(itemsComboBox[0]);
-        jComboBox.addItem(itemsComboBox[1]);
+        cbxMoneda.addItem(itemsComboBox[0]);
+        cbxMoneda.addItem(itemsComboBox[1]);
         
-        add(jComboBox);
+        add(cbxMoneda);
         add(jlMoneda);
         
     }

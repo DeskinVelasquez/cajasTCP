@@ -396,10 +396,7 @@ public abstract class ComunicationTools {
             case Constans.SOLICITUD_CONEXION_QR:
             case Constans.SOLICITUD_CONEXION_CONTACTLESS:
                 //aqui se debe validar si tiene id de comercio
-                if (panel.checkMulti.isSelected()) {
-                   int idAcq = (int) panel.jSpnAcquirer.getValue();
-                   retorno = armarTramaIDACQ(idAcq);
-                }
+                retorno = armarFirtsFields();
                 break;
             case Constans.TRANS_REV_No:
                 retorno = armarTramaVariable(Constans.STR_TRANS_REV_No);
@@ -411,6 +408,37 @@ public abstract class ComunicationTools {
                 //retorno = impComunication.armarTramaVariable(Constans.TARJETA_CONTACTLESS);
                 break;
         }
+        return retorno;
+    }
+    
+    private byte[] armarFirtsFields() {
+        byte[] frame = new byte[30];
+        int dinamicLen = 0;
+        if (panel.checkMulti.isSelected()) {
+            int idAcq = (int) panel.jSpnAcquirer.getValue();
+            byte[] tramaIdAc = armarTramaIDACQ(idAcq);
+            System.arraycopy(tramaIdAc, 0, frame, dinamicLen, tramaIdAc.length);
+            dinamicLen += tramaIdAc.length;
+        }
+        String moneda = (String) panel.cbxMoneda.getSelectedItem();
+        if (moneda.equals(Constans.STR_BS)) {
+            moneda = "01";
+        } else {
+            moneda = "02";
+        }
+        byte[] tramaCoin = crearCampo(moneda, 68, 2);
+        System.arraycopy(tramaCoin, 0, frame, dinamicLen, tramaCoin.length);
+        dinamicLen += tramaCoin.length;
+
+        byte[] etx = {Constans.ETX};
+        System.arraycopy(etx, 0, frame, dinamicLen, etx.length);
+
+        byte[] frame2 = ComunicationTools.dicardEmpty(frame);
+        byte[] retorno = new byte[frame2.length - 2];
+        for (int i = 0; i < frame2.length - 2; i++) {
+            retorno[i] = frame2[i];
+        }
+
         return retorno;
     }
     
@@ -639,6 +667,14 @@ public abstract class ComunicationTools {
                 idCampoByte[1] = 0x31;
                 longitudCampoByte[0] = 0x00;
                 longitudCampoByte[1] = 0x45;
+                totalByte[0] = Constans.SEPARADOR;
+                break;
+            case 68:
+                Arrays.fill(totalByte, (byte) 0x20);
+                idCampoByte[0] = 0x36;
+                idCampoByte[1] = 0x38;
+                longitudCampoByte[0] = 0x00;
+                longitudCampoByte[1] = 0x02;
                 totalByte[0] = Constans.SEPARADOR;
                 break;
             case 79:
@@ -919,6 +955,7 @@ public abstract class ComunicationTools {
         if (tramaReceived == null) {
             comando = -1;
             panel.rspBox("POS ->  null");
+            finalizarCo();
             return;
         }
 

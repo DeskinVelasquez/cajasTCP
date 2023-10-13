@@ -162,6 +162,9 @@ public class Constans {
     public static final String STR_COIN = "Moneda";
     public static final String STR_CUOTAS = "Cuotas";
     
+    //moneda
+    public static final String STR_BS = "BS";
+    public static final String STR_USD = "USD";
     
     //bytes para armado de tramas-----------------------------------------------------------------
     public final static byte STX = 0x02;
