@@ -93,7 +93,7 @@ public abstract class ComunicationTools {
                     System.out.println("desconectado");
                     timer.cancel();
                 }
-            }, 5000);
+            }, 10000);
             socket = serverSocket.accept();
             timer.cancel();
             if (socket != null && socket.isConnected()) {
@@ -1047,25 +1047,45 @@ public abstract class ComunicationTools {
     protected byte[] tramaEnvioDatos() {
 
         String montoPadleft = Util.padleft(monto + "", 12, '0');
-
+        int dinamicLength = 0;
         byte[] frame = new byte[100];
         byte[] campoMonto = ComunicationTools.crearCampo(montoPadleft, 40, 12);
         System.arraycopy(campoMonto, 0, frame, 0, campoMonto.length );
+        dinamicLength += campoMonto.length;
 
         byte[] noCaja = ComunicationTools.crearCampo("123", 42, 10);//10
-        System.arraycopy(noCaja, 0, frame, campoMonto.length, noCaja.length);
+        System.arraycopy(noCaja, 0, frame, dinamicLength, noCaja.length);
+        dinamicLength += noCaja.length;
 
         byte[] codigoResp = ComunicationTools.hacerCodigoRespuesta(true);
-        System.arraycopy(codigoResp, 0, frame, campoMonto.length+noCaja.length, codigoResp.length);
+        System.arraycopy(codigoResp, 0, frame, dinamicLength, codigoResp.length);
+        dinamicLength += codigoResp.length;
 
+        if (panel.checkCuota.isSelected()) {
+            
+            int numero = (int) panel.jSpnCuotas.getValue();
+            String numCuota;
+            if (numero < 9) {
+                numCuota = "0"+numero;
+            } else {
+              numCuota = String.valueOf(numero);
+            }
+            byte[] noCuota = ComunicationTools.crearCampo(numCuota, 51, 2);
+            System.arraycopy(noCuota, 0, frame, dinamicLength, noCuota.length);
+            dinamicLength += noCuota.length;
+            
+        }          
+                 
         byte[] noTrx = ComunicationTools.crearCampo("123456", 53, 10);//10
-        System.arraycopy(noTrx, 0, frame, campoMonto.length+noCaja.length+codigoResp.length, noTrx.length);
+        System.arraycopy(noTrx, 0, frame, dinamicLength, noTrx.length);
+        dinamicLength += noTrx.length;
 
         byte[] typeAccount = ComunicationTools.crearCampo("1", 88, 12);//12
-        System.arraycopy(typeAccount, 0, frame,campoMonto.length+noCaja.length+codigoResp.length+noTrx.length, typeAccount.length);
+        System.arraycopy(typeAccount, 0, frame,dinamicLength, typeAccount.length);
+        dinamicLength += typeAccount.length;
         
         byte[] etx = {Constans.ETX};
-        System.arraycopy(etx, 0, frame, typeAccount.length+campoMonto.length+noCaja.length+codigoResp.length+noTrx.length, etx.length);
+        System.arraycopy(etx, 0, frame, dinamicLength, etx.length);
         
          byte[] frame2 = ComunicationTools.dicardEmpty(frame);
          byte[] retorno = new byte[frame2.length-2];

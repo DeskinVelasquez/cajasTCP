@@ -85,6 +85,8 @@ public final class JPanelPrincipal extends JPanel /*implements ActionListener*/ 
     private final JTextArea jTextArea = new JTextArea();
     public  JCheckBox checkMulti;
     public  JSpinner jSpnAcquirer;
+    public  JCheckBox checkCuota;
+    public  JSpinner jSpnCuotas;
     private JSlider jSlider;
     private Graphics g;
     private JMenuItem styleItalic;
@@ -737,10 +739,10 @@ public final class JPanelPrincipal extends JPanel /*implements ActionListener*/ 
         JLabel jlCuota = new JLabel(Constans.STR_CUOTAS);
         jlCuota.setBounds(30, 50, 150, 20);
 
-        JCheckBox checkCuota = new JCheckBox();
+        checkCuota = new JCheckBox();
         checkCuota.setBounds(80, 50, 35, 20);
 
-        JSpinner jSpnCuotas = new JSpinner(new SpinnerNumberModel(1, 1, 12, 1));
+        jSpnCuotas = new JSpinner(new SpinnerNumberModel(1, 1, 12, 1));
         jSpnCuotas.setBounds(145, 50, 40, 20);
         JComponent editor = jSpnCuotas.getEditor();
         if (editor instanceof JSpinner.DefaultEditor) {
