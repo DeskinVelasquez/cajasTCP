@@ -12,6 +12,7 @@ com\cajatcp\Utils\Alerts.class
 com\mycompany\cajatcp\Cajatcp.class
 com\cajatcp\view\listeners\ExtAbstractAction$2.class
 com\cajatcp\view\listeners\ImpWindowFocusListener.class
+com\cajatcp\view\listeners\ExtAbstractAction$5.class
 com\cajatcp\view\listeners\ImpKeyListener.class
 com\cajatcp\view\listeners\ImpMouseMotionListener.class
 com\cajatcp\view\listeners\ExtAbstractAction$4.class

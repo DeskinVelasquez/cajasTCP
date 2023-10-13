@@ -19,6 +19,7 @@ public class ComunicationCTL extends ComunicationTools {
     
     public ComunicationCTL(JPanelPrincipal panel) {
         super(panel);
+        super.setMonto();
         listMsgOutput = new ArrayList<>();
         listMsgInput = new ArrayList<>();
     }

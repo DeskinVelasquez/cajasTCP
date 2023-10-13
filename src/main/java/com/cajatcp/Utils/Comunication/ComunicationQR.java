@@ -20,6 +20,7 @@ public class ComunicationQR extends ComunicationTools {
     
     public ComunicationQR(JPanelPrincipal panel) {
         super(panel);
+        super.setMonto();
         listMsgOutput = new ArrayList<>();
         listMsgInput = new ArrayList<>();
     }

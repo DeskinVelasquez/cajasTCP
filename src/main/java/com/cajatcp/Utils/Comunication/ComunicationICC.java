@@ -18,6 +18,7 @@ public class ComunicationICC extends ComunicationTools {
     
     public ComunicationICC(JPanelPrincipal panel) {
         super(panel);
+        super.setMonto();
         listMsgOutput = new ArrayList<>();
         listMsgInput = new ArrayList<>();
     }

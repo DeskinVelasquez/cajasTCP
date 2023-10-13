@@ -77,19 +77,18 @@ public class ExtAbstractAction /*implements Action*/ extends AbstractAction {
                     }
                 }).start();
                 break;
-            case STR_ENABLE_CONNECT:
-                ComunicationTools co = new ComunicationTools(panel) {
+            case PAGO_CTL:
+                panel.setEnableButtons(false);
+                new Thread(new Runnable() {
                     @Override
-                    public byte[] armarTramaVariable(String tipo) {
-                        return null;
+                    public void run() {
+                        int monto = panel.getMonto();
+                        if (!Alerts.alert(monto == 0, "Debe haber un monto", 2)) {
+                            ComunicationCTL cCTL = new ComunicationCTL(panel);
+                            cCTL.iniciarProceso();
+                        }
                     }
-
-                    @Override
-                    public void mensajeria() {
-                    }
-                };
-                panel.cambiarNombreBtnConecct(STR_DISABLE_CONNECT);
-                co.openConnect();
+                }).start();
                 break;
             case PAGO_QR:
                 panel.setEnableButtons(false);
@@ -104,18 +103,19 @@ public class ExtAbstractAction /*implements Action*/ extends AbstractAction {
                     }
                 }).start();
                 break;
-            case PAGO_CTL:
-                panel.setEnableButtons(false);
-                new Thread(new Runnable() {
+            case STR_ENABLE_CONNECT:
+                ComunicationTools co = new ComunicationTools(panel) {
                     @Override
-                    public void run() {
-                        int monto = panel.getMonto();
-                        if (!Alerts.alert(monto == 0, "Debe haber un monto", 2)) {
-                            ComunicationCTL cCTL = new ComunicationCTL(panel);
-                            cCTL.iniciarProceso();
-                        }
+                    public byte[] armarTramaVariable(String tipo) {
+                        return null;
                     }
-                }).start();
+
+                    @Override
+                    public void mensajeria() {
+                    }
+                };
+                panel.cambiarNombreBtnConecct(STR_DISABLE_CONNECT);
+                co.openConnect();
                 break;
             case STR_DISABLE_CONNECT:
                 ComunicationTools ca = new ComunicationTools(panel) {

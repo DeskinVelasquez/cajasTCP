@@ -50,7 +50,10 @@ public abstract class ComunicationTools {
    
     public ComunicationTools(JPanelPrincipal panel) {
         this.panel = panel;
-        monto = panel.getMonto();
+       
+    }
+     public void setMonto() {
+          monto = panel.getMonto();
     }
     public static ArrayList<String> getListMsgInput() {
         return listMsgInput;
