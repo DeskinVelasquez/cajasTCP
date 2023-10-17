@@ -28,6 +28,10 @@ public class Constans {
     public final static String TRANSACCION_ENVIO_DATOS = "1000002";
     public final static String TARJETA_CONTACTLESS = "1006001";
     
+    //Inicializacion
+    public final static String SOLICITUD_INIT = "1002000";
+    public final static String RESP_INIT = "1002  0";
+    
     //Strings ventas tramas enviadas
     public final static String STR_SOLICITUD_CONEXION = "SOLICITUD CONEXION";
     public final static String STR_SOLICITUD_CONEXION_QR = "SOLICITUD CONEXION QR";
@@ -79,6 +83,7 @@ public class Constans {
     public final static String STR_SOLICITUD_DATOS = "SOLICITUD DATOS";
     public final static String STR_RESP_HOST = "RESP HOST";
     public final static String STR_RESP_HOST_CONTACTLESS = "RESP HOST CONTACTLESS";
+    public final static String STR_INIT_OK = "INICIALIZACION EXITOSA";
     
     //msg bytes venta icc
     public final static byte[] BT_SOLICITUD_CONEXION = {2, 0, 23, 54, 48, 48, 48, 48, 48, 48, 48, 48, 48, 49, 48, 48, 48, 48, 48, 48, 3, 35};
@@ -191,6 +196,8 @@ public class Constans {
     public final static byte[] PH_RESP_HOST_CONTACTLESS_BYTES ={ 0x31, 0x30, 0x30, 0x36, 0x20, 0x20, 0x30 };
     //qr
     public final static byte[] PH_SOLICITUD_CONEXION_QR ={ 0x31, 0x30, 0x30, 0x38, 0x30, 0x30, 0x30};
+    //init
+    public final static byte[] PH_SOLICITUD_INIT ={ 0x31, 0x30, 0x30, 0x32, 0x30, 0x30, 0x30};
     
 }
 

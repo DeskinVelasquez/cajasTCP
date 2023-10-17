@@ -336,6 +336,9 @@ public abstract class ComunicationTools {
             case Constans.TARJETA_CONTACTLESS:
                 msgOnScreen = Constans.STR_TARJETA_CONTACTLESS;
                 break;
+            case Constans.SOLICITUD_INIT:
+                msgOnScreen = Constans.STR_INIT;
+                break;
         //msg recibidos
             case Constans.ULTIMA_TRANS:
                 msgOnScreen = Constans.STR_ULTIMA_TRANS;
@@ -363,6 +366,9 @@ public abstract class ComunicationTools {
                 break;
             case Constans.SEND_REF_PENDING:
                 msgOnScreen = Constans.STR_SEND_REF_PENDING;
+                break;
+            case Constans.RESP_INIT:
+                msgOnScreen = Constans.STR_INIT_OK;
                 break;
             default:
                 Alerts.alert(true, "mensaje sobre pantalla no contemplado", 2);
@@ -392,6 +398,8 @@ public abstract class ComunicationTools {
     public byte[] armarParteVariable(String presentationHeader) {
         byte[] retorno = null;
         switch (presentationHeader) {
+            case Constans.STR_INIT:
+                break;
             case Constans.SOLICITUD_CONEXION:
             case Constans.SOLICITUD_CONEXION_QR:
             case Constans.SOLICITUD_CONEXION_CONTACTLESS:
@@ -909,6 +917,10 @@ public abstract class ComunicationTools {
                 break;
            case Constans.SOLICITUD_CONEXION:
                 trama = armarTrama(300, tipoMsg, Constans.PH_SOLICITUD_CONEXION);
+                enviar(trama);
+                break;
+           case Constans.SOLICITUD_INIT:
+                trama = armarTrama(300, tipoMsg, Constans.PH_SOLICITUD_INIT);
                 enviar(trama);
                 break;
             default:
