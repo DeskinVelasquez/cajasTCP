@@ -5,7 +5,6 @@
 package com.cajatcp.Utils.Comunication;
 
 import com.cajatcp.Utils.Alerts;
-import static com.cajatcp.Utils.Comunication.ComunicationTools.armarTrama48XX;
 import static com.cajatcp.Utils.Comunication.ComunicationTools.comando;
 import static com.cajatcp.Utils.Comunication.ComunicationTools.listMsgInput;
 import com.cajatcp.Utils.Constans;

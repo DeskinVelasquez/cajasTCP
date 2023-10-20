@@ -32,15 +32,25 @@ public class Constans {
     public final static String SOLICITUD_INIT = "1002000";
     public final static String RESP_INIT = "1002  0";
     
+    //Cierre
+    public final static String SOLICITUD_CIERRE = "1001000";
+    //Tramas de cierre recibidas. 
+    public final static String CIERRE_CANTIDAD = "1001  0";//-->cantidad de transacciones inicial
+    public final static String DATOS_CIERRE = "1001  1"; //la transaccion
+    public final static String RESP_CIERRE = "1001  2";//-->respuesta final
+    
     //Strings ventas tramas enviadas
     public final static String STR_SOLICITUD_CONEXION = "SOLICITUD CONEXION";
     public final static String STR_SOLICITUD_CONEXION_QR = "SOLICITUD CONEXION QR";
     public final static String STR_SOLICITUD_CONEXION_TIGOMONEY = "SOLICITUD CONEXION TIGOMONEY";
     public final static String STR_SOLICITUD_CONEXION_CONTACTLESS = "SOLICITUD CONEXION CONTACTLESS";
+    public final static String STR_SOLICITUD_INIT = "SOLICITUD INICIALIZACION";
     public final static String STR_TRANS_REV_No = "TRANS REV No";
     public final static String STR_TRANSACCION_ENVIO_DATOS = "TRANSACCION ENVIO DATOS";
     public final static String STR_TARJETA_CONTACTLESS = "TARJETA CONTACTLESS";
     public final static String STR_SEND_REF_PENDING = "REFERENCIA PENDIENTE";
+    public final static String STR_CIERRE_CANTIDAD = "CANTIDAD TRXS";
+    public final static String STR_DATOS_CIERRE = "DATOS DE LA TRX"; //la transaccion
     
     //strings programa
     public final static String PAGO_ICC = "PAGO ICC";
@@ -198,6 +208,8 @@ public class Constans {
     public final static byte[] PH_SOLICITUD_CONEXION_QR ={ 0x31, 0x30, 0x30, 0x38, 0x30, 0x30, 0x30};
     //init
     public final static byte[] PH_SOLICITUD_INIT ={ 0x31, 0x30, 0x30, 0x32, 0x30, 0x30, 0x30};
+    //cierre
+    public final static byte[] PH_SOLICITUD_CIERRE ={ 0x31, 0x30, 0x30, 0x31, 0x30, 0x30, 0x30};
     
 }
 

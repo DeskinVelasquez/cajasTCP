@@ -96,7 +96,7 @@ public class ComunicationCTL extends ComunicationTools {
                 needReceived = true;
                 break;
             case 20:
-                desempaquetarDatos(msgComplete);
+                desempaquetarDatos(msgComplete, true);
                 msgSend = Constans.ACK_STRING;
                 needSend = true;
                 needReceived = false;

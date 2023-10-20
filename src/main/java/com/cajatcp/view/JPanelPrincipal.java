@@ -743,7 +743,7 @@ public final class JPanelPrincipal extends JPanel /*implements ActionListener*/ 
         checkCuota = new JCheckBox();
         checkCuota.setBounds(80, 50, 35, 20);
 
-        jSpnCuotas = new JSpinner(new SpinnerNumberModel(1, 1, 12, 1));
+        jSpnCuotas = new JSpinner(new SpinnerNumberModel(1, 1, 15, 1));
         jSpnCuotas.setBounds(145, 50, 40, 20);
         JComponent editor = jSpnCuotas.getEditor();
         if (editor instanceof JSpinner.DefaultEditor) {

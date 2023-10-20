@@ -6,6 +6,7 @@ package com.cajatcp.view.listeners;
 
 import com.cajatcp.Utils.Alerts;
 import com.cajatcp.Utils.Comunication.ComunicationCTL;
+import com.cajatcp.Utils.Comunication.ComunicationClose;
 import com.cajatcp.Utils.Comunication.ComunicationICC;
 import com.cajatcp.Utils.Comunication.ComunicationInit;
 import com.cajatcp.Utils.Comunication.ComunicationQR;
@@ -28,6 +29,7 @@ import static com.cajatcp.Utils.Constans.STR_STYLE_PLAIN;
 import com.cajatcp.Utils.Comunication.ComunicationTools;
 import static com.cajatcp.Utils.Constans.PAGO_CTL;
 import static com.cajatcp.Utils.Constans.STR_CLEAR;
+import static com.cajatcp.Utils.Constans.STR_CLOSE;
 import static com.cajatcp.Utils.Constans.STR_INIT;
 import static com.cajatcp.Utils.Constans.STR_READ_FILE;
 import static com.cajatcp.Utils.Constans.STR_SAVE;
@@ -150,6 +152,16 @@ public class ExtAbstractAction /*implements Action*/ extends AbstractAction {
                     public void run() {
                         ComunicationInit cInit = new ComunicationInit(panel);
                         cInit.iniciarProceso();
+                    }
+                }).start();
+                break;
+            case STR_CLOSE:
+                panel.setEnableButtons(false);
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        ComunicationClose cClose = new ComunicationClose(panel);
+                        cClose.iniciarProceso();
                     }
                 }).start();
                 break;

@@ -86,7 +86,7 @@ public class ComunicationICC extends ComunicationTools {
                 needReceived = true;
                 break;
             case 18:
-                desempaquetarDatos(msgComplete);
+                desempaquetarDatos(msgComplete, true);
                 msgSend = Constans.ACK_STRING;
                 needSend = true;
                 needReceived = false;

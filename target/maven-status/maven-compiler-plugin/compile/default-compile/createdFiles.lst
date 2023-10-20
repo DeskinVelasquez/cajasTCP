@@ -1,9 +1,11 @@
 com\cajatcp\Utils\Comunication\ComunicationTools$1.class
 com\cajatcp\view\JFramePrincipal.class
 DataManager\DataClasses\Trx.class
+com\cajatcp\Utils\Comunication\ComunicationClose.class
 com\cajatcp\view\listeners\ImpDocumentListener.class
 com\cajatcp\practice\MarcoPractica.class
 com\cajatcp\practice\JFrameCalculadora.class
+com\cajatcp\Utils\Comunication\ComunicationInit.class
 com\cajatcp\Utils\Util.class
 com\cajatcp\view\listeners\ExtAbstractAction$3.class
 com\cajatcp\Utils\Comunication\ComunicationICC.class
@@ -29,5 +31,6 @@ com\cajatcp\view\listeners\ExtAbstractAction.class
 com\cajatcp\view\listeners\ImpFocusListener.class
 com\cajatcp\practice\JPanelCalculadora.class
 com\cajatcp\view\JPanelPrincipal$2.class
+com\cajatcp\view\listeners\ExtAbstractAction$6.class
 com\cajatcp\Utils\Comunication\ComunicationTools$2.class
 com\cajatcp\view\listeners\ExtAbstractAction$1.class

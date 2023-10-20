@@ -339,6 +339,15 @@ public abstract class ComunicationTools {
             case Constans.SOLICITUD_INIT:
                 msgOnScreen = Constans.STR_INIT;
                 break;
+            case Constans.SOLICITUD_CIERRE:
+                msgOnScreen = Constans.STR_CLOSE;
+                break;
+            case Constans.CIERRE_CANTIDAD:
+                msgOnScreen = Constans.STR_CLOSE;
+                break;
+            case Constans.DATOS_CIERRE:
+                msgOnScreen = Constans.STR_DATOS_CIERRE;
+                break;
         //msg recibidos
             case Constans.ULTIMA_TRANS:
                 msgOnScreen = Constans.STR_ULTIMA_TRANS;
@@ -399,6 +408,7 @@ public abstract class ComunicationTools {
         byte[] retorno = null;
         switch (presentationHeader) {
             case Constans.STR_INIT:
+            case Constans.SOLICITUD_CIERRE:
                 break;
             case Constans.SOLICITUD_CONEXION:
             case Constans.SOLICITUD_CONEXION_QR:
@@ -923,10 +933,13 @@ public abstract class ComunicationTools {
                 trama = armarTrama(300, tipoMsg, Constans.PH_SOLICITUD_INIT);
                 enviar(trama);
                 break;
+           case Constans.SOLICITUD_CIERRE:
+                trama = armarTrama(300, tipoMsg, Constans.PH_SOLICITUD_CIERRE);
+                enviar(trama);
+                break;
             default:
                 retorno = null;
                 System.out.println("Error switch comunicationQR-armarTramaVariable");
-           
         }
     }
    
@@ -991,6 +1004,13 @@ public abstract class ComunicationTools {
         if (msgRecibido.equals(Constans.SEND_REF_PENDING)) {
             panel.rspBox("Trama:  " + stringBuilder.toString());
             panel.rspBox("Referencia pendiente: "+Util.conversorAString(buscarDato(msgComplete,43)) + "\n");
+        } else if (msgRecibido.equals(Constans.CIERRE_CANTIDAD)) {
+            panel.rspBox("Trama:  " + stringBuilder.toString());
+            panel.rspBox("Cantidad Trx: "+Util.conversorAString(buscarDato(msgComplete,90)) + "\n");
+        }else if (msgRecibido.equals(Constans.DATOS_CIERRE)) {
+            panel.rspBox("Trama:  " + stringBuilder.toString());
+            panel.rspBox("Trx No: "+ ComunicationClose.countTrx);
+            desempaquetarDatos(msgComplete, false);
         } else {
             panel.rspBox("Trama:  " + stringBuilder.toString() + "\n");
         }
@@ -1059,7 +1079,7 @@ public abstract class ComunicationTools {
      * Metodo que desempaqueta los campos que llegan a la caja
      * @param mensaje El mensaje o la trama completa recibida
      */
-    protected int desempaquetarDatos(ArrayList<String> mensaje) {
+    protected int desempaquetarDatos(ArrayList<String> mensaje, boolean addList) {
        
         try {
             String codigoAut = Util.conversorAString(buscarDato(mensaje,01));
@@ -1073,10 +1093,17 @@ public abstract class ComunicationTools {
             String typeAccount = Util.conversorAString(buscarDato(mensaje,50));
             String numCuotas = Util.conversorAString(buscarDato(mensaje,51));
             String last4Digits = Util.conversorAString(buscarDato(mensaje,54));
-            String msgError = Util.conversorAString(buscarDato(mensaje,61));
+            String msgError;
+            if (addList) {
+                msgError = Util.conversorAString(buscarDato(mensaje,61));
+            } else {
+                msgError = Util.conversorAString(buscarDato(mensaje,75));
+            }
             
             Trx trx = new Trx(codigoAut, montoString, numRecibo, RRN, tid, dateTXR, timeTXR, codRsp, typeAccount, numCuotas, last4Digits, msgError);
-            listTrx.add(trx);
+            if (addList) {
+                listTrx.add(trx);
+            }
             panel.rspBox(panel.dataTrx(trx));            
         } catch (Exception e) {
             System.out.println("Error al desempaquetar los datos ");
