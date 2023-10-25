@@ -53,6 +53,8 @@ public class Constans {
     public final static String STR_DATOS_CIERRE = "DATOS DE LA TRX"; //la transaccion
     
     //strings programa
+    public final static String TCP = "TCP";
+    public final static String USB = "USB";
     public final static String PAGO_ICC = "PAGO ICC";
     public final static String PAGO_CTL = "PAGO CTL";
     public final static String PAGO_QR = "PAGO QR";

@@ -79,6 +79,7 @@ public final class JPanelPrincipal extends JPanel /*implements ActionListener*/ 
     private JTextField textField1;
     private JTextField tfVoid;
     private JLabel jLabelMonto;
+    private JLabel jlTypeCo;
     private JLabel jLabelMulti;
     private JLabel jLabelIP;
     private JLabel jLabelPORT;
@@ -87,6 +88,7 @@ public final class JPanelPrincipal extends JPanel /*implements ActionListener*/ 
     public  JSpinner jSpnAcquirer;
     public  JCheckBox checkCuota;
     public  JComboBox cbxMoneda;
+    public  JComboBox cbxTypeCo;
     public  JSpinner jSpnCuotas;
     private JSlider jSlider;
     private Graphics g;
@@ -676,6 +678,25 @@ public final class JPanelPrincipal extends JPanel /*implements ActionListener*/ 
         showMulticomercio();
         showMoneda();
         showCuotas();
+        showTypeComunication();
+    }
+    
+    public void showTypeComunication() {
+        jlTypeCo = jLabelMonto = new JLabel("Tipo ");
+        jlTypeCo.setBounds(550, 25, 70, 20);
+        
+        cbxTypeCo = new JComboBox();
+        cbxTypeCo.setBounds(600, 25, 70, 20);
+        String[] itemsComboBox = {Constans.TCP, Constans.USB};
+        cbxTypeCo.addItem(itemsComboBox[0]);
+        cbxTypeCo.addItem(itemsComboBox[1]);
+        
+        add(jlTypeCo);
+        add(cbxTypeCo);
+    }
+    
+    public String getTipoCo() {
+        return (String) cbxTypeCo.getSelectedItem();
     }
     
     public void showLabels() {
@@ -950,5 +971,6 @@ public final class JPanelPrincipal extends JPanel /*implements ActionListener*/ 
         }
         return null;
     }
+
     
 }

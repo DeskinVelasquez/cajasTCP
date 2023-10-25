@@ -10,6 +10,8 @@ import com.cajatcp.Utils.Constans;
 import static com.cajatcp.Utils.Constans.STR_ENABLE_CONNECT;
 import com.cajatcp.Utils.Util;
 import com.cajatcp.view.JPanelPrincipal;
+import com.fazecast.jSerialComm.SerialPort;
+import com.fazecast.jSerialComm.SerialPortDataListener;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -29,14 +31,16 @@ import java.util.Timer;
  * @author deskin
  */
 public abstract class ComunicationTools {
-    InputStream inputStream;
-    OutputStream outputStream;
+
+    private InputStream inputStream;
+    private OutputStream outputStream;
     private static Socket socket;
     private static ServerSocket serverSocket;
+    private static boolean isTCP;
     private JPanelPrincipal panel;
     String retorno = "";
     private static final ArrayList<Trx> listTrx = new ArrayList<>();
-    
+
     //heredar
     protected static int comando = 0;
     protected String msgSend;
@@ -47,19 +51,40 @@ public abstract class ComunicationTools {
     protected static ArrayList<String> listMsgInput;
     protected ArrayList<String> msgComplete;
     protected int monto;
-   
+
+    //comunicacion USB
+    public static SerialPort serialPort;
+    private static boolean conecctUSB;
+
     public ComunicationTools(JPanelPrincipal panel) {
         this.panel = panel;
-       
+        if (panel.getTipoCo().equals(Constans.TCP)) {
+            isTCP = true;
+        } else {
+            isTCP = false;
+        }
+
     }
-     public void setMonto() {
-          monto = panel.getMonto();
+
+    public void setMonto() {
+        monto = panel.getMonto();
     }
+
     public static ArrayList<String> getListMsgInput() {
         return listMsgInput;
     }
-    
-     public String disaableConnect() {
+
+    public String disaableConnect() {
+        String retorno;
+        if (isTCP) {
+            retorno = disaableConnectTCP();
+        } else {
+            retorno = disaableConnectUSB();
+        }
+        return retorno;
+    }
+
+    public String disaableConnectTCP() {
         try {
             if (socket != null) {
                 socket.close();
@@ -73,15 +98,104 @@ public abstract class ComunicationTools {
         }
         return "Error al desconectar";
     }
-    
+
+    public String disaableConnectUSB() {
+
+        return "Comunicación cerrada";
+    }
+
     public void enableConnect() {
-        
+        int retorno;
+        panel.rspBox("Esperando una conexión...");
+        if (isTCP) {
+            retorno = comunicationTCPenable();
+        } else {
+            retorno = comunicationUSBenable();
+        }
+
+        if (retorno != 0) {
+            panel.rspBox("fallo en la conexion con el cliente");
+        } else {
+            panel.rspBox("cliente conectado");
+            panel.setEnableButtons(true);
+        }
+
+    }
+
+    private int comunicationUSBenable() {
+        if (!conecctUSB) {
+            // Obtener la lista de puertos seriales disponibles
+            SerialPort[] ports = SerialPort.getCommPorts();
+
+            // Elegir un puerto
+            String port = "";
+            if (ports.length == 1) {
+                String p = ports[0].getDescriptivePortName().split(" ")[3];
+                port = ports[0].getDescriptivePortName().split(" ")[3].substring(1, p.length() - 1);
+                System.out.println("Port: " + port);
+            } else {
+                System.out.println("varios dispositivos conectados");
+            }
+
+            serialPort = SerialPort.getCommPort(port);
+            serialPort.setComPortParameters(9600, 8, 1, 0); // Configura los parámetros del puerto
+
+            // Abrir el puerto
+            try {
+                if (serialPort.openPort()) {
+                    // Configurar los parámetros del puerto
+                    serialPort.setComPortParameters(9600, 8, SerialPort.ONE_STOP_BIT, SerialPort.NO_PARITY);
+                    // Antes de la lectura, configure un tiempo de espera de 60 segundos
+                    serialPort.setComPortTimeouts(SerialPort.TIMEOUT_READ_SEMI_BLOCKING, 60000, 0);
+
+                    inputStream = serialPort.getInputStream();
+                    outputStream = serialPort.getOutputStream();
+                    System.out.println("Puerto abierto correctamente. " + serialPort.getDescriptivePortName());
+                } else {
+                    System.err.println("No se pudo abrir el puerto.");
+                    return 1;
+                }
+            } catch (Exception e) {
+                System.out.println("Error: " + e.getMessage());
+            }
+
+        }
+        return 0;
+    }
+    /*
+    private int comunicationUSBenable2() {
+        if (!conecctUSB) {
+            // Obtener la lista de puertos seriales disponibles
+            SerialPort[] ports = SerialPort.getCommPorts();
+
+            // Elegir un puerto
+            serialPort = ports[0]; // Puedes seleccionar el puerto deseado
+
+            // Abrir el puerto
+            if (serialPort.openPort()) {
+                // Configurar los parámetros del puerto
+                serialPort.setComPortParameters(9600, 8, SerialPort.ONE_STOP_BIT, SerialPort.NO_PARITY);
+                // Antes de la lectura, configure un tiempo de espera de 5 segundos
+                serialPort.setComPortTimeouts(SerialPort.TIMEOUT_READ_SEMI_BLOCKING, 5000, 0);
+
+                inputStream = serialPort.getInputStream();
+                outputStream = serialPort.getOutputStream();
+                conecctUSB = true;
+                System.out.println("Puerto abierto correctamente. " + serialPort.getPortDescription());
+            } else {
+                System.err.println("No se pudo abrir el puerto.");
+                return 1;
+            }
+        }
+        return 0;
+    }*/
+
+    private int comunicationTCPenable() {
         try {
             if (socket != null && socket.isClosed()) {
                 socket = new Socket();
             }
             serverSocket = new ServerSocket(Constans.getPORT());
-            panel.rspBox("Esperando una conexión...");
             Timer timer = new Timer();
             timer.schedule(new TimerTask() {
                 @Override
@@ -93,43 +207,45 @@ public abstract class ComunicationTools {
                     System.out.println("desconectado");
                     timer.cancel();
                 }
-            }, 10000);
+            }, 5000);
             socket = serverSocket.accept();
             timer.cancel();
             if (socket != null && socket.isConnected()) {
                 System.out.println("cliente conectado");
-                panel.rspBox("cliente conectado");
-                panel.setEnableButtons(true);
-                return;
             }
-            panel.rspBox("fallo en la conexion con el cliente");
+            return 0;
         } catch (IOException e) {
             e.printStackTrace();
         }
+        return 1;
     }
-    
+
     public void openConnect() {
         new Thread(new Runnable() {
             @Override
             public void run() {
-               enableConnect();
+                enableConnect();
             }
         }).start();
     }
-    
+
     public byte[] receiveRsp() {
 
         byte[] temporary = new byte[5000];
         byte[] frame = null;
         int len = 0;
         try {
-            //BufferedReader entrada = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            InputStream is = socket.getInputStream();
-            len = is.read(temporary);
+            if (isTCP) {
+                inputStream = socket.getInputStream();
+            } else {
+                inputStream = serialPort.getInputStream();
+            }
+            
+            len = inputStream.read(temporary);
         } catch (IOException ex) {
             Logger.getLogger(ComunicationTools.class.getName()).log(Level.SEVERE, null, ex);
-        } 
-        
+        }
+
         if (len > 1) {
             frame = dicardEmpty(temporary);
         } else if (len == 1) {
@@ -142,7 +258,7 @@ public abstract class ComunicationTools {
         return frame;
 
     }
-    
+
     public String decodeMsg(byte[] frame) {
         ArrayList<String> strListFrame = toListStringFrame(frame);
 
@@ -154,25 +270,30 @@ public abstract class ComunicationTools {
         }
         return msgRecibido;
     }
-    
+
     public boolean send(byte[] data) {
-        try {
+        try {/*
             if (Alerts.alert(socket == null, "Debe haber un cliente conectado", 1)) {
                 return false;
+            }*/
+            if (isTCP) {
+                outputStream = socket.getOutputStream();
+            } else {
+                outputStream = serialPort.getOutputStream();
             }
-            OutputStream os = socket.getOutputStream();
-            os.write(data);
-            os.flush();
+            
+            outputStream.write(data);
+            outputStream.flush();
             return true;
         } catch (IOException ex) {
             Logger.getLogger(ComunicationTools.class.getName()).log(Level.SEVERE, null, ex);
         }
         return false;
     }
-    
+
     /**
-     * Metodo para descartar los espacios sobrantes del arreglo temporal donde se recibe la trama
-     * (SOLO MODO CAJA)
+     * Metodo para descartar los espacios sobrantes del arreglo temporal donde
+     * se recibe la trama (SOLO MODO CAJA)
      *
      * @param data
      * @return arreglo de bytes con los datos exactos de la trama
@@ -196,10 +317,11 @@ public abstract class ComunicationTools {
                 }
                 temporary[j] = data[i];
             }
-            if (i == 5000)
+            if (i == 5000) {
                 frame = new byte[i];
-            else
+            } else {
                 frame = new byte[++i];
+            }
             for (i = 0; i < frame.length; i++) {
                 frame[i] = temporary[i];
             }
@@ -210,7 +332,7 @@ public abstract class ComunicationTools {
 
         return frame;
     }
-    
+
     private static boolean manyAckAndNack(byte[] data) {
         byte ack = 0x06;
         byte nack = 0x15;
@@ -218,15 +340,16 @@ public abstract class ComunicationTools {
         byte b = data[0];
         byte c = data[1];
         if ((Byte.compare(b, ack) == 0 && Byte.compare(c, ack) == 0) || (Byte.compare(b, nack) == 0 && Byte.compare(c, nack) == 0)
-                || (Byte.compare(b, ack) == 0 && Byte.compare(c, nack) == 0) || (Byte.compare(b, nack) == 0 && Byte.compare(c, ack) == 0) ) {
+                || (Byte.compare(b, ack) == 0 && Byte.compare(c, nack) == 0) || (Byte.compare(b, nack) == 0 && Byte.compare(c, ack) == 0)) {
             return true;
         }
 
         return false;
     }
-    
+
     /**
-     * Metodo que convierte en un arreglo de String con formato hexadeimal una trama
+     * Metodo que convierte en un arreglo de String con formato hexadeimal una
+     * trama
      *
      * @param frame
      * @return trama covertida a String
@@ -239,13 +362,14 @@ public abstract class ComunicationTools {
         if (numRead != -1) {
             for (byte b : frame) {
                 hexa = Integer.toHexString(b);
-                if(b < 0){
+                if (b < 0) {
                     int c = b + 256;
                     hexa = Integer.toHexString(c);
                 }
                 if (b < 10) {
-                    if(b >= 0)
+                    if (b >= 0) {
                         hexa = "0" + b;
+                    }
                 }
                 if (validarHexaLetra(hexa)) {
                     hexa = "0" + hexa;
@@ -255,27 +379,29 @@ public abstract class ComunicationTools {
         }
         return result;
     }
-    
+
     /**
-     * Metodo utilizado para validar si el String es hexa: A,B,C,D,E o F (decimal 10 al 15)
+     * Metodo utilizado para validar si el String es hexa: A,B,C,D,E o F
+     * (decimal 10 al 15)
      *
      * @param hexa --> valor hexa
-     * @return true--> si es un decimal del 10 al 15, false
-     * Creado por: Silvia Hernandez
+     * @return true--> si es un decimal del 10 al 15, false Creado por: Silvia
+     * Hernandez
      */
     private boolean validarHexaLetra(String hexa) {
         if (hexa.equalsIgnoreCase("a") || hexa.equalsIgnoreCase("b")
                 || hexa.equalsIgnoreCase("c") || hexa.equalsIgnoreCase("d")
                 || hexa.equalsIgnoreCase("e") || hexa.equalsIgnoreCase("f")) {
             return true;
-        }else{
+        } else {
             return false;
         }
     }
-    
+
     /**
-     * Metodo utilizado para descomponer la parte fija del mensaje recibido
-     * El presentation header
+     * Metodo utilizado para descomponer la parte fija del mensaje recibido El
+     * presentation header
+     *
      * @param trama
      */
     private String obtenerPresentationHeader(ArrayList<String> trama) {
@@ -288,6 +414,7 @@ public abstract class ComunicationTools {
         }
         return presentationHeader;
     }
+
     /*
     public byte[] obtenerTramaData() {
         StringBuilder datos = new StringBuilder();
@@ -348,7 +475,7 @@ public abstract class ComunicationTools {
             case Constans.DATOS_CIERRE:
                 msgOnScreen = Constans.STR_DATOS_CIERRE;
                 break;
-        //msg recibidos
+            //msg recibidos
             case Constans.ULTIMA_TRANS:
                 msgOnScreen = Constans.STR_ULTIMA_TRANS;
                 break;
@@ -381,25 +508,26 @@ public abstract class ComunicationTools {
                 break;
             default:
                 Alerts.alert(true, "mensaje sobre pantalla no contemplado", 2);
-                
+
         }
         return msgOnScreen;
     }
-    
+
     /**
      * metodo utilizado para calcular la longitud de la trama a enviar
      * corresponde: primer byte transportHeader hasta el byte anterior al ETX
-     * @param size tamaño de la trama (TransportHeader+PresentationHeader+Campos)
-     * @return
-     * Creado por Deskin Velasquez
+     *
+     * @param size tamaño de la trama
+     * (TransportHeader+PresentationHeader+Campos)
+     * @return Creado por Deskin Velasquez
      */
     public static byte[] calcularLongitudMensaje(int size) {
         return Util.int2bcd(size, 2);
     }
-    
+
     /**
-     * Metodo utilizado para armar la parte variable de la trama
-     * Valida que tipo de transacción es y procede a armar la trama
+     * Metodo utilizado para armar la parte variable de la trama Valida que tipo
+     * de transacción es y procede a armar la trama
      *
      * @param presentationHeader
      * @return
@@ -428,7 +556,7 @@ public abstract class ComunicationTools {
         }
         return retorno;
     }
-    
+
     private byte[] armarFirtsFields() {
         byte[] frame = new byte[30];
         int dinamicLen = 0;
@@ -459,27 +587,29 @@ public abstract class ComunicationTools {
 
         return retorno;
     }
-    
+
     private byte[] armarTramaIDACQ(int idacq) {
         String dato = "";
         if (idacq < 10) {
-            dato = "0"+idacq;
+            dato = "0" + idacq;
         } else {
             dato = String.valueOf(idacq);
         }
-        
+
         byte[] retorno = crearCampo(dato, 79, 2);
 
         return retorno;
     }
 
     /**
-     * Metodo que permite hacer un campo de codigo de respuesta, correcto o incorrecto dependiendo
-     * del boolean enviando
-     * @param tipo el tipo de codigo de respuesta, true si es correcto, de lo contrario false
+     * Metodo que permite hacer un campo de codigo de respuesta, correcto o
+     * incorrecto dependiendo del boolean enviando
+     *
+     * @param tipo el tipo de codigo de respuesta, true si es correcto, de lo
+     * contrario false
      * @return el campo de codigo de respuesta
      */
-    public static byte[] hacerCodigoRespuesta(boolean tipo){
+    public static byte[] hacerCodigoRespuesta(boolean tipo) {
         byte retorno[] = new byte[7];
         retorno[0] = Constans.SEPARADOR;
         //Nombre del campo
@@ -490,27 +620,28 @@ public abstract class ComunicationTools {
         retorno[3] = 0x00;
         retorno[4] = 0x02;
         //campo
-           
-        if (tipo){
+
+        if (tipo) {
             retorno[5] = 0x20;
             retorno[6] = 0x20;
-        }else{
+        } else {
             retorno[5] = 0x58;
             retorno[6] = 0x58;
         }
         return retorno;
     }
-    
+
     /**
      * converts to BCD
      *
-     * @param s       - the number
+     * @param s - the number
      * @param padLeft - flag indicating left/right padding
      * @return BCD representation of the number
      */
     public static byte[] str2bcd(String s, boolean padLeft) {
-        if (s == null)
+        if (s == null) {
             return null;
+        }
         int len = s.length();
         byte[] d = new byte[len + 1 >> 1];
         return str2bcd(s, padLeft, d, 0);
@@ -519,10 +650,10 @@ public abstract class ComunicationTools {
     /**
      * converts to BCD
      *
-     * @param s       - the number
+     * @param s - the number
      * @param padLeft - flag indicating left/right padding
-     * @param d       The byte array to copy into.
-     * @param offset  Where to start copying into.
+     * @param d The byte array to copy into.
+     * @param offset Where to start copying into.
      * @return BCD representation of the number
      */
     public static byte[] str2bcd(String s, boolean padLeft, byte[] d, int offset) {
@@ -532,8 +663,9 @@ public abstract class ComunicationTools {
         for (int i = start; i < len + start; i++) {
             c = s.charAt(i - start);
             if (c >= '0' && c <= '?') // 30~3f
+            {
                 c -= '0';
-            else {
+            } else {
                 c &= ~0x20;
                 c -= 'A' - 10;
             }
@@ -541,14 +673,12 @@ public abstract class ComunicationTools {
         }
         return d;
     }
-    
-    
+
     //-------------------------------------------------------------------------------------------
-    
-    
     /**
-     * Metodo utilizado para calcular el LRC de la trama
-     * LRC = XOR de todos los bytes después del STX [0] (sin incluir) hasta el ETX [leng-2](incluyéndolo)
+     * Metodo utilizado para calcular el LRC de la trama LRC = XOR de todos los
+     * bytes después del STX [0] (sin incluir) hasta el ETX
+     * [leng-2](incluyéndolo)
      *
      * @param arreglo
      * @return
@@ -568,13 +698,15 @@ public abstract class ComunicationTools {
         }
         return LRC;
     }
-    
+
     /**
      * Metodo que permite crear un campo especifico de un dato
+     *
      * @param campo el valor del dato Ej: 5000
      * @param idCampo el id del campo
      * @param longitud la longitud del campo
-     * @return un arreglo de bytes con todos los datos del campo: separador - id - longitud - valor
+     * @return un arreglo de bytes con todos los datos del campo: separador - id
+     * - longitud - valor
      */
     public static byte[] crearCampo(String campo, Integer idCampo, Integer longitud) {
         byte[] totalByte = new byte[longitud + 5];
@@ -719,14 +851,15 @@ public abstract class ComunicationTools {
         }
         System.arraycopy(idCampoByte, 0, totalByte, 1, idCampoByte.length);
         System.arraycopy(longitudCampoByte, 0, totalByte, 3, longitudCampoByte.length);
-        if(longitud!=0){
+        if (longitud != 0) {
             System.arraycopy(campoByte, 0, totalByte, 5, campoByte.length);
         }
         return totalByte;
     }
-    
+
     /**
-     * Metodo que permite convertir un String a un arreglo de bytes en hexadecimal
+     * Metodo que permite convertir un String a un arreglo de bytes en
+     * hexadecimal
      *
      * @param size
      * @param value
@@ -735,20 +868,24 @@ public abstract class ComunicationTools {
     public static byte[] converT2byteHexa(Integer size, String value) {
         //Logger.debug("Convirtiendo a hexa el valor " + value);
         byte[] retorno = new byte[size];
-        if(value != null)retorno = value.getBytes(StandardCharsets.US_ASCII);//convertir cadena en []ascii
+        if (value != null) {
+            retorno = value.getBytes(StandardCharsets.US_ASCII);//convertir cadena en []ascii
+        }
         return retorno;
     }
-    
+
     /**
      * Metodo que permite buscar un campo en la trama,
+     *
      * @param mensaje el arreglo del mensaje
      * @param campo el campo a buscar ej: 43, 48
-     * @return Una lista con los datos del campo buscado, null si no encuentra el campo
+     * @return Una lista con los datos del campo buscado, null si no encuentra
+     * el campo
      */
     public static List<String> buscarDato(ArrayList<String> mensaje, Integer campo) {
         try {
             Integer contador = 20;
-            if(mensaje!=null) {
+            if (mensaje != null) {
                 while (contador < mensaje.size() - 2) {
                     if (isSeparador(mensaje.get(contador))) {
                         String tipo = Util.conversorAString(mensaje.subList(contador + 1, contador + 3));
@@ -765,43 +902,43 @@ public abstract class ComunicationTools {
                     contador++;
                 }
                 return null;
-            }else{
+            } else {
                 return null;
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             //Logger.error("Hubo un error recorriendo la trama para buscar un dato");
             return null;
         }
     }
-    
+
     /**
      * Metodo usado para saber si un valor hexa en string es separador = 1C
+     *
      * @param entrada
      * @return
      */
-    public static boolean isSeparador(String entrada){
+    public static boolean isSeparador(String entrada) {
         return entrada.equalsIgnoreCase(Constans.SEPARADOR_STRING);
     }
-    
+
     /**
-     * Metodo que analiza la parte de datos una trama de codigo de respuesta y regresa si es un codigo de respuesta
-     * correcto o incorrecto
+     * Metodo que analiza la parte de datos una trama de codigo de respuesta y
+     * regresa si es un codigo de respuesta correcto o incorrecto
+     *
      * @param trama
      * @return
      */
-    public static boolean analizarCodigoRespuesta(List<String> trama){
-        if(trama.size()==2){
+    public static boolean analizarCodigoRespuesta(List<String> trama) {
+        if (trama.size() == 2) {
             if (trama.get(0).equalsIgnoreCase("20")) {
                 return true;
-            }else{
+            } else {
                 return false;
             }
         }
         return false;
     }
-    
-    
-    
+
     private void finalizarCo() {
         comando = 0;
         disaableConnect();
@@ -875,7 +1012,6 @@ public abstract class ComunicationTools {
         return msgEror;
     }
 
-    
     //metodos heredados---------------------------------------------------------
     protected void iniciarProceso(String typeSend) throws InterruptedException {
 
@@ -892,13 +1028,13 @@ public abstract class ComunicationTools {
             if (needReceived) {
                 recibir();
             }
-            
+
             mensajeria();
-            
+
         } while (!lastMsg);
         finalizarCo();
     }
-    
+
     protected void enviarMsg(String tipoMsg) {
         byte[] trama;
         switch (tipoMsg) {
@@ -925,15 +1061,15 @@ public abstract class ComunicationTools {
                 trama = armarTrama(300, tipoMsg, Constans.PH_SOLICITUD_CONEXION_QR);
                 enviar(trama);
                 break;
-           case Constans.SOLICITUD_CONEXION:
+            case Constans.SOLICITUD_CONEXION:
                 trama = armarTrama(300, tipoMsg, Constans.PH_SOLICITUD_CONEXION);
                 enviar(trama);
                 break;
-           case Constans.SOLICITUD_INIT:
+            case Constans.SOLICITUD_INIT:
                 trama = armarTrama(300, tipoMsg, Constans.PH_SOLICITUD_INIT);
                 enviar(trama);
                 break;
-           case Constans.SOLICITUD_CIERRE:
+            case Constans.SOLICITUD_CIERRE:
                 trama = armarTrama(300, tipoMsg, Constans.PH_SOLICITUD_CIERRE);
                 enviar(trama);
                 break;
@@ -942,7 +1078,7 @@ public abstract class ComunicationTools {
                 System.out.println("Error switch comunicationQR-armarTramaVariable");
         }
     }
-   
+
     protected void enviar(byte[] frame) {
         byte[] trama = ComunicationTools.dicardEmpty(frame);
         String msgEnviado = decodeMsg(trama);
@@ -971,7 +1107,7 @@ public abstract class ComunicationTools {
         }
 
     }
-    
+
     public void recibir() {
 
         byte[] tramaReceived = receiveRsp();
@@ -1003,13 +1139,13 @@ public abstract class ComunicationTools {
         panel.rspBox("POS ->  " + msgOnScreen(msgRecibido));
         if (msgRecibido.equals(Constans.SEND_REF_PENDING)) {
             panel.rspBox("Trama:  " + stringBuilder.toString());
-            panel.rspBox("Referencia pendiente: "+Util.conversorAString(buscarDato(msgComplete,43)) + "\n");
+            panel.rspBox("Referencia pendiente: " + Util.conversorAString(buscarDato(msgComplete, 43)) + "\n");
         } else if (msgRecibido.equals(Constans.CIERRE_CANTIDAD)) {
             panel.rspBox("Trama:  " + stringBuilder.toString());
-            panel.rspBox("Cantidad Trx: "+Util.conversorAString(buscarDato(msgComplete,90)) + "\n");
-        }else if (msgRecibido.equals(Constans.DATOS_CIERRE)) {
+            panel.rspBox("Cantidad Trx: " + Util.conversorAString(buscarDato(msgComplete, 90)) + "\n");
+        } else if (msgRecibido.equals(Constans.DATOS_CIERRE)) {
             panel.rspBox("Trama:  " + stringBuilder.toString());
-            panel.rspBox("Trx No: "+ ComunicationClose.countTrx);
+            panel.rspBox("Trx No: " + ComunicationClose.countTrx);
             desempaquetarDatos(msgComplete, false);
         } else {
             panel.rspBox("Trama:  " + stringBuilder.toString() + "\n");
@@ -1019,12 +1155,13 @@ public abstract class ComunicationTools {
             panel.rspBox("POS ->  " + manejoError(msgComplete));
         }
     }
-    
+
     /**
-     * Metodo utilizado para armar la trama de acuerdo que será enviada a la caja
+     * Metodo utilizado para armar la trama de acuerdo que será enviada a la
+     * caja
      *
-     * @param tamTrama           tamaño que va a tener la trama completa
-     * @param tipoTrans          tipo de transacción realizada ASCII
+     * @param tamTrama tamaño que va a tener la trama completa
+     * @param tipoTrans tipo de transacción realizada ASCII
      * @param presentationHeader arreglo de byte del tipo de transacción
      * @return arreglo de bytes de la trama que será enviada
      */
@@ -1062,11 +1199,11 @@ public abstract class ComunicationTools {
         } else {
             longMensaje = Constans.transportHeader.length + Constans.PH_SOLICITUD_CONEXION.length;
         }
-        
+
         //int longMensaje = Constans.transportHeader.length + Constans.PH_SOLICITUD_CONEXION.length + parteVariable.length;
         byte[] longMsj = calcularLongitudMensaje(longMensaje);
         retorno[1] = longMsj[0];
-        retorno[2] = longMsj[1]; 
+        retorno[2] = longMsj[1];
 
         retorno[con] = Constans.ETX;
         con++;
@@ -1074,59 +1211,60 @@ public abstract class ComunicationTools {
 
         return retorno;
     }
-    
+
     /**
      * Metodo que desempaqueta los campos que llegan a la caja
+     *
      * @param mensaje El mensaje o la trama completa recibida
      */
     protected int desempaquetarDatos(ArrayList<String> mensaje, boolean addList) {
-       
+
         try {
-            String codigoAut = Util.conversorAString(buscarDato(mensaje,01));
-            String montoString = Util.conversorAString(buscarDato(mensaje,40));
-            String numRecibo = Util.conversorAString(buscarDato(mensaje,43));
-            String RRN = Util.conversorAString(buscarDato(mensaje,44));
-            String tid = Util.conversorAString(buscarDato(mensaje,45));
-            String dateTXR = Util.conversorAString(buscarDato(mensaje,46));
-            String timeTXR = Util.conversorAString(buscarDato(mensaje,47));
-            String codRsp = Util.conversorAString(buscarDato(mensaje,48));
-            String typeAccount = Util.conversorAString(buscarDato(mensaje,50));
-            String numCuotas = Util.conversorAString(buscarDato(mensaje,51));
-            String last4Digits = Util.conversorAString(buscarDato(mensaje,54));
+            String codigoAut = Util.conversorAString(buscarDato(mensaje, 01));
+            String montoString = Util.conversorAString(buscarDato(mensaje, 40));
+            String numRecibo = Util.conversorAString(buscarDato(mensaje, 43));
+            String RRN = Util.conversorAString(buscarDato(mensaje, 44));
+            String tid = Util.conversorAString(buscarDato(mensaje, 45));
+            String dateTXR = Util.conversorAString(buscarDato(mensaje, 46));
+            String timeTXR = Util.conversorAString(buscarDato(mensaje, 47));
+            String codRsp = Util.conversorAString(buscarDato(mensaje, 48));
+            String typeAccount = Util.conversorAString(buscarDato(mensaje, 50));
+            String numCuotas = Util.conversorAString(buscarDato(mensaje, 51));
+            String last4Digits = Util.conversorAString(buscarDato(mensaje, 54));
             String msgError;
             if (addList) {
-                msgError = Util.conversorAString(buscarDato(mensaje,61));
+                msgError = Util.conversorAString(buscarDato(mensaje, 61));
             } else {
-                msgError = Util.conversorAString(buscarDato(mensaje,75));
+                msgError = Util.conversorAString(buscarDato(mensaje, 75));
             }
-            
+
             Trx trx = new Trx(codigoAut, montoString, numRecibo, RRN, tid, dateTXR, timeTXR, codRsp, typeAccount, numCuotas, last4Digits, msgError);
             if (addList) {
                 listTrx.add(trx);
             }
-            panel.rspBox(panel.dataTrx(trx));            
+            panel.rspBox(panel.dataTrx(trx));
         } catch (Exception e) {
             System.out.println("Error al desempaquetar los datos ");
             return 2;
         }
         return 0;
     }
-    
+
     public static byte[] armarTrama48XX() {
-        byte[] retorno = new byte[7]; 
+        byte[] retorno = new byte[7];
         byte[] codigoResp = ComunicationTools.hacerCodigoRespuesta(false);
         System.arraycopy(codigoResp, 0, retorno, 0, codigoResp.length);
 
         return retorno;
     }
-    
+
     protected byte[] tramaEnvioDatos() {
 
         String montoPadleft = Util.padleft(monto + "", 12, '0');
         int dinamicLength = 0;
         byte[] frame = new byte[100];
         byte[] campoMonto = ComunicationTools.crearCampo(montoPadleft, 40, 12);
-        System.arraycopy(campoMonto, 0, frame, 0, campoMonto.length );
+        System.arraycopy(campoMonto, 0, frame, 0, campoMonto.length);
         dinamicLength += campoMonto.length;
 
         byte[] noCaja = ComunicationTools.crearCampo("123", 42, 10);//10
@@ -1138,43 +1276,42 @@ public abstract class ComunicationTools {
         dinamicLength += codigoResp.length;
 
         if (panel.checkCuota.isSelected()) {
-            
+
             int numero = (int) panel.jSpnCuotas.getValue();
             String numCuota;
             if (numero < 9) {
-                numCuota = "0"+numero;
+                numCuota = "0" + numero;
             } else {
-              numCuota = String.valueOf(numero);
+                numCuota = String.valueOf(numero);
             }
             byte[] noCuota = ComunicationTools.crearCampo(numCuota, 51, 2);
             System.arraycopy(noCuota, 0, frame, dinamicLength, noCuota.length);
             dinamicLength += noCuota.length;
-            
-        }          
-                 
+
+        }
+
         byte[] noTrx = ComunicationTools.crearCampo("123456", 53, 10);//10
         System.arraycopy(noTrx, 0, frame, dinamicLength, noTrx.length);
         dinamicLength += noTrx.length;
 
         byte[] typeAccount = ComunicationTools.crearCampo("1", 88, 12);//12
-        System.arraycopy(typeAccount, 0, frame,dinamicLength, typeAccount.length);
+        System.arraycopy(typeAccount, 0, frame, dinamicLength, typeAccount.length);
         dinamicLength += typeAccount.length;
-        
+
         byte[] etx = {Constans.ETX};
         System.arraycopy(etx, 0, frame, dinamicLength, etx.length);
-        
-         byte[] frame2 = ComunicationTools.dicardEmpty(frame);
-         byte[] retorno = new byte[frame2.length-2];
-         for (int i = 0; i < frame2.length-2; i++) {
+
+        byte[] frame2 = ComunicationTools.dicardEmpty(frame);
+        byte[] retorno = new byte[frame2.length - 2];
+        for (int i = 0; i < frame2.length - 2; i++) {
             retorno[i] = frame2[i];
         }
-         
+
         return retorno;
     }
-    
+
     //metodos abstractos---------------------------------------------------------------------------
-    
     public abstract byte[] armarTramaVariable(String tipo);
-    
+
     public abstract void mensajeria();
 }
