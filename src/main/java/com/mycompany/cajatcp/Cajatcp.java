@@ -27,34 +27,14 @@ public class Cajatcp {
             ComunicationTools.isTCP = false;
         }
        
-       JFramePrincipal marco = new JFramePrincipal();
-       marco.getColorModel();
-       marco.setVisible(true);
-       marco.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); //cancelar ejecución del programa al cerrar la ventana
-       marco.setResizable(false);//bloquear la maximizacion de la pantalla
-       
-       //se agrega el focus listener a la ventana principal.
-       marco.addWindowFocusListener(new ImpWindowFocusListener());
-       
-        
-       /*
-       MarcoCalculadora marcoCalculadora = new MarcoCalculadora();
-       marcoCalculadora.setVisible(true);
-       marcoCalculadora.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); //cancelar ejecución del programa al cerrar la ventana
-       */
+                JFramePrincipal marco = new JFramePrincipal();
+                marco.getColorModel();
+                marco.setVisible(true);
+                marco.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); //cancelar ejecución del programa al cerrar la ventana
+                marco.setResizable(false);//bloquear la maximizacion de la pantalla
 
-        //Disposiciones avanzadas --------------------------------------------
-        //MarcoPractica marco1 = new MarcoPractica("Disposicion en caja");
-        //marco1.setVisible(true);
-        //marco1.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
-        //MarcoPractica marco2 = new MarcoPractica("Disposicion en muelle");
-        //marco2.setVisible(true);
-        //marco2.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
-        //MarcoPractica marco3 = new MarcoPractica("Disposicion libre");
-        //marco3.setVisible(true);
-        //marco3.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+                //se agrega el focus listener a la ventana principal.
+                marco.addWindowFocusListener(new ImpWindowFocusListener());
 
     }
 }

@@ -473,7 +473,10 @@ public abstract class ComunicationTools {
                 msgOnScreen = Constans.STR_INIT_OK;
                 break;
             default:
-                Alerts.alert(true, "mensaje sobre pantalla no contemplado", 2);
+                if (isTCP) {
+                   Alerts.alert(true, "mensaje sobre pantalla no contemplado", 2); 
+                }
+                break;
 
         }
         return msgOnScreen;

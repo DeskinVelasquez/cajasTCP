@@ -150,14 +150,14 @@ public final class JPanelPrincipal extends JPanel /*implements ActionListener*/ 
         
         
         //items con iconos-----------------------------------------------------
-        ImageIcon iconSave = new ImageIcon("src/images/disquete.png");
-        ImageIcon iconFile = new ImageIcon("src/images/ic_text.png");
-        ImageIcon icScaled = new ImageIcon(iconSave.getImage().getScaledInstance(10, 10, Image.SCALE_DEFAULT));
-        ImageIcon icFileScaled = new ImageIcon(iconFile.getImage().getScaledInstance(iconFile.getIconWidth()/35, iconFile.getIconHeight()/35, Image.SCALE_DEFAULT));
+        //ImageIcon iconSave = new ImageIcon("src/images/disquete.png");
+        //ImageIcon iconFile = new ImageIcon("src/images/ic_text.png");
+        //ImageIcon icScaled = new ImageIcon(iconSave.getImage().getScaledInstance(10, 10, Image.SCALE_DEFAULT));
+        //ImageIcon icFileScaled = new ImageIcon(iconFile.getImage().getScaledInstance(iconFile.getIconWidth()/35, iconFile.getIconHeight()/35, Image.SCALE_DEFAULT));
         
-        JMenuItem save = new JMenuItem(Constans.STR_SAVE, icScaled);
-        JMenuItem saveTrx = new JMenuItem(Constans.STR_SAVE_TRX, icScaled);
-        JMenuItem readFile = new JMenuItem(Constans.STR_READ_FILE, icFileScaled);
+        JMenuItem save = new JMenuItem(Constans.STR_SAVE);
+        JMenuItem saveTrx = new JMenuItem(Constans.STR_SAVE_TRX);
+        JMenuItem readFile = new JMenuItem(Constans.STR_READ_FILE);
         
         
         JMenuItem viewTrxs = new JMenuItem(Constans.STR_VIEW_TRXS);
@@ -267,6 +267,7 @@ public final class JPanelPrincipal extends JPanel /*implements ActionListener*/ 
     }
     
     public JButton showBtnConect () {
+        enableConnect.setSize(210, 15);
         return enableConnect;
     }
     
@@ -375,12 +376,12 @@ public final class JPanelPrincipal extends JPanel /*implements ActionListener*/ 
         //ImageIcon imageIcon = new ImageIcon("src/images/ic_logo.png");
         
         //se crean las instancias de multifuente para cada boton
-        ExtAbstractAction actionQR = new ExtAbstractAction(Constans.PAGO_QR, redimensionarIcono(new ImageIcon("src/images/ic_qr.png").getImage(), 120), this);
-        ExtAbstractAction actionIcc = new ExtAbstractAction(Constans.PAGO_ICC, redimensionarIcono(new ImageIcon("src/images/ic_icc.png").getImage(), 30), this);
-        ExtAbstractAction actionCtl = new ExtAbstractAction(Constans.PAGO_CTL, redimensionarIcono(new ImageIcon("src/images/ic_ctl.png").getImage(), 20), this);
-        ExtAbstractAction actionTigo = new ExtAbstractAction(Constans.PAGO_TG, redimensionarIcono(new ImageIcon("src/images/ic_tigo.png").getImage(), 30), this);
-        ExtAbstractAction actionInit = new ExtAbstractAction(Constans.STR_INIT, redimensionarIcono(new ImageIcon("src/images/ic_init.png").getImage(), 60), this);
-        ExtAbstractAction actionClose = new ExtAbstractAction(Constans.STR_CLOSE, redimensionarIcono(new ImageIcon("src/images/ic_close.png").getImage(), 60), this);
+        ExtAbstractAction actionQR = new ExtAbstractAction(Constans.PAGO_QR,/* redimensionarIcono(new ImageIcon("src/images/ic_qr.png").getImage(), 120),*/ this);
+        ExtAbstractAction actionIcc = new ExtAbstractAction(Constans.PAGO_ICC, this);
+        ExtAbstractAction actionCtl = new ExtAbstractAction(Constans.PAGO_CTL, this);
+        ExtAbstractAction actionTigo = new ExtAbstractAction(Constans.PAGO_TG,  this);
+        ExtAbstractAction actionInit = new ExtAbstractAction(Constans.STR_INIT, this);
+        ExtAbstractAction actionClose = new ExtAbstractAction(Constans.STR_CLOSE, this);
         ExtAbstractAction actionVoid = new ExtAbstractAction(Constans.STR_VOID, this);
         ExtAbstractAction actionEnableConnect = new ExtAbstractAction(Constans.STR_ENABLE_CONNECT, this);
         ExtAbstractAction actionTipoCo = new ExtAbstractAction(Constans.STR_TIPO_CO, this);
@@ -497,13 +498,19 @@ public final class JPanelPrincipal extends JPanel /*implements ActionListener*/ 
 
         btnVoid.setEnabled(isEnable);
     }
-    
+    /*
     private ImageIcon redimensionarIcono(Image image, int div){
         int newSizeX = image.getWidth(null)/div;
         int newSizeY = image.getHeight(null)/div;
+        if (newSizeX == 0) {
+            newSizeX = 1;
+        }
+        if (newSizeY == 0) {
+            newSizeY = 1;
+        }
         return new ImageIcon(image.getScaledInstance(newSizeX, newSizeY, Image.SCALE_DEFAULT));
     }
-    
+    */
     private void showTextArea() {
        
         //para que no se ensanche, sino que de un salto de linea al escribir texto
@@ -528,12 +535,7 @@ public final class JPanelPrincipal extends JPanel /*implements ActionListener*/ 
     
     public void cambiarNombreBtnConecct(String newName){
         enableConnect.setText(newName);
-        if (newName.equals(Constans.STR_ENABLE_CONNECT)) {
-           enableConnect.setSize(100, 15); 
-        } else {
-            enableConnect.setSize(120, 15); 
-        }
-        
+        enableConnect.setSize(120, 15);
     }
     
     public void cambiarCo(){
