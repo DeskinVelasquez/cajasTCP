@@ -11,7 +11,6 @@ import static com.cajatcp.Utils.Constans.STR_ENABLE_CONNECT;
 import com.cajatcp.Utils.Util;
 import com.cajatcp.view.JPanelPrincipal;
 import com.fazecast.jSerialComm.SerialPort;
-import com.fazecast.jSerialComm.SerialPortDataListener;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -36,7 +35,7 @@ public abstract class ComunicationTools {
     private OutputStream outputStream;
     private static Socket socket;
     private static ServerSocket serverSocket;
-    private static boolean isTCP;
+    public static boolean isTCP;
     private JPanelPrincipal panel;
     String retorno = "";
     private static final ArrayList<Trx> listTrx = new ArrayList<>();
@@ -58,12 +57,6 @@ public abstract class ComunicationTools {
 
     public ComunicationTools(JPanelPrincipal panel) {
         this.panel = panel;
-        if (panel.getTipoCo().equals(Constans.TCP)) {
-            isTCP = true;
-        } else {
-            isTCP = false;
-        }
-
     }
 
     public void setMonto() {
@@ -162,33 +155,6 @@ public abstract class ComunicationTools {
         }
         return 0;
     }
-    /*
-    private int comunicationUSBenable2() {
-        if (!conecctUSB) {
-            // Obtener la lista de puertos seriales disponibles
-            SerialPort[] ports = SerialPort.getCommPorts();
-
-            // Elegir un puerto
-            serialPort = ports[0]; // Puedes seleccionar el puerto deseado
-
-            // Abrir el puerto
-            if (serialPort.openPort()) {
-                // Configurar los parámetros del puerto
-                serialPort.setComPortParameters(9600, 8, SerialPort.ONE_STOP_BIT, SerialPort.NO_PARITY);
-                // Antes de la lectura, configure un tiempo de espera de 5 segundos
-                serialPort.setComPortTimeouts(SerialPort.TIMEOUT_READ_SEMI_BLOCKING, 5000, 0);
-
-                inputStream = serialPort.getInputStream();
-                outputStream = serialPort.getOutputStream();
-                conecctUSB = true;
-                System.out.println("Puerto abierto correctamente. " + serialPort.getPortDescription());
-            } else {
-                System.err.println("No se pudo abrir el puerto.");
-                return 1;
-            }
-        }
-        return 0;
-    }*/
 
     private int comunicationTCPenable() {
         try {

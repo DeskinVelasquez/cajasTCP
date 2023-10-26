@@ -4,21 +4,11 @@
  */
 package com.mycompany.cajatcp;
 
-import com.cajatcp.view.ImpLayoutManager;
+import com.cajatcp.Utils.Alerts;
+import com.cajatcp.Utils.Comunication.ComunicationTools;
 import com.cajatcp.view.JFramePrincipal;
 import com.cajatcp.view.listeners.ImpWindowFocusListener;
-import java.awt.Component;
-import java.awt.Container;
-import java.awt.Dimension;
-import java.awt.LayoutManager;
-import javax.swing.Box;
-import javax.swing.JButton;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
-import javax.swing.Spring;
-import javax.swing.SpringLayout;
 
 /**
  * Esta clase contiene el metodo main
@@ -28,6 +18,14 @@ import javax.swing.SpringLayout;
 public class Cajatcp {
 
     public static void main(String[] args) {
+        
+        int tipoCo = Alerts.showCommunicationChoice();
+        
+        if (tipoCo == 1) {
+            ComunicationTools.isTCP = true;
+        } else {
+            ComunicationTools.isTCP = false;
+        }
        
        JFramePrincipal marco = new JFramePrincipal();
        marco.getColorModel();

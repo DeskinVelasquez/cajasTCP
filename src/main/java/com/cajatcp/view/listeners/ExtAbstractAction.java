@@ -34,6 +34,7 @@ import static com.cajatcp.Utils.Constans.STR_INIT;
 import static com.cajatcp.Utils.Constans.STR_READ_FILE;
 import static com.cajatcp.Utils.Constans.STR_SAVE;
 import static com.cajatcp.Utils.Constans.STR_SAVE_TRX;
+import static com.cajatcp.Utils.Constans.STR_TIPO_CO;
 import static com.cajatcp.Utils.Constans.STR_VIEW_TRXS;
 import com.cajatcp.view.JPanelPrincipal;
 import java.awt.Font;
@@ -164,6 +165,17 @@ public class ExtAbstractAction /*implements Action*/ extends AbstractAction {
                         cClose.iniciarProceso();
                     }
                 }).start();
+                break;
+            case STR_TIPO_CO:
+                System.out.println(STR_TIPO_CO);
+                int tipoCo = Alerts.showCommunicationChoice();
+
+                if (tipoCo == 1) {
+                    ComunicationTools.isTCP = true;
+                } else {
+                    ComunicationTools.isTCP = false;
+                }
+                panel.cambiarCo();
                 break;
             case APPEARANCE_DARK:
                 System.out.println(APPEARANCE_DARK);

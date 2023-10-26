@@ -4,6 +4,7 @@
  */
 package com.cajatcp.view;
 
+import com.cajatcp.Utils.Comunication.ComunicationTools;
 import com.cajatcp.Utils.Constans;
 import com.cajatcp.view.listeners.ExtWindowAdapter;
 import com.cajatcp.view.JPanelPrincipal;
@@ -45,10 +46,14 @@ public class JFramePrincipal extends JFrame  {
         //tambien se puede agregar una ventana con setbounds, que recibe cuatro parametros correspondientes al tamaÃ±o y posiciÃ³n de la pantalla
         setBounds(ScreenX/2, ScreenY/2, ScreenX, ScreenY);
         setResizable(true); //este metodo permite bloquear el redimensionamiento de la ventana
-        setTitle("Cajas TCP"); // pone el titulo de la ventana
-       
+        if (ComunicationTools.isTCP) {
+            setTitle(Constans.TCP); // pone el titulo de la ventana
+        } else {
+            setTitle(Constans.USB); // pone el titulo de la ventana
+        }
+        
         //agregar un panel
-        panel = new JPanelPrincipal(ScreenX, ScreenY);
+        panel = new JPanelPrincipal(ScreenX, ScreenY, this);
         
         //trabajando con posicionamientos de componentes del panel.
         //FlowLayout flowLayout = new FlowLayout(FlowLayout.TRAILING);
@@ -76,6 +81,7 @@ public class JFramePrincipal extends JFrame  {
         JToolBar jToolBar = new JToolBar("Comunicación");
         jToolBar.add(panel.showBtnConect());
         jToolBar.add(panel.showBtnClear());
+        jToolBar.add(panel.showBtnTipoCo());
         add(jToolBar, BorderLayout.NORTH);
         
     }

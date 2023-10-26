@@ -27,4 +27,17 @@ public class Alerts {
        return null;
     }
     
+    public static int showCommunicationChoice() {
+        Object[] options = {"USB", "TCP"};
+        int choice = JOptionPane.showOptionDialog(null, "Selecciona un método de comunicación",
+                "Panel de Comunicación",
+                JOptionPane.YES_NO_OPTION,
+                JOptionPane.QUESTION_MESSAGE,
+                null,
+                options,
+                options[0]);
+
+        return choice;
+    }
+    
 }

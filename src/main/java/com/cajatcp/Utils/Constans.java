@@ -64,6 +64,7 @@ public class Constans {
     public final static String STR_VOID = "ANULAR";
     public final static String STR_ENABLE_CONNECT = "conectar";
     public final static String STR_DISABLE_CONNECT = "desconectar";
+    public final static String STR_TIPO_CO = "Tipo Comunicacion";
     public final static String STR_CLEAR = "Limpiar registro";
     public final static String STR_CONFIG_PORT = "config port";
     public final static String STR_STYLE_PLAIN = "Normal";

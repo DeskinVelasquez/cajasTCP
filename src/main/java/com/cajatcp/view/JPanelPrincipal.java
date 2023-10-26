@@ -75,11 +75,11 @@ public final class JPanelPrincipal extends JPanel /*implements ActionListener*/ 
     private JButton btnClose;
     private JButton btnVoid;
     private JButton enableConnect;
+    private JButton tipoCo;
     private JButton clearTextArea;
     private JTextField textField1;
     private JTextField tfVoid;
     private JLabel jLabelMonto;
-    private JLabel jlTypeCo;
     private JLabel jLabelMulti;
     private JLabel jLabelIP;
     private JLabel jLabelPORT;
@@ -88,21 +88,20 @@ public final class JPanelPrincipal extends JPanel /*implements ActionListener*/ 
     public  JSpinner jSpnAcquirer;
     public  JCheckBox checkCuota;
     public  JComboBox cbxMoneda;
-    public  JComboBox cbxTypeCo;
     public  JSpinner jSpnCuotas;
-    private JSlider jSlider;
     private Graphics g;
     private JMenuItem styleItalic;
     private JMenuItem styleBold;
     private JMenuItem stylePlain;
     private JPanel jpBtns;
+    private JFramePrincipal frame;
        
-    public JPanelPrincipal(int widthScreen, int heightScreen) {
+    public JPanelPrincipal(int widthScreen, int heightScreen, JFramePrincipal frame) {
         this.widthScreen = widthScreen;
         this.heightScreen = heightScreen;
+        this.frame = frame;
         //se deshabilita el posicionamiento de componestes para hacerlo manualmente
         setLayout(null);
-        
         //se muestran loscomponentes
         showComponents();
         
@@ -270,6 +269,10 @@ public final class JPanelPrincipal extends JPanel /*implements ActionListener*/ 
     public JButton showBtnConect () {
         return enableConnect;
     }
+    
+    public JButton showBtnTipoCo () {
+        return tipoCo;
+    }
     public JButton showBtnClear () {
         return clearTextArea;
     }
@@ -380,6 +383,7 @@ public final class JPanelPrincipal extends JPanel /*implements ActionListener*/ 
         ExtAbstractAction actionClose = new ExtAbstractAction(Constans.STR_CLOSE, redimensionarIcono(new ImageIcon("src/images/ic_close.png").getImage(), 60), this);
         ExtAbstractAction actionVoid = new ExtAbstractAction(Constans.STR_VOID, this);
         ExtAbstractAction actionEnableConnect = new ExtAbstractAction(Constans.STR_ENABLE_CONNECT, this);
+        ExtAbstractAction actionTipoCo = new ExtAbstractAction(Constans.STR_TIPO_CO, this);
         ExtAbstractAction actionClearTextArea = new ExtAbstractAction(Constans.STR_CLEAR, this);
         //ExtAbstractAction actionGenerico = new ExtAbstractAction("generico", this);
         
@@ -392,6 +396,7 @@ public final class JPanelPrincipal extends JPanel /*implements ActionListener*/ 
         btnClose = new JButton(actionClose);
         btnVoid = new JButton(actionVoid);
         enableConnect = new JButton(actionEnableConnect);
+        tipoCo = new JButton(actionTipoCo);
         clearTextArea = new JButton(actionClearTextArea);
        // generico = new JButton(actionGenerico);
        
@@ -403,6 +408,7 @@ public final class JPanelPrincipal extends JPanel /*implements ActionListener*/ 
        jpBtns.add(btnClose);
        
        jpBtns.setBounds(210, 50, 500, 50);
+      
        
         /*
         //se instancian los botones
@@ -526,6 +532,15 @@ public final class JPanelPrincipal extends JPanel /*implements ActionListener*/ 
            enableConnect.setSize(100, 15); 
         } else {
             enableConnect.setSize(120, 15); 
+        }
+        
+    }
+    
+    public void cambiarCo(){
+        if (ComunicationTools.isTCP) {
+           frame.setTitle(Constans.TCP);
+        } else {
+            frame.setTitle(Constans.USB);
         }
         
     }
@@ -678,25 +693,6 @@ public final class JPanelPrincipal extends JPanel /*implements ActionListener*/ 
         showMulticomercio();
         showMoneda();
         showCuotas();
-        showTypeComunication();
-    }
-    
-    public void showTypeComunication() {
-        jlTypeCo = jLabelMonto = new JLabel("Tipo ");
-        jlTypeCo.setBounds(550, 25, 70, 20);
-        
-        cbxTypeCo = new JComboBox();
-        cbxTypeCo.setBounds(600, 25, 70, 20);
-        String[] itemsComboBox = {Constans.TCP, Constans.USB};
-        cbxTypeCo.addItem(itemsComboBox[0]);
-        cbxTypeCo.addItem(itemsComboBox[1]);
-        
-        add(jlTypeCo);
-        add(cbxTypeCo);
-    }
-    
-    public String getTipoCo() {
-        return (String) cbxTypeCo.getSelectedItem();
     }
     
     public void showLabels() {
