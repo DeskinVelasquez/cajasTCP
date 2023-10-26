@@ -18,23 +18,23 @@ import javax.swing.JFrame;
 public class Cajatcp {
 
     public static void main(String[] args) {
-        
+
         int tipoCo = Alerts.showCommunicationChoice();
-        
+
         if (tipoCo == 1) {
             ComunicationTools.isTCP = true;
         } else {
             ComunicationTools.isTCP = false;
         }
-       
-                JFramePrincipal marco = new JFramePrincipal();
-                marco.getColorModel();
-                marco.setVisible(true);
-                marco.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); //cancelar ejecución del programa al cerrar la ventana
-                marco.setResizable(false);//bloquear la maximizacion de la pantalla
 
-                //se agrega el focus listener a la ventana principal.
-                marco.addWindowFocusListener(new ImpWindowFocusListener());
+        JFramePrincipal marco = new JFramePrincipal();
+        marco.getColorModel();
+        marco.setVisible(true);
+        marco.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); //cancelar ejecución del programa al cerrar la ventana
+        marco.setResizable(false);//bloquear la maximizacion de la pantalla
+
+        //se agrega el focus listener a la ventana principal.
+        marco.addWindowFocusListener(new ImpWindowFocusListener());
 
     }
 }

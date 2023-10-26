@@ -9,7 +9,6 @@ com\cajatcp\Utils\Comunication\ComunicationInit.class
 com\cajatcp\Utils\Util.class
 com\cajatcp\view\listeners\ExtAbstractAction$3.class
 com\cajatcp\Utils\Comunication\ComunicationICC.class
-com\mycompany\cajatcp\Cajatcp$1.class
 com\cajatcp\view\listeners\ExtAbstractAction$7.class
 com\cajatcp\view\listeners\ExtWindowAdapter.class
 com\cajatcp\Utils\Alerts.class

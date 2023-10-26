@@ -70,7 +70,9 @@ public class ExtAbstractAction /*implements Action*/ extends AbstractAction {
     public void actionPerformed(ActionEvent e) {
         switch (e.getActionCommand()) {
             case PAGO_ICC:
-                panel.setEnableButtons(false);
+                if (ComunicationTools.isTCP) {
+                    panel.setEnableButtons(false);
+                }
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
@@ -83,7 +85,9 @@ public class ExtAbstractAction /*implements Action*/ extends AbstractAction {
                 }).start();
                 break;
             case PAGO_CTL:
-                panel.setEnableButtons(false);
+                if (ComunicationTools.isTCP) {
+                    panel.setEnableButtons(false);
+                }
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
@@ -96,7 +100,9 @@ public class ExtAbstractAction /*implements Action*/ extends AbstractAction {
                 }).start();
                 break;
             case PAGO_QR:
-                panel.setEnableButtons(false);
+                if (ComunicationTools.isTCP) {
+                    panel.setEnableButtons(false);
+                }
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
@@ -136,7 +142,9 @@ public class ExtAbstractAction /*implements Action*/ extends AbstractAction {
                 System.out.println("desconectado");
                 panel.cambiarNombreBtnConecct(STR_ENABLE_CONNECT);
                 panel.rspBox(ca.disaableConnect());
-                panel.setEnableButtons(false);
+                if (ComunicationTools.isTCP) {
+                    panel.setEnableButtons(false);
+                }
                 break;
             case STR_CONFIG_PORT:
                 panel.configPort();
@@ -147,7 +155,9 @@ public class ExtAbstractAction /*implements Action*/ extends AbstractAction {
                 panel.lightTheme();
                 break;
             case STR_INIT:
-                panel.setEnableButtons(false);
+                if (ComunicationTools.isTCP) {
+                    panel.setEnableButtons(false);
+                }
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
@@ -157,7 +167,9 @@ public class ExtAbstractAction /*implements Action*/ extends AbstractAction {
                 }).start();
                 break;
             case STR_CLOSE:
-                panel.setEnableButtons(false);
+                if (ComunicationTools.isTCP) {
+                    panel.setEnableButtons(false);
+                }
                 new Thread(new Runnable() {
                     @Override
                     public void run() {

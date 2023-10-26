@@ -179,6 +179,7 @@ public class Constans {
     public static final String STR_MULTI_ACQ = "Multicomercio";
     public static final String STR_COIN = "Moneda";
     public static final String STR_CUOTAS = "Cuotas";
+    public static final String STR_INTERES = "Interes";
     
     //moneda
     public static final String STR_BS = "BS";

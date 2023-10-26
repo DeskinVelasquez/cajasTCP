@@ -87,6 +87,7 @@ public final class JPanelPrincipal extends JPanel /*implements ActionListener*/ 
     public  JCheckBox checkMulti;
     public  JSpinner jSpnAcquirer;
     public  JCheckBox checkCuota;
+    public  JCheckBox checkInteres;
     public  JComboBox cbxMoneda;
     public  JSpinner jSpnCuotas;
     private Graphics g;
@@ -537,14 +538,21 @@ public final class JPanelPrincipal extends JPanel /*implements ActionListener*/ 
         enableConnect.setText(newName);
         enableConnect.setSize(120, 15);
     }
-    
-    public void cambiarCo(){
+
+    public void cambiarCo() {
         if (ComunicationTools.isTCP) {
-           frame.setTitle(Constans.TCP);
+            frame.setTitle(Constans.TCP);
+            jLabelIP.setVisible(true);
+            jLabelPORT.setVisible(true);
+            if (enableConnect != null) {
+                enableConnect.setText(Constans.STR_ENABLE_CONNECT);
+                enableConnect.setVisible(true);
+            }
         } else {
             frame.setTitle(Constans.USB);
+            jLabelIP.setVisible(false);
+            jLabelPORT.setVisible(false);
         }
-        
     }
 
     private void showTextField (){
@@ -558,7 +566,7 @@ public final class JPanelPrincipal extends JPanel /*implements ActionListener*/ 
         ImpDocumentListener documentListener = new ImpDocumentListener();
         Document document = textField1.getDocument();
         document.addDocumentListener(documentListener);
-        textField1.setBounds(90, 20, 95, 20);
+        textField1.setBounds(90, 10, 95, 20);
         add(textField1);
         
         //agregando cuadros de texto, para el tema del evento foco
@@ -703,11 +711,12 @@ public final class JPanelPrincipal extends JPanel /*implements ActionListener*/ 
         jLabelMonto = new JLabel("Monto");
         jLabelIP.setBounds(550, 3, 150, 20);
         jLabelPORT.setBounds(660, 3, 150, 20);
-        jLabelMonto.setBounds(30, 20, 70, 20);
-        
+        jLabelMonto.setBounds(30, 10, 70, 20);
+
         add(jLabelIP);
         add(jLabelPORT);
         add(jLabelMonto);
+        cambiarCo();
     }
     
     public void showMulticomercio() {
@@ -757,13 +766,17 @@ public final class JPanelPrincipal extends JPanel /*implements ActionListener*/ 
  
     public void showCuotas() {
         JLabel jlCuota = new JLabel(Constans.STR_CUOTAS);
-        jlCuota.setBounds(30, 50, 150, 20);
+        JLabel jlInteres = new JLabel(Constans.STR_INTERES);
+        jlCuota.setBounds(30, 40, 150, 15);
+        jlInteres.setBounds(30, 45, 150, 35);
 
         checkCuota = new JCheckBox();
-        checkCuota.setBounds(80, 50, 35, 20);
+        checkInteres = new JCheckBox();
+        checkCuota.setBounds(80, 35, 20, 20);
+        checkInteres.setBounds(80, 55, 20, 20);
 
         jSpnCuotas = new JSpinner(new SpinnerNumberModel(1, 1, 15, 1));
-        jSpnCuotas.setBounds(145, 50, 40, 20);
+        jSpnCuotas.setBounds(145, 45, 40, 20);
         JComponent editor = jSpnCuotas.getEditor();
         if (editor instanceof JSpinner.DefaultEditor) {
             JSpinner.DefaultEditor defaultEditor = (JSpinner.DefaultEditor) editor;
@@ -772,17 +785,21 @@ public final class JPanelPrincipal extends JPanel /*implements ActionListener*/ 
         }
 
         jSpnCuotas.setEnabled(false);
+        checkInteres.setEnabled(false);
 
         checkCuota.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 jSpnCuotas.setEnabled(checkCuota.isSelected());
+                checkInteres.setEnabled(checkCuota.isSelected());
             }
         });
 
         add(jlCuota);
+        add(jlInteres);
         add(jSpnCuotas);
         add(checkCuota);
+        add(checkInteres);
     }
     
     public void darkTheme(){

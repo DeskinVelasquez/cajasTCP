@@ -68,11 +68,9 @@ public abstract class ComunicationTools {
     }
 
     public String disaableConnect() {
-        String retorno;
+        String retorno = "";
         if (isTCP) {
-            retorno = disaableConnectTCP();
-        } else {
-            retorno = disaableConnectUSB();
+        retorno = disaableConnectTCP();
         }
         return retorno;
     }
@@ -90,11 +88,6 @@ public abstract class ComunicationTools {
             Logger.getLogger(ComunicationTools.class.getName()).log(Level.SEVERE, null, ex);
         }
         return "Error al desconectar";
-    }
-
-    public String disaableConnectUSB() {
-
-        return "Comunicación cerrada";
     }
 
     public void enableConnect() {
@@ -153,6 +146,7 @@ public abstract class ComunicationTools {
             }
 
         }
+        panel.showBtnConect().setVisible(false);
         return 0;
     }
 
@@ -766,7 +760,7 @@ public abstract class ComunicationTools {
                 idCampoByte[0] = 0x35;
                 idCampoByte[1] = 0x31;
                 longitudCampoByte[0] = 0x00;
-                longitudCampoByte[1] = 0x02;
+                longitudCampoByte[1] = 0x04;
                 break;
             case 53: //numero trx
                 idCampoByte[0] = 0x35;
@@ -910,8 +904,11 @@ public abstract class ComunicationTools {
 
     private void finalizarCo() {
         comando = 0;
-        disaableConnect();
-        openConnect();
+        panel.setEnableButtons(true);
+        if (isTCP) {
+            disaableConnect();
+            openConnect();
+        }
     }
 
     private String manejoError(ArrayList<String> mensaje) {
@@ -1253,7 +1250,12 @@ public abstract class ComunicationTools {
             } else {
                 numCuota = String.valueOf(numero);
             }
-            byte[] noCuota = ComunicationTools.crearCampo(numCuota, 51, 2);
+            if (panel.checkInteres.isSelected()) {
+                numCuota += "01";
+            } else {
+                numCuota += "02";
+            }
+            byte[] noCuota = ComunicationTools.crearCampo(numCuota, 51, 4);
             System.arraycopy(noCuota, 0, frame, dinamicLength, noCuota.length);
             dinamicLength += noCuota.length;
 
