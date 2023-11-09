@@ -51,6 +51,7 @@ public class Constans {
     public final static String STR_SEND_REF_PENDING = "REFERENCIA PENDIENTE";
     public final static String STR_CIERRE_CANTIDAD = "CANTIDAD TRXS";
     public final static String STR_DATOS_CIERRE = "DATOS DE LA TRX"; //la transaccion
+    public final static String STR_RESP_CIERRE = "RESPUESTA FINAL"; //la transaccion
     
     //strings programa
     public final static String TCP = "TCP";

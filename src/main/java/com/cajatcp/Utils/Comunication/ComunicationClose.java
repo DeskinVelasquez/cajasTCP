@@ -48,28 +48,13 @@ public class ComunicationClose extends ComunicationTools{
         msgSend = "";
 
         if (noSwitch) {
-            
-            if (countTrx == -1) {
-                //finaliza la comunicacion 
-                lastMsg = true;
-                noSwitch = false;
-                countTrx = 0;
-            }
+            //finaliza la comunicacion 
+            lastMsg = true;
+            noSwitch = false;
+            countTrx = 0;
+            msgSend = Constans.ACK_STRING;
+            enviarMsg(msgSend);
 
-            if (countTrx == 0) {
-                //ya recibió respuesta del host. 
-                msgSend = Constans.ACK_STRING;
-                needSend = true;
-                needReceived = false;
-                countTrx = -1; //para indicar que no se van a enviar mas mensajes
-            } else {
-                msgSend = Constans.ACK_STRING;
-                needSend = true;
-                needReceived = true;
-                System.out.println("The Trx send is: "+countTrx);
-                countTrx--;
-            }
-            
         } else {
             switch (comando + 1) {
                 case 3: //comando 3
@@ -81,6 +66,10 @@ public class ComunicationClose extends ComunicationTools{
                     msgSend = Constans.ACK_STRING;
                     needSend = true;
                     needReceived = true;
+                    for (int i = 0; i < countTrx; i++) {
+                        enviarMsg(msgSend);
+                        recibir();
+                    }
                     break;
                 default:
                     Alerts.alert(true, "Error en la comunicación", 2);

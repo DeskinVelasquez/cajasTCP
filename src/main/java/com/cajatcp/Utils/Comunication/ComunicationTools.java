@@ -466,6 +466,9 @@ public abstract class ComunicationTools {
             case Constans.RESP_INIT:
                 msgOnScreen = Constans.STR_INIT_OK;
                 break;
+            case Constans.RESP_CIERRE:
+                msgOnScreen = Constans.STR_RESP_CIERRE;
+                break;
             default:
                 if (isTCP) {
                    Alerts.alert(true, "mensaje sobre pantalla no contemplado", 2); 
@@ -1108,7 +1111,8 @@ public abstract class ComunicationTools {
             panel.rspBox("Referencia pendiente: " + Util.conversorAString(buscarDato(msgComplete, 43)) + "\n");
         } else if (msgRecibido.equals(Constans.CIERRE_CANTIDAD)) {
             panel.rspBox("Trama:  " + stringBuilder.toString());
-            panel.rspBox("Cantidad Trx: " + Util.conversorAString(buscarDato(msgComplete, 90)) + "\n");
+            ComunicationClose.countTrx = Integer.parseInt(Util.conversorAString(buscarDato(msgComplete, 90)));
+            panel.rspBox("Cantidad Trx: " + ComunicationClose.countTrx + "\n");
         } else if (msgRecibido.equals(Constans.DATOS_CIERRE)) {
             panel.rspBox("Trama:  " + stringBuilder.toString());
             panel.rspBox("Trx No: " + ComunicationClose.countTrx);
