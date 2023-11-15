@@ -52,8 +52,7 @@ public class ComunicationClose extends ComunicationTools{
             lastMsg = true;
             noSwitch = false;
             countTrx = 0;
-            msgSend = Constans.ACK_STRING;
-            enviarMsg(msgSend);
+            enviarMsg(Constans.ACK_STRING);
 
         } else {
             switch (comando + 1) {

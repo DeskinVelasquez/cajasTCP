@@ -579,6 +579,17 @@ public final class JPanelPrincipal extends JPanel /*implements ActionListener*/ 
         add(tfVoid);
     }
     
+    public int getNumRef() {
+        int ref = 0;
+        try{
+            ref = Integer.parseInt(tfVoid.getText());
+        } catch(Exception e) {
+            System.out.println("Error try Catch: "+ e.getMessage());
+            Alerts.alert(true, "Referencia invalida", 1);
+        }
+        return ref;
+    }
+    
     public int getMonto() {
         int monto = 0;
         try{

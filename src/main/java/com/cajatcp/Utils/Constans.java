@@ -30,6 +30,7 @@ public class Constans {
     
     //Inicializacion
     public final static String SOLICITUD_INIT = "1002000";
+    //trama de inicializacion recibida
     public final static String RESP_INIT = "1002  0";
     
     //Cierre
@@ -39,19 +40,34 @@ public class Constans {
     public final static String DATOS_CIERRE = "1001  1"; //la transaccion
     public final static String RESP_CIERRE = "1001  2";//-->respuesta final
     
+    //Anulacion
+    public final static String SOLICITUD_ANULACION = "1005000";
+    public final static String REFERENCIA_TRANSACCION_ANULACION = "1005001";
+    public final static String CONFIRMACION_ANULACION = "1005002";
+    //tramas de anulacion recibidas
+    public final static String SOLICITUD_ANULACION_REFERENCIA = "1005  0";
+    public final static String RESULTADO_BUSQUEDA_REFERENCIA = "1005  1";
+    public final static String RESPUESA_HOST_ANULACION = "1005  2";
+    
     //Strings ventas tramas enviadas
     public final static String STR_SOLICITUD_CONEXION = "SOLICITUD CONEXION";
     public final static String STR_SOLICITUD_CONEXION_QR = "SOLICITUD CONEXION QR";
     public final static String STR_SOLICITUD_CONEXION_TIGOMONEY = "SOLICITUD CONEXION TIGOMONEY";
     public final static String STR_SOLICITUD_CONEXION_CONTACTLESS = "SOLICITUD CONEXION CONTACTLESS";
     public final static String STR_SOLICITUD_INIT = "SOLICITUD INICIALIZACION";
+    public final static String STR_SOLICITUD_ANULACION = "SOLICITUD ANULACION";
+    public final static String STR_REFERENCIA_TRANSACCION_ANULACION = "REFERENCIA TRANSACCION ANULACION";
+    public final static String STR_CONFIRMACION_ANULACION = "CONFIRMACION ANULACION";
+    public final static String STR_SOLICITUD_ANULACION_REFERENCIA = "SOLICITUD ANULACION REFERENCIA";
+    public final static String STR_RESULTADO_BUSQUEDA_REFERENCIA = "RESULTADO_BUSQUEDA_REFERENCIA";
+    public final static String STR_RESPUESA_HOST_ANULACION = "RESPUESA HOST ANULACION";
     public final static String STR_TRANS_REV_No = "TRANS REV No";
     public final static String STR_TRANSACCION_ENVIO_DATOS = "TRANSACCION ENVIO DATOS";
     public final static String STR_TARJETA_CONTACTLESS = "TARJETA CONTACTLESS";
     public final static String STR_SEND_REF_PENDING = "REFERENCIA PENDIENTE";
     public final static String STR_CIERRE_CANTIDAD = "CANTIDAD TRXS";
     public final static String STR_DATOS_CIERRE = "DATOS DE LA TRX"; //la transaccion
-    public final static String STR_RESP_CIERRE = "RESPUESTA FINAL"; //la transaccion
+    public final static String STR_RESP_CIERRE = "RESPUESTA FINAL"; 
     
     //strings programa
     public final static String TCP = "TCP";
@@ -215,6 +231,10 @@ public class Constans {
     public final static byte[] PH_SOLICITUD_INIT ={ 0x31, 0x30, 0x30, 0x32, 0x30, 0x30, 0x30};
     //cierre
     public final static byte[] PH_SOLICITUD_CIERRE ={ 0x31, 0x30, 0x30, 0x31, 0x30, 0x30, 0x30};
+    //anulacion
+    public final static byte[] PH_SOLICITUD_ANULACION={ 0x31, 0x30, 0x30, 0x35, 0x30, 0x30, 0x30};
+    public final static byte[] PH_REFERENCIA_TRANSACCION_ANULACION={ 0x31, 0x30, 0x30, 0x35, 0x30, 0x30, 0x31};
+    public final static byte[] PH_CONFIRMACION_ANULACION ={ 0x31, 0x30, 0x30, 0x35, 0x30, 0x30, 0x32};
     
 }
 

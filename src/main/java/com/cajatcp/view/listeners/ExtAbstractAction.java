@@ -27,6 +27,7 @@ import static com.cajatcp.Utils.Constans.STR_STYLE_BOLD;
 import static com.cajatcp.Utils.Constans.STR_STYLE_ITALIC;
 import static com.cajatcp.Utils.Constans.STR_STYLE_PLAIN;
 import com.cajatcp.Utils.Comunication.ComunicationTools;
+import com.cajatcp.Utils.Comunication.ComunicationVoid;
 import static com.cajatcp.Utils.Constans.PAGO_CTL;
 import static com.cajatcp.Utils.Constans.STR_CLEAR;
 import static com.cajatcp.Utils.Constans.STR_CLOSE;
@@ -36,6 +37,7 @@ import static com.cajatcp.Utils.Constans.STR_SAVE;
 import static com.cajatcp.Utils.Constans.STR_SAVE_TRX;
 import static com.cajatcp.Utils.Constans.STR_TIPO_CO;
 import static com.cajatcp.Utils.Constans.STR_VIEW_TRXS;
+import static com.cajatcp.Utils.Constans.STR_VOID;
 import com.cajatcp.view.JPanelPrincipal;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
@@ -223,6 +225,19 @@ public class ExtAbstractAction /*implements Action*/ extends AbstractAction {
                 break;
             case STR_VIEW_TRXS:
                 panel.viewTrxs();
+                break;
+            case STR_VOID:
+                int numRef = panel.getNumRef();
+                if (ComunicationTools.isTCP) {
+                    panel.setEnableButtons(false);
+                }
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        ComunicationVoid cInit = new ComunicationVoid(panel, numRef);
+                        cInit.iniciarProceso();
+                    }
+                }).start();
                 break;
             default:
                 System.out.println(e.getActionCommand());

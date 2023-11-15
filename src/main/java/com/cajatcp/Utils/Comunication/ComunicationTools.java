@@ -435,7 +435,25 @@ public abstract class ComunicationTools {
             case Constans.DATOS_CIERRE:
                 msgOnScreen = Constans.STR_DATOS_CIERRE;
                 break;
+            case Constans.SOLICITUD_ANULACION:
+                msgOnScreen = Constans.STR_SOLICITUD_ANULACION;
+                break;
+            case Constans.REFERENCIA_TRANSACCION_ANULACION:
+                msgOnScreen = Constans.STR_REFERENCIA_TRANSACCION_ANULACION;
+                break;
+            case Constans.CONFIRMACION_ANULACION:
+                msgOnScreen = Constans.STR_CONFIRMACION_ANULACION;
+                break;
             //msg recibidos
+            case Constans.SOLICITUD_ANULACION_REFERENCIA:
+                msgOnScreen = Constans.STR_SOLICITUD_ANULACION_REFERENCIA;
+                break;
+            case Constans.RESULTADO_BUSQUEDA_REFERENCIA:
+                msgOnScreen = Constans.STR_RESULTADO_BUSQUEDA_REFERENCIA;
+                break;
+            case Constans.RESPUESA_HOST_ANULACION:
+                msgOnScreen = Constans.STR_RESPUESA_HOST_ANULACION;
+                break;
             case Constans.ULTIMA_TRANS:
                 msgOnScreen = Constans.STR_ULTIMA_TRANS;
                 break;
@@ -503,6 +521,7 @@ public abstract class ComunicationTools {
         switch (presentationHeader) {
             case Constans.STR_INIT:
             case Constans.SOLICITUD_CIERRE:
+            case Constans.SOLICITUD_ANULACION:
                 break;
             case Constans.SOLICITUD_CONEXION:
             case Constans.SOLICITUD_CONEXION_QR:
@@ -518,6 +537,12 @@ public abstract class ComunicationTools {
                 break;
             case Constans.TARJETA_CONTACTLESS:
                 //retorno = impComunication.armarTramaVariable(Constans.TARJETA_CONTACTLESS);
+                break;
+            case Constans.REFERENCIA_TRANSACCION_ANULACION:
+                retorno = armarTramaVariable(Constans.REFERENCIA_TRANSACCION_ANULACION);
+                break;
+            case Constans.CONFIRMACION_ANULACION:
+                retorno = armarTramaVariable(Constans.CONFIRMACION_ANULACION);
                 break;
         }
         return retorno;
@@ -1042,9 +1067,21 @@ public abstract class ComunicationTools {
                 trama = armarTrama(300, tipoMsg, Constans.PH_SOLICITUD_CIERRE);
                 enviar(trama);
                 break;
+            case Constans.SOLICITUD_ANULACION:
+                trama = armarTrama(300, tipoMsg, Constans.PH_SOLICITUD_ANULACION);
+                enviar(trama);
+                break;
+            case Constans.REFERENCIA_TRANSACCION_ANULACION:
+                trama = armarTrama(300, tipoMsg, Constans.PH_REFERENCIA_TRANSACCION_ANULACION);
+                enviar(trama);
+                break;
+            case Constans.CONFIRMACION_ANULACION:
+                trama = armarTrama(300, tipoMsg, Constans.PH_CONFIRMACION_ANULACION);
+                enviar(trama);
+                break;
             default:
                 retorno = null;
-                System.out.println("Error switch comunicationQR-armarTramaVariable");
+                System.out.println("Error switch comunication-armarTramaVariable");
         }
     }
 
