@@ -525,6 +525,7 @@ public abstract class ComunicationTools {
                 break;
             case Constans.SOLICITUD_CONEXION:
             case Constans.SOLICITUD_CONEXION_QR:
+            case Constans.SOLICITUD_CONEXION_TIGOMONEY:
             case Constans.SOLICITUD_CONEXION_CONTACTLESS:
                 //aqui se debe validar si tiene id de comercio
                 retorno = armarFirtsFields();
@@ -802,6 +803,12 @@ public abstract class ComunicationTools {
                 longitudCampoByte[0] = 0x00;
                 longitudCampoByte[1] = 0x04;
                 break;
+            case 57: //numero de telefono
+                idCampoByte[0] = 0x35;
+                idCampoByte[1] = 0x37;
+                longitudCampoByte[0] = 0x00;
+                longitudCampoByte[1] = 0x08;
+                break;
             case 61:
                 Arrays.fill(totalByte, (byte) 0x20);
                 idCampoByte[0] = 0x36;
@@ -1053,6 +1060,10 @@ public abstract class ComunicationTools {
                 break;
             case Constans.SOLICITUD_CONEXION_QR:
                 trama = armarTrama(300, tipoMsg, Constans.PH_SOLICITUD_CONEXION_QR);
+                enviar(trama);
+                break;
+            case Constans.SOLICITUD_CONEXION_TIGOMONEY:
+                trama = armarTrama(300, tipoMsg, Constans.PH_SOLICITUD_CONEXION_TG);
                 enviar(trama);
                 break;
             case Constans.SOLICITUD_CONEXION:

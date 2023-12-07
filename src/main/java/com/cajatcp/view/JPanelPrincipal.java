@@ -587,7 +587,7 @@ public final class JPanelPrincipal extends JPanel /*implements ActionListener*/ 
             System.out.println("Error try Catch: "+ e.getMessage());
             Alerts.alert(true, "Referencia invalida", 1);
         }
-        return ref;
+        return ref*100;
     }
     
     public int getMonto() {

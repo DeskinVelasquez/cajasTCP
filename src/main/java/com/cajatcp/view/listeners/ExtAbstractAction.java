@@ -10,6 +10,7 @@ import com.cajatcp.Utils.Comunication.ComunicationClose;
 import com.cajatcp.Utils.Comunication.ComunicationICC;
 import com.cajatcp.Utils.Comunication.ComunicationInit;
 import com.cajatcp.Utils.Comunication.ComunicationQR;
+import com.cajatcp.Utils.Comunication.ComunicationTG;
 import com.cajatcp.Utils.Constans;
 import static com.cajatcp.Utils.Constans.APPEARANCE_DARK;
 import static com.cajatcp.Utils.Constans.APPEARANCE_LIGHT;
@@ -29,6 +30,7 @@ import static com.cajatcp.Utils.Constans.STR_STYLE_PLAIN;
 import com.cajatcp.Utils.Comunication.ComunicationTools;
 import com.cajatcp.Utils.Comunication.ComunicationVoid;
 import static com.cajatcp.Utils.Constans.PAGO_CTL;
+import static com.cajatcp.Utils.Constans.PAGO_TG;
 import static com.cajatcp.Utils.Constans.STR_CLEAR;
 import static com.cajatcp.Utils.Constans.STR_CLOSE;
 import static com.cajatcp.Utils.Constans.STR_INIT;
@@ -115,6 +117,27 @@ public class ExtAbstractAction /*implements Action*/ extends AbstractAction {
                         }
                     }
                 }).start();
+                break;
+            case PAGO_TG:
+                if (ComunicationTools.isTCP) {
+                    panel.setEnableButtons(false);
+                }
+                String phone = Alerts.inputAlert("Ingrese un numero de telefono");
+                
+                if (ComunicationTG.validatePhone(phone)) {
+                    
+                    new Thread(() -> {
+                        int monto = panel.getMonto();
+                        if (!Alerts.alert(monto == 0, "Debe haber un monto", 2)) {
+                            ComunicationTG cTG = new ComunicationTG(panel, phone);
+                            cTG.iniciarProceso();
+                        }
+                }).start();
+                    
+                } else {
+                    Alerts.alert(true, "telefono invalido", 2);
+                    return;
+                }
                 break;
             case STR_ENABLE_CONNECT:
                 ComunicationTools co = new ComunicationTools(panel) {
